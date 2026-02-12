@@ -1,65 +1,117 @@
-import Image from "next/image";
+'use client'; // Required for the onClick alert
+
+import Link from 'next/link';
 
 export default function Home() {
+
+  const handleSubscribeClick = () => {
+    alert('Thank you for subscribing!');
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="bg-white min-h-screen">
+      {/* Hero Section */}
+      <section className="flex flex-col items-center justify-center text-center px-4 py-20">
+        <div className="text-slate-900 max-w-4xl mx-auto">
+          <h1 className="text-5xl font-extrabold text-[#0F172A] mb-6">
+            Teaching Students to Think With AI, Not Just Use It.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-8">
+            Hands-on AI literacy programs that connect technology to students&rsquo; real interests. We build tools for thinking, not shortcuts for answers.
           </p>
+          <Link href="#programs">
+            <button className="bg-[#0F172A] text-white px-8 py-3 rounded-lg font-bold hover:bg-slate-800 transition-all">
+              View Our Programs
+            </button>
+          </Link>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+        {/* NEW: Philosophy Section */}
+      <section className="py-20 md:py-24 px-4 bg-slate-50">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-[#0F172A] mb-6">Different Means, Same End.</h2>
+          <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-12">
+           Whether your child is interested in coding, digital art, music, or entrepreneurship, they will use their passion as a &quot;means&quot; to achieve the same &quot;end&quot;: AI Literacy and Critical Thinking. We achieve these ends through different means, where student education is tailored to their specific interests—whether that is coding, music production, or digital storytelling.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div className="p-6 bg-white rounded-lg shadow-md border border-slate-200">
+              <h4 className="text-xl font-bold text-[#0F172A] mb-2">Prompt Engineering</h4>
+            </div>
+            <div className="p-6 bg-white rounded-lg shadow-md border border-slate-200">
+              <h4 className="text-xl font-bold text-[#0F172A] mb-2">Output Verification</h4>
+            </div>
+            <div className="p-6 bg-white rounded-lg shadow-md border border-slate-200">
+              <h4 className="text-xl font-bold text-[#0F172A] mb-2">Ethical Reasoning</h4>
+            </div>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+
+      {/* Program Selection Section */}
+      <section id="programs" className="py-20 px-4 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-[#0F172A]">
+            Choose Your Learning Path
+          </h2>
+          <div className="grid md:grid-cols-2 gap-10">
+            {/* Card A: Library Programs */}
+            <div className="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 border border-slate-200 flex flex-col justify-between">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold mb-3 text-[#0F172A]">Library Programs</h3>
+                <p className="text-slate-600 mb-6">Hands-on workshops like the &apos;AI Thinkers &amp; Builders Club&apos; for public libraries.</p>
+              </div>
+              <div className="p-8 pt-0">
+                <Link href="/libraries">
+                  <button className="w-full bg-[#0F172A] text-white py-3 rounded-md font-bold hover:bg-slate-800 transition-all">For Librarians</button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Card B: After School */}
+            <div className="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 border border-slate-200 flex flex-col justify-between">
+              <div className="p-8">
+                <h3 className="text-2xl font-bold mb-3 text-[#0F172A]">After School Accelerators</h3>
+                <p className="text-slate-600 mb-6">Structured multi-week programs for schools and parent-enrolled students.</p>
+              </div>
+              <div className="p-8 pt-0">
+                <Link href="/after-school">
+                 <button className="w-full bg-[#0F172A] text-white py-3 rounded-md font-bold hover:bg-slate-800 transition-all">For Parents</button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trusted Organizations Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-5xl mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center text-[#0F172A] mb-4">Trusted Organizations</h2>
+          <p className="text-center text-slate-600 mb-16">Empowering students through partnerships with leading schools and libraries.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-8 items-center justify-items-center">
+            <div className="text-center font-semibold text-slate-500 hover:text-[#0F172A] transition-colors">Babson College</div>
+            <div className="text-center font-semibold text-slate-500 hover:text-[#0F172A] transition-colors">Danbury Library</div>
+            <div className="text-center font-semibold text-slate-500 hover:text-[#0F172A] transition-colors">Ridgefield Library</div>
+            <div className="text-center font-semibold text-slate-500 hover:text-[#0F172A] transition-colors">Wooster School</div>
+            <div className="text-center font-semibold text-slate-500 hover:text-[#0F172A] transition-colors">Woodstock Public Schools</div>
+            <div className="text-center font-semibold text-slate-500 hover:text-[#0F172A] transition-colors">Danbury High School</div>
+          </div>
+        </div>
+      </section>
+
+      {/* Blog / Newsletter Section */}
+      <section className="bg-slate-50 py-20 px-4">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-[#0F172A] mb-4">Join the AI Literacy Journey</h2>
+          <p className="text-slate-600 mb-8">Get weekly AI thinking prompts and program updates delivered to your inbox.</p>
+          <div className="flex flex-col md:flex-.row gap-4 max-w-md mx-auto">
+            <input type="email" placeholder="Enter your email" className="flex-grow px-4 py-3 rounded-md border border-slate-300 focus:ring-2 focus:ring-[#4FD1C5] focus:outline-none" />
+            <button onClick={handleSubscribeClick} className="bg-[#0F172A] text-white px-6 py-3 rounded-md font-bold hover:bg-slate-800 transition-all">Subscribe</button>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
