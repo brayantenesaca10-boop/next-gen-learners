@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Battle Plan — April 3, 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --bg:#FAFBFF;--surface:#fff;--border:#E2E8F0;
+      --text:#1E1B4B;--text-2:#64748B;--text-3:#94A3B8;
+      --primary:#4F46E5;--violet:#7C3AED;--emerald:#10B981;--amber:#F59E0B;--cyan:#06B6D4;--red:#EF4444;
+      --indigo-glow:rgba(79,70,229,0.08);--emerald-glow:rgba(16,185,129,0.08);
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Plus Jakarta Sans',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased;padding:0 0 80px}
+
+    /* Header */
+    .header{background:linear-gradient(135deg,#4F46E5,#7C3AED,#06B6D4);padding:48px 24px;text-align:center;color:white;position:relative;overflow:hidden}
+    .header::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(255,255,255,0.1),transparent 60%);pointer-events:none}
+    .header h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;letter-spacing:-0.03em;margin-bottom:8px;position:relative}
+    .header p{font-size:1rem;opacity:0.85;max-width:600px;margin:0 auto;position:relative;font-weight:300}
+
+    .container{max-width:720px;margin:0 auto;padding:0 24px}
+
+    /* Mission banner */
+    .mission{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin:-32px auto 40px;position:relative;z-index:2;max-width:720px;box-shadow:0 4px 24px rgba(0,0,0,0.06)}
+    .mission p{font-size:0.95rem;color:var(--text-2);line-height:1.7;text-align:center}
+    .mission strong{color:var(--text)}
+
+    /* Section */
+    .section{margin-top:48px}
+    .section-label{font-size:0.6rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--primary);font-weight:700;margin-bottom:8px}
+    .section-title{font-size:1.5rem;font-weight:800;letter-spacing:-0.02em;margin-bottom:16px}
+
+    /* Goals */
+    .goal{display:flex;gap:16px;padding:20px 0;border-bottom:1px solid var(--border)}
+    .goal:last-child{border-bottom:none}
+    .goal-num{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;flex-shrink:0}
+    .goal h3{font-size:0.95rem;font-weight:700;margin-bottom:4px}
+    .goal p{font-size:0.85rem;color:var(--text-2)}
+
+    /* Timeline */
+    .tl-item{display:flex;gap:16px;padding:14px 0;border-bottom:1px solid var(--border);align-items:baseline}
+    .tl-item:last-child{border-bottom:none}
+    .tl-time{font-size:0.78rem;font-weight:700;color:var(--primary);min-width:90px;flex-shrink:0}
+    .tl-desc{font-size:0.88rem;color:var(--text-2)}
+    .tl-desc strong{color:var(--text)}
+
+    /* Keynote parts */
+    .part{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:16px}
+    .part-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+    .part-badge{font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;font-weight:700;padding:4px 12px;border-radius:8px}
+    .part h3{font-size:1.1rem;font-weight:700}
+    .part-time{font-size:0.72rem;color:var(--text-3);margin-left:auto;font-weight:600}
+
+    /* Speaking lines */
+    .speak{background:var(--indigo-glow);border-left:3px solid var(--primary);border-radius:0 12px 12px 0;padding:16px 20px;margin:12px 0;font-size:0.9rem;line-height:1.7;color:var(--text);font-style:italic}
+    .speak strong{font-style:normal}
+
+    /* Stage directions */
+    .stage{font-size:0.78rem;color:var(--violet);font-weight:600;font-style:italic;margin:10px 0}
+
+    /* Demo box */
+    .demo-box{background:#1E1B4B;color:#E0E7FF;border-radius:12px;padding:16px 20px;margin:12px 0;font-family:'Courier New',monospace;font-size:0.82rem;line-height:1.6;white-space:pre-wrap}
+    .demo-say{font-size:0.85rem;color:var(--emerald);font-weight:600;margin-top:8px;font-family:'Plus Jakarta Sans',sans-serif;font-style:normal}
+
+    /* Insight cards */
+    .insight{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+    .insight:last-child{border-bottom:none}
+    .insight-num{width:28px;height:28px;border-radius:8px;background:var(--indigo-glow);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.72rem;flex-shrink:0}
+    .insight h4{font-size:0.88rem;font-weight:700;margin-bottom:2px}
+    .insight p{font-size:0.82rem;color:var(--text-2)}
+
+    /* Roche box */
+    .roche-box{background:linear-gradient(135deg,rgba(79,70,229,0.06),rgba(124,58,237,0.06));border:1px solid rgba(79,70,229,0.15);border-radius:16px;padding:28px;margin-top:20px}
+    .roche-box .speak{background:rgba(79,70,229,0.08);border-left-color:var(--violet)}
+
+    /* Contingency table */
+    .cont-row{display:grid;grid-template-columns:140px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);font-size:0.85rem}
+    .cont-row:last-child{border-bottom:none}
+    .cont-problem{font-weight:700;color:var(--red)}
+    .cont-solution{color:var(--text-2)}
+
+    /* Final box */
+    .final{background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:16px;padding:32px;text-align:center;color:white;margin-top:48px}
+    .final h2{font-size:1.4rem;font-weight:800;margin-bottom:8px}
+    .final p{font-size:0.92rem;opacity:0.85;max-width:500px;margin:0 auto}
+
+    /* Checklist */
+    .check{display:flex;align-items:flex-start;gap:10px;padding:8px 0;font-size:0.88rem;color:var(--text-2)}
+    .check-box{width:20px;height:20px;border:2px solid var(--border);border-radius:6px;flex-shrink:0;margin-top:2px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center}
+    .check-box.checked{background:var(--emerald);border-color:var(--emerald)}
+    .check-box.checked::after{content:'';width:6px;height:10px;border:solid white;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
+
+    @media(max-width:640px){
+      .header{padding:36px 20px}
+      .cont-row{grid-template-columns:1fr;gap:4px}
+      .tl-item{flex-direction:column;gap:4px}
+      .tl-time{min-width:auto}
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Battle Plan</h1>
+  <p>Woodstock PD Day &mdash; April 3, 2026</p>
+</div>
+
+<div class="container">
+
+  <div class="mission">
+    <p>Walk into Woodstock Middle School and make 50 educators believe that AI is their ally, not their enemy. Leave them with a tool they can use Monday morning. <strong>Leave as the person everyone in that room wants to talk to about AI.</strong></p>
+  </div>
+
+  <!-- GOALS -->
+  <div class="section">
+    <div class="section-label">Priority</div>
+    <div class="section-title">3 Goals</div>
+
+    <div class="goal">
+      <div class="goal-num" style="background:rgba(79,70,229,0.1);color:#4F46E5">1</div>
+      <div><h3>Shift the room from fear to curiosity</h3><p>If they leave thinking "I could actually try that," you won.</p></div>
+    </div>
+    <div class="goal">
+      <div class="goal-num" style="background:rgba(16,185,129,0.1);color:#10B981">2</div>
+      <div><h3>Deliver a takeaway they'll use Monday</h3><p>nextgenerationlearners.com/woodstock &mdash; 3 Rules, a 15-min lesson, 6 drivers. You hand them the keys.</p></div>
+    </div>
+    <div class="goal">
+      <div class="goal-num" style="background:rgba(124,58,237,0.1);color:#7C3AED">3</div>
+      <div><h3>Plant the seed with Roche</h3><p>"I built a personal AI system for myself. I'd love to show you what yours could look like."</p></div>
+    </div>
+  </div>
+
+  <!-- PREP CHECKLIST -->
+  <div class="section">
+    <div class="section-label">Tonight</div>
+    <div class="section-title">Prep Checklist</div>
+    <div class="check"><div class="check-box" onclick="this.classList.toggle('checked')"></div>Run through keynote out loud 2x (under 28 min)</div>
+    <div class="check"><div class="check-box" onclick="this.classList.toggle('checked')"></div>Run all 4 demos in ChatGPT, screenshot as backup</div>
+    <div class="check"><div class="check-box" onclick="this.classList.toggle('checked')"></div>Type 4 demo prompts in Notes &mdash; ready to paste</div>
+    <div class="check"><div class="check-box" onclick="this.classList.toggle('checked')"></div>Charge laptop + phone, pack HDMI + USB-C</div>
+    <div class="check"><div class="check-box" onclick="this.classList.toggle('checked')"></div>Pick outfit &mdash; blazer or button-down, clean sneakers</div>
+    <div class="check"><div class="check-box" onclick="this.classList.toggle('checked')"></div>Set alarm for 6:00 AM</div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="section">
+    <div class="section-label">Tomorrow</div>
+    <div class="section-title">Timeline</div>
+    <div class="tl-item"><div class="tl-time">6:00 AM</div><div class="tl-desc">Wake up. Shower. Eat. <strong>Pray.</strong></div></div>
+    <div class="tl-item"><div class="tl-time">7:00 AM</div><div class="tl-desc">Leave for Woodstock (~1hr drive)</div></div>
+    <div class="tl-item"><div class="tl-time">8:00 AM</div><div class="tl-desc"><strong>Arrive.</strong> Find Mr. Roche.</div></div>
+    <div class="tl-item"><div class="tl-time">8:00-8:30</div><div class="tl-desc"><strong>Setup:</strong> Smart TV, Wi-Fi, ChatGPT open, demo prompts in separate tab</div></div>
+    <div class="tl-item"><div class="tl-time">8:30-8:50</div><div class="tl-desc"><strong>Meet Kristy and Gina.</strong> Ask what they're covering. Ask how to support.</div></div>
+    <div class="tl-item"><div class="tl-time">8:50-9:00</div><div class="tl-desc">Stand at the front. Water bottle. <strong>Deep breath.</strong></div></div>
+    <div class="tl-item"><div class="tl-time" style="color:#4F46E5">9:00-9:30</div><div class="tl-desc"><strong style="color:#4F46E5">KEYNOTE</strong></div></div>
+    <div class="tl-item"><div class="tl-time">9:30-9:35</div><div class="tl-desc">Show QR code. Let people scan.</div></div>
+    <div class="tl-item"><div class="tl-time">9:35-11:00</div><div class="tl-desc"><strong>Breakout sessions.</strong> Float between Gina's and Kristy's rooms.</div></div>
+    <div class="tl-item"><div class="tl-time">11:00-2:30</div><div class="tl-desc">1-on-1 conversations. Get emails. Listen for pain points.</div></div>
+    <div class="tl-item"><div class="tl-time" style="color:#7C3AED">End of day</div><div class="tl-desc"><strong style="color:#7C3AED">Private conversation with Roche.</strong> The seed.</div></div>
+  </div>
+
+  <!-- KEYNOTE -->
+  <div class="section">
+    <div class="section-label">The Talk</div>
+    <div class="section-title">Keynote: 30 Minutes</div>
+    <p style="font-size:0.88rem;color:var(--text-2);margin-bottom:24px"><strong>WHO &rarr; WHY &rarr; WHAT I SAW &rarr; WHAT WE DID &rarr; WHAT YOU CAN DO &rarr; TOOLS</strong><br>Your story leads into the fear. The fear leads into your why. Your why earns you the right to teach them.</p>
+
+    <!-- Part 1 -->
+    <div class="part">
+      <div class="part-header">
+        <span class="part-badge" style="background:rgba(79,70,229,0.1);color:#4F46E5">Part 1</span>
+        <h3>Who I Am</h3>
+        <span class="part-time">3 min</span>
+      </div>
+      <div class="stage">No slide needed. Just you talking.</div>
+      <div class="speak">"Good morning. My name is Brayan Tenesaca. I grew up in Danbury. I went to AIS Magnet School &mdash; Mr. Roche was actually my principal."</div>
+      <div class="stage">Pause. Let the room react. Roche will smile.</div>
+      <div class="speak">"I played soccer all four years of high school. Won five trophies. Scored over 100 goals. I now train mixed martial arts at Babson College, where I'm a freshman."</div>
+      <div class="stage">You're not a "tech kid." You're an athlete. They need to see that.</div>
+      <div class="speak">"I'm also the co-founder of Next Generation Learners. We run AI literacy programs in libraries and schools across Connecticut &mdash; Danbury, Ridgefield, Easton, and now here in Woodstock. I'm 18 years old."</div>
+      <div class="stage">Let that land. 18. Founded a company. In their building.</div>
+    </div>
+
+    <!-- Part 2 -->
+    <div class="part">
+      <div class="part-header">
+        <span class="part-badge" style="background:rgba(239,68,68,0.1);color:#EF4444">Part 2</span>
+        <h3>The Fear &mdash; Why I'm Here</h3>
+        <span class="part-time">4 min</span>
+      </div>
+      <div class="stage">This is the emotional core. Slow down. Mean every word.</div>
+      <div class="speak">"When I got to Babson, I saw something that scared me. I saw students my age building entire businesses with AI &mdash; real revenue, real products &mdash; while other students were terrified to even open it. The gap was massive. And I realized: that gap doesn't start in college. It starts now. It starts in your classrooms."</div>
+      <div class="speak">"So I started paying attention. And I saw fear <strong>everywhere.</strong>"</div>
+      <div class="speak">"I saw the fear of parents &mdash; worried their kids will never get exposed to AI, or worried they'll get too exposed without guidance."</div>
+      <div class="speak">"I saw the fear of students &mdash; afraid they'll get caught using AI, not knowing there's a right way."</div>
+      <div class="speak">"I saw the fear of schools &mdash; that they won't adapt fast enough, that the world is moving and they're standing still."</div>
+      <div class="speak" style="border-left-color:#EF4444;background:rgba(239,68,68,0.05)">"And I saw the fear of <strong>teachers.</strong>"</div>
+      <div class="stage">Pause here. Look at them.</div>
+      <div class="speak">"I saw teachers afraid that AI will replace them. That their job &mdash; the job they pour their heart into &mdash; is somehow disposable. That a machine can do what they do."</div>
+      <div class="stage">Pause again.</div>
+      <div class="speak" style="border-left-color:#7C3AED;background:rgba(124,58,237,0.06)">"And I thought: <strong>I have to do something about this.</strong> Because that fear? It's wrong."</div>
+    </div>
+
+    <!-- Part 3 -->
+    <div class="part">
+      <div class="part-header">
+        <span class="part-badge" style="background:rgba(16,185,129,0.1);color:#10B981">Part 3</span>
+        <h3>Why Teachers Matter</h3>
+        <span class="part-time">3 min</span>
+      </div>
+      <div class="stage">This is where you earn the room. Every teacher needs to hear this.</div>
+      <div class="speak">"AI is not going to replace you. It will never replace you. Here's what it WILL do: it will replace people who refuse to learn how to use it. That's different. That's a choice, not a fate."</div>
+      <div class="speak" style="border-left-color:#10B981;background:rgba(16,185,129,0.06)">"AI cannot <strong>care</strong> about your students. You can tell a machine what to do. You can tell it how to respond. But you cannot teach it to care. It doesn't stay after school because it noticed a kid was having a bad day. It doesn't throw a football with a 5th grader because that kid needed someone to show up for him."</div>
+      <div class="stage">This is about Roche. He'll know. The room will feel it.</div>
+      <div class="speak">"No one can take away your teaching style. No one can take away the way you connect with a student who's about to give up. No one can replicate the moment a kid's eyes light up because YOU explained it in the way that finally made sense."</div>
+      <div class="speak" style="border-left-color:#F59E0B;background:rgba(245,158,11,0.06)">"Teaching is one of the <strong>most important jobs on earth.</strong> Our first teachers were our parents. Then you. You pass wisdom from one generation to the next. You fuel the next generation. Without you, we don't have a society."</div>
+      <div class="speak">"So no &mdash; AI is not here to replace you. AI is here to make the most important job in the world <strong>a little easier.</strong> Less time on admin. More time on what only YOU can do: caring about your students."</div>
+      <div class="stage">Let the room breathe. Don't rush.</div>
+    </div>
+
+    <!-- Part 4 -->
+    <div class="part">
+      <div class="part-header">
+        <span class="part-badge" style="background:rgba(6,182,212,0.1);color:#06B6D4">Part 4</span>
+        <h3>What We Found</h3>
+        <span class="part-time">3 min</span>
+      </div>
+      <div class="speak">"So we went and tested this. We ran a 4-session AI literacy program for 4th and 5th graders at the Danbury Library. And what we found surprised even us."</div>
+      <div class="speak">"Students showed up thinking AI was magic. By session 4, those same kids were <strong>disagreeing with AI.</strong> They were revising their own prompts. They were explaining WHY."</div>
+      <div class="speak" style="border-left-color:#06B6D4;background:rgba(6,182,212,0.06)">"AI literacy doesn't replace thinking. It makes thinking <strong>visible.</strong>"</div>
+      <div class="speak">"The students who asked the worst questions learned the most. Because they saw the gap between a vague question and a specific one in real time. That skill &mdash; asking better questions &mdash; transfers to everything. Not just AI. Life."</div>
+    </div>
+
+    <!-- Part 5 -->
+    <div class="part">
+      <div class="part-header">
+        <span class="part-badge" style="background:rgba(124,58,237,0.1);color:#7C3AED">Part 5</span>
+        <h3>Partner vs Employee</h3>
+        <span class="part-time">2 min</span>
+      </div>
+      <div class="speak">"There are two ways to use AI. As an <strong>employee:</strong> 'Do this for me.' One prompt, one answer, done. That's what cheating looks like."</div>
+      <div class="speak">"Or as a <strong>partner:</strong> 'Help me think.' Back-and-forth. Questions. Iteration. The human stays in control."</div>
+      <div class="speak">"When we taught 4th graders this distinction, something clicked. They stopped asking AI for answers and started asking AI for <strong>better questions.</strong>"</div>
+    </div>
+
+    <!-- Part 6 -->
+    <div class="part">
+      <div class="part-header">
+        <span class="part-badge" style="background:rgba(79,70,229,0.1);color:#4F46E5">Part 6</span>
+        <h3>Live Demos</h3>
+        <span class="part-time">10 min</span>
+      </div>
+      <div class="speak">"Enough talking. Let me show you."</div>
+      <div class="stage">Switch to ChatGPT. Run all 4 demos live.</div>
+
+      <p style="font-size:0.78rem;font-weight:700;color:var(--primary);margin:20px 0 8px;letter-spacing:0.1em;text-transform:uppercase">Demo 1: Lesson Plan Partner (3 min)</p>
+      <div class="demo-box">I teach 6th grade ELA. I'm starting a unit on persuasive writing next week. Before you give me a lesson plan, ask me 5 questions about my students so you can personalize it.</div>
+      <div class="demo-say">SAY: "I asked it to ask ME questions first. That's the partner mindset."</div>
+
+      <p style="font-size:0.78rem;font-weight:700;color:var(--emerald);margin:20px 0 8px;letter-spacing:0.1em;text-transform:uppercase">Demo 2: Differentiation in 60 Seconds (3 min)</p>
+      <div class="demo-box">Now adapt this for a student who understands the concepts but struggles with English as a second language. Keep the thinking demands high but simplify the language.</div>
+      <div class="demo-box" style="margin-top:8px">Now create a version for a student who finishes early and needs extension.</div>
+      <div class="demo-say">SAY: "60 seconds. Two versions. You made every decision. AI removed the barrier, not the rigor."</div>
+
+      <p style="font-size:0.78rem;font-weight:700;color:var(--amber);margin:20px 0 8px;letter-spacing:0.1em;text-transform:uppercase">Demo 3: Student Simulator (2 min)</p>
+      <div class="demo-box">Act as a 7th grader who is confused about fractions. I'm going to explain it to you, and you tell me where my explanation is unclear or where a real student might get lost.</div>
+      <div class="demo-say">SAY: "Practice before class, not during it. Find the gaps now."</div>
+
+      <p style="font-size:0.78rem;font-weight:700;color:var(--cyan);margin:20px 0 8px;letter-spacing:0.1em;text-transform:uppercase">Demo 4: Feedback Writer (2 min)</p>
+      <div class="demo-box">Here's a paragraph a 5th grader wrote about their favorite animal: "Dogs are the best pets because they are fun and nice. They play with you and love you. I want a golden retriever." Give feedback the way a great teacher would &mdash; specific, encouraging, focused on one thing to improve. Don't rewrite it.</div>
+      <div class="demo-say">SAY: "Specific. Encouraging. One next step. You decide if it sounds like you."</div>
+    </div>
+
+    <!-- Part 7 -->
+    <div class="part">
+      <div class="part-header">
+        <span class="part-badge" style="background:rgba(16,185,129,0.1);color:#10B981">Part 7</span>
+        <h3>The Toolkit</h3>
+        <span class="part-time">2 min</span>
+      </div>
+      <div class="speak">"Everything I just showed you is yours. 6 AI drivers. A 15-minute lesson you can run Monday. 3 rules you can print and put on every desk."</div>
+      <div class="speak" style="border-left-color:#10B981;background:rgba(16,185,129,0.06)">"Scan this. Everything is there. It's free. It's yours."</div>
+      <div class="stage">Show QR code &rarr; nextgenerationlearners.com/woodstock</div>
+    </div>
+
+    <!-- Part 8 -->
+    <div class="part">
+      <div class="part-header">
+        <span class="part-badge" style="background:rgba(245,158,11,0.1);color:#F59E0B">Part 8</span>
+        <h3>Close</h3>
+        <span class="part-time">2 min</span>
+      </div>
+      <div class="speak">"I started this because I saw fear. Fear from every direction. And I realized that fear doesn't go away by avoiding the thing you're afraid of. It goes away when someone shows you how to use it."</div>
+      <div class="speak" style="border-left-color:#F59E0B;background:rgba(245,158,11,0.06)">"<strong>You</strong> are that someone for your students. You are the ones who will teach them to think with AI, not outsource their thinking to it. Nobody else is going to do that. Not an app. Not a YouTube video. <strong>You.</strong>"</div>
+      <div class="speak">"Your students are watching. Show them what's possible."</div>
+      <div class="stage">"Gina and Kristy are going to take you deeper. I'll be there too. Come find me."</div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="section">
+    <div class="section-label">From Your Pilots</div>
+    <div class="section-title">6 Insights to Weave In</div>
+    <div class="insight"><div class="insight-num">1</div><div><h4>The Ego Barrier</h4><p>"Your 20 years PLUS AI makes you unstoppable."</p></div></div>
+    <div class="insight"><div class="insight-num">2</div><div><h4>Students Know More Than You Think</h4><p>4th graders were disagreeing with AI by session 4.</p></div></div>
+    <div class="insight"><div class="insight-num">3</div><div><h4>Thinking Became Visible</h4><p>Before/after mind maps showed growth worksheets never capture.</p></div></div>
+    <div class="insight"><div class="insight-num">4</div><div><h4>Question Quality = Life Quality</h4><p>Better questions of AI taught better questions of everything.</p></div></div>
+    <div class="insight"><div class="insight-num">5</div><div><h4>The ELL Breakthrough</h4><p>AI separates concept mastery from language proficiency.</p></div></div>
+    <div class="insight"><div class="insight-num">6</div><div><h4>Teachers Had Lower AI Literacy</h4><p>Don't say it. Demonstrate it. "4th graders picked this up in 10 minutes."</p></div></div>
+  </div>
+
+  <!-- ROCHE -->
+  <div class="section">
+    <div class="section-label">After the Event</div>
+    <div class="section-title">The Private Conversation with Roche</div>
+    <div class="roche-box">
+      <div class="stage">Find him when things wind down. Say:</div>
+      <div class="speak">"Mr. Roche, you asked me back in March about AI tools for your meetings and emails. I've been thinking about it a lot. I didn't want to just recommend another app. What I've been building is something different &mdash; it's a personal AI system that learns how you work and helps you think, not just automate. I built one for myself and it's changed how I operate. <strong>I'd love to show you what yours could look like. Can I come back and walk you through it?</strong>"</div>
+      <div class="stage">No price. No proposal. Just: "Can I show you?"</div>
+    </div>
+  </div>
+
+  <!-- CONTINGENCY -->
+  <div class="section">
+    <div class="section-label">If Things Go Wrong</div>
+    <div class="section-title">Contingencies</div>
+    <div class="cont-row"><div class="cont-problem">Wi-Fi dies</div><div class="cont-solution">Screenshots on laptop. Story and framing still land.</div></div>
+    <div class="cont-row"><div class="cont-problem">TV won't connect</div><div class="cont-solution">Present from laptop. Walk around showing it close.</div></div>
+    <div class="cont-row"><div class="cont-problem">Audience is quiet</div><div class="cont-solution">"You teach math, right? What would you ask AI?"</div></div>
+    <div class="cont-row"><div class="cont-problem">Running over</div><div class="cont-solution">Cut Demo 4. First 3 are enough.</div></div>
+    <div class="cont-row"><div class="cont-problem">Running under</div><div class="cont-solution">"What's the one thing you're most worried about?"</div></div>
+    <div class="cont-row"><div class="cont-problem">Nerves</div><div class="cont-solution">Roche believes in you. You taught 4th graders. Adults are easier.</div></div>
+  </div>
+
+  <!-- FINAL -->
+  <div class="final">
+    <h2>The One Thing</h2>
+    <p>You are not giving a talk tomorrow. You are walking into a room where 50 people are about to watch you prove that AI can make them better at what they already do. The goal is one person who says "can you do that for me?"</p>
+  </div>
+
+</div>
+
+</body>
+</html>
