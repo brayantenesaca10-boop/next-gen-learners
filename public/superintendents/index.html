@@ -6,101 +6,122 @@
   <title>AI for District Leaders — Next Generation Learners</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
-      --bg:#060606;--surface:rgba(255,255,255,0.03);--surface-2:rgba(255,255,255,0.05);
-      --surface-glass:rgba(255,255,255,0.04);--glass-border:rgba(255,255,255,0.08);
-      --border:rgba(255,255,255,0.06);--border-2:rgba(255,255,255,0.1);
-      --text:#FAFAFA;--text-2:rgba(255,255,255,0.65);--text-3:rgba(255,255,255,0.35);
-      --accent:#D4A843;--accent-glow:rgba(212,168,67,0.15);
-      --green:#34D399;--green-glow:rgba(52,211,153,0.12);
-      --blue:#60A5FA;--blue-glow:rgba(96,165,250,0.1);
-      --radius:12px;--radius-lg:20px;
+      --bg:#FAFBFF;--surface:#FFFFFF;--surface-2:#F1F5F9;
+      --border:#E2E8F0;--border-2:#CBD5E1;
+      --text:#1E1B4B;--text-2:#64748B;--text-3:#94A3B8;
+      --primary:#4F46E5;--secondary:#7C3AED;
+      --accent:#10B981;--accent-glow:rgba(16,185,129,0.15);
+      --warm:#F59E0B;--warm-glow:rgba(245,158,11,0.12);
+      --cyan:#06B6D4;--cyan-glow:rgba(6,182,212,0.12);
+      --indigo-glow:rgba(79,70,229,0.1);
+      --violet-glow:rgba(124,58,237,0.1);
+      --radius:12px;--radius-lg:20px;--radius-xl:24px;
     }
     html{scroll-behavior:smooth}
-    body{font-family:'DM Sans',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
-    body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 20%,rgba(212,168,67,0.04) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(96,165,250,0.03) 0%,transparent 50%);pointer-events:none;z-index:0}
+    body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
     .container{max-width:760px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
-    .glass{background:var(--surface-glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);transition:border-color 0.3s,box-shadow 0.3s,transform 0.3s}
-    .glass:hover{border-color:var(--border-2);box-shadow:0 8px 40px rgba(0,0,0,0.3);transform:translateY(-2px)}
 
     /* Nav */
-    nav{position:sticky;top:0;z-index:100;background:rgba(6,6,6,0.7);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:14px 24px}
+    nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.8);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(79,70,229,0.08);padding:14px 24px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
     nav .inner{max-width:760px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-    .nav-brand{font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
-    .nav-link{font-size:0.75rem;letter-spacing:0.04em;color:var(--text-3);text-decoration:none;cursor:pointer;transition:color 0.25s;position:relative}
-    .nav-link:hover{color:var(--text)}
-    .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--accent);transform:scaleX(0);transition:transform 0.25s;transform-origin:center}
+    .nav-brand{font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--primary);font-weight:700}
+    .nav-link{font-size:0.8rem;color:var(--text-2);text-decoration:none;cursor:pointer;transition:color 0.2s;font-weight:500;position:relative}
+    .nav-link:hover{color:var(--primary)}
+    .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;background:var(--primary);transform:scaleX(0);transition:transform 0.2s;transform-origin:center}
     .nav-link:hover::after{transform:scaleX(1)}
 
     /* Hero */
-    .hero{padding:80px 0 60px;text-align:center}
-    .hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:0.63rem;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(212,168,67,0.25);padding:7px 18px;border-radius:100px;margin-bottom:28px;background:rgba(212,168,67,0.05)}
-    .hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:700;line-height:1.1;letter-spacing:-0.03em;margin-bottom:16px}
-    .hero h1 em{font-style:italic;background:linear-gradient(135deg,var(--accent),#E8C97A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .hero-sub{font-size:1rem;color:var(--text-2);max-width:540px;margin:0 auto;line-height:1.7}
+    .hero{position:relative;padding:80px 0 60px;text-align:center;overflow:hidden}
+    .hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#4F46E5,#7C3AED,#06B6D4,#10B981,#4F46E5);background-size:400% 400%;z-index:0;border-radius:0 0 40px 40px}
+    @media(prefers-reduced-motion:no-preference){
+      .hero-bg{animation:gradientFlow 15s ease infinite}
+      @keyframes gradientFlow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    }
+    .hero-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.3;pointer-events:none}
+    @media(prefers-reduced-motion:no-preference){
+      .hero-orb-1{animation:float1 20s ease-in-out infinite}
+      .hero-orb-2{animation:float2 25s ease-in-out infinite}
+      @keyframes float1{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-30px) scale(1.05)}66%{transform:translate(-20px,20px) scale(0.95)}}
+      @keyframes float2{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-25px,25px) scale(0.95)}66%{transform:translate(35px,-15px) scale(1.08)}}
+    }
+    .hero-content{position:relative;z-index:2}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:0.68rem;letter-spacing:0.16em;text-transform:uppercase;color:white;border:1px solid rgba(255,255,255,0.3);padding:7px 18px;border-radius:100px;margin-bottom:28px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);font-weight:600}
+    .hero h1{font-size:clamp(2.2rem,5vw,3.2rem);font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin-bottom:16px;color:white}
+    .hero h1 em{font-style:italic;color:rgba(255,255,255,0.9)}
+    .hero-sub{font-size:1rem;color:rgba(255,255,255,0.8);max-width:540px;margin:0 auto;line-height:1.7;font-weight:300}
 
     /* Sections */
-    .section{padding:64px 0;border-top:1px solid var(--border)}
-    .sh-label{font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;font-weight:600}
-    .sh-title{font-weight:700;letter-spacing:-0.02em;font-size:clamp(1.4rem,3vw,1.8rem);font-weight:600;line-height:1.25;margin-bottom:8px}
+    .section{padding:64px 0}
+    .sh-label{font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--primary);margin-bottom:8px;font-weight:700}
+    .sh-title{font-weight:800;letter-spacing:-0.02em;font-size:clamp(1.4rem,3vw,1.8rem);line-height:1.25;margin-bottom:8px;color:var(--text)}
     .sh-desc{font-size:0.9rem;color:var(--text-2);max-width:560px;line-height:1.7;margin-bottom:32px}
 
     /* Problem cards */
     .problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .problem-card{background:var(--surface-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:24px;transition:all 0.3s}
-    .problem-card:hover{border-color:var(--border-2);transform:translateY(-1px)}
-    .problem-card .pc-label{font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;font-weight:600}
-    .problem-card .pc-text{font-size:0.9rem;line-height:1.6}
+    .problem-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;transition:all 0.3s}
+    @media(prefers-reduced-motion:no-preference){.problem-card:hover{transform:translateY(-4px)}}
+    .problem-card:hover{box-shadow:0 12px 24px -8px rgba(79,70,229,0.12)}
+    .problem-card .pc-label{font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--primary);margin-bottom:8px;font-weight:700}
+    .problem-card .pc-text{font-size:0.9rem;line-height:1.6;color:var(--text-2)}
 
     /* Time calculator */
     .task-row{display:grid;grid-template-columns:1fr 90px 90px 70px;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
-    .task-row.header-row{font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);padding:8px 0;border-bottom:1px solid var(--border-2);font-weight:600}
-    .task-name{font-size:0.85rem}.task-name small{display:block;font-size:0.72rem;color:var(--text-3);margin-top:2px}
-    input[type=number]{width:100%;background:var(--surface);border:1px solid var(--border-2);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.85rem;padding:8px;outline:none;text-align:center;transition:border-color 0.2s}
-    input[type=number]:focus{border-color:var(--accent)}
-    .saved-cell{font-size:0.88rem;font-weight:600;color:var(--green);text-align:center}
+    .task-row.header-row{font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);padding:8px 0;border-bottom:2px solid var(--border);font-weight:700}
+    .task-name{font-size:0.85rem;color:var(--text);font-weight:500}.task-name small{display:block;font-size:0.72rem;color:var(--text-3);margin-top:2px;font-weight:400}
+    input[type=number]{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:0.85rem;padding:8px;outline:none;text-align:center;transition:border-color 0.2s}
+    input[type=number]:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--indigo-glow)}
+    .saved-cell{font-size:0.88rem;font-weight:700;color:var(--accent);text-align:center}
 
     /* Summary */
     .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:32px 0}
-    .summary-card{background:var(--surface-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:24px;text-align:center}
-    .summary-card .label{font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;font-weight:600}
-    .summary-card .value{font-weight:700;letter-spacing:-0.02em;font-size:1.8rem;font-weight:600}
+    .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;text-align:center}
+    .summary-card .label{font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;font-weight:700}
+    .summary-card .value{font-weight:800;letter-spacing:-0.02em;font-size:1.8rem}
     .summary-card .sub{font-size:0.75rem;color:var(--text-2);margin-top:4px}
 
     /* Capability cards */
-    .cap-card{background:var(--surface-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:24px;margin-bottom:12px;transition:all 0.3s}
-    .cap-card:hover{border-color:var(--border-2);transform:translateY(-1px)}
-    .cap-card h4{font-size:0.9rem;font-weight:600;margin-bottom:6px}
+    .cap-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:12px;transition:all 0.3s}
+    @media(prefers-reduced-motion:no-preference){.cap-card:hover{transform:translateY(-4px)}}
+    .cap-card:hover{box-shadow:0 12px 24px -8px rgba(79,70,229,0.12)}
+    .cap-card h4{font-size:0.9rem;font-weight:700;margin-bottom:6px;color:var(--text)}
     .cap-card p{font-size:0.82rem;color:var(--text-2);line-height:1.6}
-    .cap-icon{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;margin-bottom:12px}
+    .cap-icon{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;margin-bottom:12px}
 
     /* Becomes grid */
     .becomes-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .becomes-card{background:var(--surface-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:var(--radius);padding:20px;transition:all 0.3s}
-    .becomes-card:hover{border-color:var(--border-2);transform:translateY(-1px)}
-    .becomes-card .from{font-size:0.68rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
-    .becomes-card .to{font-size:0.92rem;font-weight:600}
+    .becomes-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all 0.3s}
+    @media(prefers-reduced-motion:no-preference){.becomes-card:hover{transform:translateY(-4px)}}
+    .becomes-card:hover{box-shadow:0 12px 24px -8px rgba(79,70,229,0.12)}
+    .becomes-card .from{font-size:0.68rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;font-weight:600}
+    .becomes-card .to{font-size:0.92rem;font-weight:700;color:var(--text)}
 
     /* Engagement */
-    .engage-card{background:var(--surface-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:28px;margin-bottom:14px;transition:all 0.3s}
-    .engage-card:hover{border-color:var(--border-2)}
-    .engage-card h4{font-size:0.95rem;font-weight:600;margin-bottom:4px}
-    .engage-card .price{font-weight:700;letter-spacing:-0.02em;font-size:1.2rem;color:var(--accent);margin-bottom:8px}
+    .engage-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;margin-bottom:14px;transition:all 0.3s}
+    @media(prefers-reduced-motion:no-preference){.engage-card:hover{transform:translateY(-4px)}}
+    .engage-card:hover{box-shadow:0 12px 24px -8px rgba(79,70,229,0.12)}
+    .engage-card h4{font-size:0.95rem;font-weight:700;margin-bottom:4px;color:var(--text)}
+    .engage-card .price{font-weight:800;font-size:1.2rem;color:var(--primary);margin-bottom:8px}
     .engage-card p{font-size:0.82rem;color:var(--text-2);line-height:1.6}
     .engage-card ul{font-size:0.82rem;color:var(--text-2);line-height:1.8;padding-left:18px;margin-top:8px}
-    .engage-tag{display:inline-block;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;font-weight:600;margin-bottom:12px}
+    .engage-tag{display:inline-block;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:100px;font-weight:700;margin-bottom:12px}
+
+    /* Guarantee */
+    .guarantee{background:var(--indigo-glow);border:1px solid rgba(79,70,229,0.15);border-radius:var(--radius-lg);padding:28px;margin-top:24px;text-align:center}
 
     /* Footer */
-    footer{border-top:1px solid var(--border);padding:40px 0;text-align:center}
-    .footer-brand{font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:6px}
-    footer p{font-size:0.75rem;color:var(--text-3);line-height:1.6}
-    footer a{color:var(--accent);text-decoration:none}
+    footer{background:linear-gradient(135deg,#4F46E5,#7C3AED,#06B6D4);padding:48px 0;text-align:center}
+    .footer-brand{font-size:0.8rem;letter-spacing:0.18em;text-transform:uppercase;color:white;font-weight:700;margin-bottom:6px}
+    footer p{font-size:0.75rem;color:rgba(255,255,255,0.6);line-height:1.6}
+    footer a{color:rgba(255,255,255,0.8);text-decoration:none;transition:color 0.2s}
+    footer a:hover{color:white}
 
     /* Animation */
-    @media(prefers-reduced-motion:no-preference){.fade-up{opacity:0;transform:translateY(20px);transition:opacity 0.5s,transform 0.5s}.fade-up.visible{opacity:1;transform:translateY(0)}}
+    @media(prefers-reduced-motion:no-preference){.fade-up{opacity:0;transform:translateY(20px);transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1),transform 0.6s cubic-bezier(0.16,1,0.3,1)}.fade-up.visible{opacity:1;transform:translateY(0)}}
 
     @media(max-width:640px){
       .problem-grid,.summary-grid,.becomes-grid{grid-template-columns:1fr}
@@ -124,14 +145,18 @@
   </div>
 </nav>
 
-<div class="container">
-
-  <!-- HERO -->
-  <div class="hero">
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-orb hero-orb-1" style="width:300px;height:300px;background:#4F46E5;top:-80px;left:-60px"></div>
+  <div class="hero-orb hero-orb-2" style="width:250px;height:250px;background:#06B6D4;bottom:-60px;right:-40px"></div>
+  <div class="hero-content container">
     <div class="hero-badge">For District Leaders</div>
     <h1>Your Personal<br><em>AI Operating System</em></h1>
     <p class="hero-sub">A system built around how you actually work. Not another app to learn. Not a generic tool. A Jarvis that knows your district, your people, and your priorities.</p>
   </div>
+</div>
+
+<div class="container">
 
   <!-- THE PROBLEM -->
   <div class="section" id="problem">
@@ -212,12 +237,12 @@
     <div class="summary-grid">
       <div class="summary-card">
         <div class="label">Hours Recovered Per Week</div>
-        <div class="value" style="color:var(--green)" id="totalHours">13.0</div>
+        <div class="value" style="color:var(--accent)" id="totalHours">13.0</div>
         <div class="sub" id="hoursSub">Over a full workday back. Every single week.</div>
       </div>
       <div class="summary-card">
         <div class="label">Hours Recovered Per Year</div>
-        <div class="value" style="color:var(--accent)" id="annualHours">676</div>
+        <div class="value" style="color:var(--primary)" id="annualHours">676</div>
         <div class="sub" id="annualSub">That's 17 full work weeks of leadership time.</div>
       </div>
     </div>
@@ -230,7 +255,7 @@
     <p class="sh-desc">These aren't faster versions of what you already do. These are things that are currently impossible — no matter how many hours you work.</p>
 
     <div class="cap-card fade-up">
-      <div class="cap-icon" style="background:var(--accent-bg2);color:var(--accent)">
+      <div class="cap-icon" style="background:var(--indigo-glow);color:var(--primary)">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
       </div>
       <h4>Institutional Memory</h4>
@@ -238,7 +263,7 @@
     </div>
 
     <div class="cap-card fade-up">
-      <div class="cap-icon" style="background:var(--green-bg);color:var(--green)">
+      <div class="cap-icon" style="background:var(--accent-glow);color:var(--accent)">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
       </div>
       <h4>Personalized Communication at Scale</h4>
@@ -246,7 +271,7 @@
     </div>
 
     <div class="cap-card fade-up">
-      <div class="cap-icon" style="background:var(--blue-bg);color:var(--blue)">
+      <div class="cap-icon" style="background:var(--cyan-glow);color:var(--cyan)">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" /></svg>
       </div>
       <h4>Decisions with Full Context</h4>
@@ -287,7 +312,7 @@
     <p class="sh-desc">A personal AI system configured to your workflow, your people, and your priorities. Setup, training, and ongoing support.</p>
 
     <div class="engage-card fade-up">
-      <span class="engage-tag" style="background:var(--accent-bg);color:var(--accent)">Contracted Professional Service</span>
+      <span class="engage-tag" style="background:var(--indigo-glow);color:var(--primary)">Contracted Professional Service</span>
       <h4>Jarvis Setup &amp; Training</h4>
       <p>Your personal AI operating system, built around how you actually work. Not a generic tool — a system that knows your district.</p>
       <ul>
@@ -301,7 +326,7 @@
     </div>
 
     <div class="engage-card fade-up">
-      <span class="engage-tag" style="background:var(--green-bg);color:var(--green)">Ongoing Technology Service</span>
+      <span class="engage-tag" style="background:var(--accent-glow);color:var(--accent)">Ongoing Technology Service</span>
       <h4>Continued Development</h4>
       <p>As your needs evolve, your system evolves with you. New tools, new capabilities, priority support.</p>
       <ul>
@@ -312,9 +337,9 @@
       </ul>
     </div>
 
-    <div style="background:var(--accent-glow);border:1px solid rgba(212,168,67,0.15);border-radius:var(--radius-lg);padding:28px;margin-top:24px;text-align:center" class="fade-up">
-      <div style="font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600">The Guarantee</div>
-      <p style="font-size:0.95rem;font-weight:700;letter-spacing:-0.02em;color:var(--text);line-height:1.6;max-width:480px;margin:0 auto">If this system doesn't change how you work, we'll make it right.</p>
+    <div class="guarantee fade-up">
+      <div style="font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--primary);margin-bottom:12px;font-weight:700">The Guarantee</div>
+      <p style="font-size:0.95rem;font-weight:800;color:var(--text);line-height:1.6;max-width:480px;margin:0 auto">If this system doesn't change how you work, we'll make it right.</p>
       <p style="font-size:0.78rem;color:var(--text-3);margin-top:8px">Built by someone who uses this system every day — not selling theory.</p>
     </div>
   </div>
@@ -329,7 +354,7 @@
         <p style="font-size:0.88rem;color:var(--text-2);line-height:1.75">The Jarvis system you're looking at is the same one Brayan uses daily to manage relationships, draft communications, track time, and operate his business. This isn't a product we designed for you. It's a system we built for ourselves that we're configuring for your world.</p>
       </div>
       <div style="width:200px;flex-shrink:0">
-        <div style="font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;font-weight:600">Partnerships</div>
+        <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;font-weight:700">Partnerships</div>
         <div style="font-size:0.82rem;color:var(--text-2);line-height:2">
           Danbury Library<br>Ridgefield Library<br>Easton Public Library<br>Woodstock Public Schools<br>Wooster School<br>Babson College
         </div>

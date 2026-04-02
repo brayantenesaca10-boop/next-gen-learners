@@ -10,10 +10,15 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          navy: '#0F172A',   // Authority/Institutional
-          teal: '#0D9488',   // Innovation/AI
-          accent: '#F59E0B', // Action/Buttons
-          light: '#F8FAFC',  // Clean background
+          primary: '#4F46E5',
+          secondary: '#7C3AED',
+          accent: '#10B981',
+          warm: '#F59E0B',
+          cyan: '#06B6D4',
+          bg: '#FAFBFF',
+          surface: '#FFFFFF',
+          text: '#1E1B4B',
+          muted: '#64748B',
         },
       },
     },

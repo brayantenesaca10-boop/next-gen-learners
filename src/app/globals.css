@@ -1,14 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #060606;
-  --foreground: #FAFAFA;
+  --background: #FAFBFF;
+  --foreground: #1E1B4B;
+  --primary: #4F46E5;
+  --secondary: #7C3AED;
+  --accent: #10B981;
+  --warm: #F59E0B;
+  --cyan: #06B6D4;
+  --surface: #FFFFFF;
+  --text-primary: #1E1B4B;
+  --text-secondary: #6366F1;
+  --text-muted: #64748B;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 html {
@@ -18,21 +27,228 @@ html {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
-body::before {
+/* ============================================
+   ANIMATED GRADIENT BACKGROUND (Hero)
+   ============================================ */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+}
+
+.hero-gradient {
+  background: linear-gradient(135deg, #4F46E5, #7C3AED, #06B6D4, #10B981, #4F46E5);
+  background-size: 400% 400%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero-gradient {
+    animation: gradientFlow 15s ease infinite;
+  }
+}
+
+/* ============================================
+   FLOATING ORBS
+   ============================================ */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes float1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -30px) scale(1.05); }
+    66% { transform: translate(-20px, 20px) scale(0.95); }
+  }
+
+  @keyframes float2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-25px, 25px) scale(0.95); }
+    66% { transform: translate(35px, -15px) scale(1.08); }
+  }
+
+  @keyframes float3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(20px, 20px) scale(1.03); }
+    66% { transform: translate(-30px, -25px) scale(0.97); }
+  }
+
+  @keyframes float4 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-15px, -20px) scale(1.06); }
+    66% { transform: translate(25px, 15px) scale(0.94); }
+  }
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .orb-1 { animation: float1 20s ease-in-out infinite; }
+  .orb-2 { animation: float2 25s ease-in-out infinite; }
+  .orb-3 { animation: float3 22s ease-in-out infinite; }
+  .orb-4 { animation: float4 18s ease-in-out infinite; }
+}
+
+/* ============================================
+   SCROLL-TRIGGERED FADE-UP
+   ============================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .fade-up-delay-1 { transition-delay: 0.1s; }
+  .fade-up-delay-2 { transition-delay: 0.2s; }
+  .fade-up-delay-3 { transition-delay: 0.3s; }
+  .fade-up-delay-4 { transition-delay: 0.4s; }
+  .fade-up-delay-5 { transition-delay: 0.5s; }
+}
+
+/* ============================================
+   CARD HOVER EFFECTS
+   ============================================ */
+.card-hover {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card-hover:hover {
+    transform: translateY(-8px);
+  }
+}
+
+.card-hover:hover {
+  box-shadow: 0 20px 40px -12px rgba(79, 70, 229, 0.15);
+}
+
+.card-hover-indigo:hover {
+  box-shadow: 0 20px 40px -12px rgba(79, 70, 229, 0.2);
+}
+
+.card-hover-violet:hover {
+  box-shadow: 0 20px 40px -12px rgba(124, 58, 237, 0.2);
+}
+
+.card-hover-emerald:hover {
+  box-shadow: 0 20px 40px -12px rgba(16, 185, 129, 0.2);
+}
+
+.card-hover-amber:hover {
+  box-shadow: 0 20px 40px -12px rgba(245, 158, 11, 0.2);
+}
+
+.card-hover-cyan:hover {
+  box-shadow: 0 20px 40px -12px rgba(6, 182, 212, 0.2);
+}
+
+/* ============================================
+   SHIMMER BUTTON EFFECT
+   ============================================ */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
   content: '';
-  position: fixed;
+  position: absolute;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
-  background:
-    radial-gradient(ellipse at 30% 20%, rgba(212,168,67,0.04) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 80%, rgba(96,165,250,0.03) 0%, transparent 50%);
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(30deg) translateX(-100%);
   pointer-events: none;
-  z-index: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn-shimmer:hover::after {
+    transition: transform 0.6s ease;
+    transform: rotate(30deg) translateX(100%);
+  }
+}
+
+/* ============================================
+   TYPING CURSOR
+   ============================================ */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 1em;
+  background: #10B981;
+  margin-left: 4px;
+  vertical-align: text-bottom;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .typing-cursor {
+    animation: blink 1s step-end infinite;
+  }
+}
+
+/* ============================================
+   SECTION CURVED DIVIDERS
+   ============================================ */
+.section-curve {
+  position: relative;
+}
+
+.section-curve::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: inherit;
+  clip-path: ellipse(55% 100% at 50% 100%);
+  z-index: 1;
+}
+
+/* ============================================
+   SMOOTH SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAFBFF;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C7D2FE;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A5B4FC;
 }
