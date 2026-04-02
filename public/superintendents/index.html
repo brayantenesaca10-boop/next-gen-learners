@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI for District Leaders — Next Generation Learners</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0A0A0A;--surface:#111;--surface-2:#171717;--border:#2A2A2A;--border-2:#333;
+      --text:#F5F5F5;--text-2:#B0B0B0;--text-3:#777;
+      --accent:#C9A84C;--accent-bg:rgba(201,168,76,0.08);--accent-bg2:rgba(201,168,76,0.15);
+      --green:#34D399;--green-bg:rgba(52,211,153,0.08);
+      --blue:#60A5FA;--blue-bg:rgba(96,165,250,0.06);
+      --radius:8px;--radius-lg:16px;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+    .container{max-width:760px;margin:0 auto;padding:0 24px}
+    .serif{font-family:'Playfair Display',Georgia,serif}
+
+    /* Nav */
+    nav{position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:16px 24px}
+    nav .inner{max-width:760px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);font-weight:600}
+    .nav-link{font-size:0.72rem;letter-spacing:0.08em;color:var(--text-3);text-decoration:none;cursor:pointer;transition:color 0.2s}
+    .nav-link:hover{color:var(--accent)}
+
+    /* Hero */
+    .hero{padding:80px 0 60px;text-align:center}
+    .hero-badge{display:inline-block;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(201,168,76,0.3);padding:5px 14px;border-radius:100px;margin-bottom:24px}
+    .hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,4.5vw,2.8rem);font-weight:600;line-height:1.15;margin-bottom:16px}
+    .hero h1 em{font-style:italic;color:var(--accent)}
+    .hero-sub{font-size:1rem;color:var(--text-2);max-width:540px;margin:0 auto;line-height:1.7}
+
+    /* Sections */
+    .section{padding:64px 0;border-top:1px solid var(--border)}
+    .sh-label{font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;font-weight:600}
+    .sh-title{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,3vw,1.8rem);font-weight:600;line-height:1.25;margin-bottom:8px}
+    .sh-desc{font-size:0.9rem;color:var(--text-2);max-width:560px;line-height:1.7;margin-bottom:32px}
+
+    /* Problem cards */
+    .problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .problem-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px}
+    .problem-card .pc-label{font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;font-weight:600}
+    .problem-card .pc-text{font-size:0.9rem;line-height:1.6}
+
+    /* Time calculator */
+    .task-row{display:grid;grid-template-columns:1fr 90px 90px 70px;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+    .task-row.header-row{font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-3);padding:8px 0;border-bottom:1px solid var(--border-2);font-weight:600}
+    .task-name{font-size:0.85rem}.task-name small{display:block;font-size:0.72rem;color:var(--text-3);margin-top:2px}
+    input[type=number]{width:100%;background:var(--surface);border:1px solid var(--border-2);border-radius:6px;color:var(--text);font-family:inherit;font-size:0.85rem;padding:8px;outline:none;text-align:center;transition:border-color 0.2s}
+    input[type=number]:focus{border-color:var(--accent)}
+    .saved-cell{font-size:0.88rem;font-weight:600;color:var(--green);text-align:center}
+
+    /* Summary */
+    .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:32px 0}
+    .summary-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;text-align:center}
+    .summary-card .label{font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;font-weight:600}
+    .summary-card .value{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:600}
+    .summary-card .sub{font-size:0.75rem;color:var(--text-2);margin-top:4px}
+
+    /* Capability cards */
+    .cap-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:12px}
+    .cap-card h4{font-size:0.9rem;font-weight:600;margin-bottom:6px}
+    .cap-card p{font-size:0.82rem;color:var(--text-2);line-height:1.6}
+    .cap-icon{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;margin-bottom:12px}
+
+    /* Becomes grid */
+    .becomes-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .becomes-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+    .becomes-card .from{font-size:0.68rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
+    .becomes-card .to{font-size:0.92rem;font-weight:600}
+
+    /* Engagement */
+    .engage-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;margin-bottom:14px}
+    .engage-card h4{font-size:0.95rem;font-weight:600;margin-bottom:4px}
+    .engage-card .price{font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--accent);margin-bottom:8px}
+    .engage-card p{font-size:0.82rem;color:var(--text-2);line-height:1.6}
+    .engage-card ul{font-size:0.82rem;color:var(--text-2);line-height:1.8;padding-left:18px;margin-top:8px}
+    .engage-tag{display:inline-block;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;font-weight:600;margin-bottom:12px}
+
+    /* Footer */
+    footer{border-top:1px solid var(--border);padding:40px 0;text-align:center}
+    .footer-brand{font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:6px}
+    footer p{font-size:0.75rem;color:var(--text-3);line-height:1.6}
+    footer a{color:var(--accent);text-decoration:none}
+
+    /* Animation */
+    @media(prefers-reduced-motion:no-preference){.fade-up{opacity:0;transform:translateY(20px);transition:opacity 0.5s,transform 0.5s}.fade-up.visible{opacity:1;transform:translateY(0)}}
+
+    @media(max-width:640px){
+      .problem-grid,.summary-grid,.becomes-grid{grid-template-columns:1fr}
+      .task-row{grid-template-columns:1fr 70px 70px 55px;gap:6px}
+      .hero{padding:60px 0 48px}
+      nav .inner{flex-direction:column;gap:8px}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <div class="nav-brand">Next Generation Learners</div>
+    <div style="display:flex;gap:20px">
+      <a href="#problem" class="nav-link">The Problem</a>
+      <a href="#calculator" class="nav-link">Your Time</a>
+      <a href="#capabilities" class="nav-link">What Changes</a>
+      <a href="#engagement" class="nav-link">The Engagement</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">For District Leaders</div>
+    <h1>Your Personal<br><em>AI Operating System</em></h1>
+    <p class="hero-sub">A system built around how you actually work. Not another app to learn. Not a generic tool. A Jarvis that knows your district, your people, and your priorities.</p>
+  </div>
+
+  <!-- THE PROBLEM -->
+  <div class="section" id="problem">
+    <div class="sh-label">The Reality</div>
+    <h2 class="sh-title">You Didn't Become a Superintendent to Draft Meeting Minutes</h2>
+    <p class="sh-desc">You went into education because you care about students. But the job has become 60% admin. Every hour on email is an hour away from classrooms, teachers, and the work that matters.</p>
+
+    <div class="problem-grid fade-up">
+      <div class="problem-card">
+        <div class="pc-label">Meetings</div>
+        <div class="pc-text">You sit through meetings, take notes, then spend hours turning them into minutes and action items that nobody tracks consistently.</div>
+      </div>
+      <div class="problem-card">
+        <div class="pc-label">Email</div>
+        <div class="pc-text">Your inbox runs your day. Drafting thoughtful responses to parents, staff, and board members takes hours you don't have.</div>
+      </div>
+      <div class="problem-card">
+        <div class="pc-label">Board Prep</div>
+        <div class="pc-text">Every board meeting requires gathering data, building talking points, and pulling from documents scattered across systems.</div>
+      </div>
+      <div class="problem-card">
+        <div class="pc-label">Context</div>
+        <div class="pc-text">Information lives in your head. When a board member asks "didn't we discuss this in October?" you're searching your memory, not a system.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALCULATOR -->
+  <div class="section" id="calculator">
+    <div class="sh-label">Your Weekly Hours</div>
+    <h2 class="sh-title">Where Does Your Time Go?</h2>
+    <p class="sh-desc">Fill in your real numbers. See what your Jarvis gives back.</p>
+
+    <div class="task-row header-row">
+      <div>Task</div>
+      <div style="text-align:center">Now</div>
+      <div style="text-align:center">With Jarvis</div>
+      <div style="text-align:center">Saved</div>
+    </div>
+
+    <div class="task-row">
+      <div class="task-name">Meeting minutes &amp; action items<small>Transcribe, organize, assign follow-ups</small></div>
+      <input type="number" id="t1-now" value="3" min="0" max="40" step="0.5" oninput="calc()" />
+      <input type="number" id="t1-ai" value="0.5" min="0" max="40" step="0.25" oninput="calc()" />
+      <div class="saved-cell" id="t1-saved">2.5</div>
+    </div>
+    <div class="task-row">
+      <div class="task-name">Email drafting &amp; responses<small>Parents, staff, board, community</small></div>
+      <input type="number" id="t2-now" value="4" min="0" max="40" step="0.5" oninput="calc()" />
+      <input type="number" id="t2-ai" value="1" min="0" max="40" step="0.25" oninput="calc()" />
+      <div class="saved-cell" id="t2-saved">3</div>
+    </div>
+    <div class="task-row">
+      <div class="task-name">Agenda building<small>Pulling open items, structuring priorities</small></div>
+      <input type="number" id="t3-now" value="1.5" min="0" max="40" step="0.5" oninput="calc()" />
+      <input type="number" id="t3-ai" value="0.25" min="0" max="40" step="0.25" oninput="calc()" />
+      <div class="saved-cell" id="t3-saved">1.25</div>
+    </div>
+    <div class="task-row">
+      <div class="task-name">Board meeting preparation<small>Data gathering, presentations, talking points</small></div>
+      <input type="number" id="t4-now" value="3" min="0" max="40" step="0.5" oninput="calc()" />
+      <input type="number" id="t4-ai" value="0.5" min="0" max="40" step="0.25" oninput="calc()" />
+      <div class="saved-cell" id="t4-saved">2.5</div>
+    </div>
+    <div class="task-row">
+      <div class="task-name">Parent &amp; community communication<small>Updates, newsletters, individual follow-ups</small></div>
+      <input type="number" id="t5-now" value="2.5" min="0" max="40" step="0.5" oninput="calc()" />
+      <input type="number" id="t5-ai" value="0.5" min="0" max="40" step="0.25" oninput="calc()" />
+      <div class="saved-cell" id="t5-saved">2</div>
+    </div>
+    <div class="task-row">
+      <div class="task-name">Staff follow-ups &amp; coordination<small>Tracking action items, reminders, scheduling</small></div>
+      <input type="number" id="t6-now" value="2" min="0" max="40" step="0.5" oninput="calc()" />
+      <input type="number" id="t6-ai" value="0.25" min="0" max="40" step="0.25" oninput="calc()" />
+      <div class="saved-cell" id="t6-saved">1.75</div>
+    </div>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="label">Hours Recovered Per Week</div>
+        <div class="value" style="color:var(--green)" id="totalHours">13.0</div>
+        <div class="sub" id="hoursSub">Over a full workday back. Every single week.</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">Hours Recovered Per Year</div>
+        <div class="value" style="color:var(--accent)" id="annualHours">676</div>
+        <div class="sub" id="annualSub">That's 17 full work weeks of leadership time.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAPABILITIES -->
+  <div class="section" id="capabilities">
+    <div class="sh-label">Beyond Time</div>
+    <h2 class="sh-title">Capabilities You Don't Have Today</h2>
+    <p class="sh-desc">These aren't faster versions of what you already do. These are things that are currently impossible — no matter how many hours you work.</p>
+
+    <div class="cap-card fade-up">
+      <div class="cap-icon" style="background:var(--accent-bg2);color:var(--accent)">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+      </div>
+      <h4>Institutional Memory</h4>
+      <p>Every meeting, decision, and conversation — captured, searchable, and connected. When someone asks "didn't we discuss this last October?" you have the answer in seconds. Not in your head. In the system.</p>
+    </div>
+
+    <div class="cap-card fade-up">
+      <div class="cap-icon" style="background:var(--green-bg);color:var(--green)">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" /></svg>
+      </div>
+      <h4>Personalized Communication at Scale</h4>
+      <p>Draft 30 unique parent emails about 30 different students, each referencing specific context. Send thoughtful follow-ups to every teacher after an observation. Currently impossible by hand.</p>
+    </div>
+
+    <div class="cap-card fade-up">
+      <div class="cap-icon" style="background:var(--blue-bg);color:var(--blue)">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:18px;height:18px"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5" /></svg>
+      </div>
+      <h4>Decisions with Full Context</h4>
+      <p>Before responding to any email or walking into any meeting, know the complete history: what was discussed, what was decided, what's still open. Your AI holds the context so you make the right call, not just a fast one.</p>
+    </div>
+  </div>
+
+  <!-- WHAT TIME BECOMES -->
+  <div class="section">
+    <div class="sh-label">The Real Question</div>
+    <h2 class="sh-title">Where Do the Recovered Hours Go?</h2>
+    <p class="sh-desc">When admin shrinks, the hours go back to the work that drew you to education in the first place.</p>
+
+    <div class="becomes-grid fade-up">
+      <div class="becomes-card">
+        <div class="from">Instead of drafting emails</div>
+        <div class="to">Visit classrooms</div>
+      </div>
+      <div class="becomes-card">
+        <div class="from">Instead of building agendas</div>
+        <div class="to">Coach your teachers</div>
+      </div>
+      <div class="becomes-card">
+        <div class="from">Instead of scrambling for board prep</div>
+        <div class="to">Think strategically about your district</div>
+      </div>
+      <div class="becomes-card">
+        <div class="from">Instead of catching up on weekends</div>
+        <div class="to">Be at your son's game</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THE ENGAGEMENT -->
+  <div class="section" id="engagement">
+    <div class="sh-label">How It Works</div>
+    <h2 class="sh-title">The Engagement</h2>
+    <p class="sh-desc">A personal AI system configured to your workflow, your people, and your priorities. Setup, training, and ongoing support.</p>
+
+    <div class="engage-card fade-up">
+      <span class="engage-tag" style="background:var(--accent-bg);color:var(--accent)">Contracted Professional Service</span>
+      <h4>Jarvis Setup &amp; Training</h4>
+      <p>Your personal AI operating system, built around how you actually work. Not a generic tool — a system that knows your district.</p>
+      <ul>
+        <li>Full workflow audit — we map how you spend your time</li>
+        <li>Custom AI system configured to your meetings, email, board prep, and communications</li>
+        <li>People directory with context for every contact you interact with</li>
+        <li>Skills library — meeting minutes, agenda builder, email drafter, board prep</li>
+        <li>Two hands-on training sessions (in person or virtual)</li>
+        <li>30-day support window for questions and adjustments</li>
+      </ul>
+    </div>
+
+    <div class="engage-card fade-up">
+      <span class="engage-tag" style="background:var(--green-bg);color:var(--green)">Ongoing Technology Service</span>
+      <h4>Continued Development</h4>
+      <p>As your needs evolve, your system evolves with you. New tools, new capabilities, priority support.</p>
+      <ul>
+        <li>New tools deployed to your system as they're built</li>
+        <li>Calendar, time tracking, and operational tools</li>
+        <li>Custom builds for specific district needs</li>
+        <li>Priority support and optimization</li>
+      </ul>
+    </div>
+
+    <div style="background:var(--accent-bg);border:1px solid rgba(201,168,76,0.2);border-radius:var(--radius-lg);padding:28px;margin-top:24px;text-align:center" class="fade-up">
+      <div style="font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:600">The Guarantee</div>
+      <p style="font-size:0.95rem;font-family:'Playfair Display',serif;color:var(--text);line-height:1.6;max-width:480px;margin:0 auto">If this system doesn't change how you work, we'll make it right.</p>
+      <p style="font-size:0.78rem;color:var(--text-3);margin-top:8px">Built by someone who uses this system every day — not selling theory.</p>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="section">
+    <div class="sh-label">Who Built This</div>
+    <h2 class="sh-title">About Next Generation Learners</h2>
+    <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap" class="fade-up">
+      <div style="flex:1;min-width:280px">
+        <p style="font-size:0.88rem;color:var(--text-2);line-height:1.75;margin-bottom:16px">NGL builds AI systems for education leaders. Founded by Brayan Tenesaca at Babson College, we've run AI literacy programs across Connecticut libraries and schools — and built the same tools internally that we now offer to district leaders.</p>
+        <p style="font-size:0.88rem;color:var(--text-2);line-height:1.75">The Jarvis system you're looking at is the same one Brayan uses daily to manage relationships, draft communications, track time, and operate his business. This isn't a product we designed for you. It's a system we built for ourselves that we're configuring for your world.</p>
+      </div>
+      <div style="width:200px;flex-shrink:0">
+        <div style="font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;font-weight:600">Partnerships</div>
+        <div style="font-size:0.82rem;color:var(--text-2);line-height:2">
+          Danbury Library<br>Ridgefield Library<br>Easton Public Library<br>Woodstock Public Schools<br>Wooster School<br>Babson College
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-brand">Next Generation Learners</div>
+    <p>Built by Brayan Tenesaca &middot; Babson College</p>
+    <p style="margin-top:8px"><a href="mailto:brayan@nextgenerationlearners.com">brayan@nextgenerationlearners.com</a></p>
+  </div>
+</footer>
+
+<script>
+function calc(){
+  let total=0;
+  for(let i=1;i<=6;i++){
+    const now=parseFloat(document.getElementById(`t${i}-now`).value)||0;
+    const ai=parseFloat(document.getElementById(`t${i}-ai`).value)||0;
+    const saved=Math.max(0,now-ai);
+    document.getElementById(`t${i}-saved`).textContent=saved.toFixed(saved%1===0?0:1);
+    total+=saved;
+  }
+  const annual=Math.round(total*52);
+  const weeks=Math.round(annual/40);
+  document.getElementById('totalHours').textContent=total.toFixed(1);
+  document.getElementById('hoursSub').textContent=total>=8?'Over a full workday back. Every single week.':total>=4?'Half a workday back. Every single week.':`${total.toFixed(1)} hours back every week.`;
+  document.getElementById('annualHours').textContent=annual.toLocaleString();
+  document.getElementById('annualSub').textContent=`That's ${weeks} full work weeks of leadership time.`;
+}
+calc();
+
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.1});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+</script>
+
+</body>
+</html>
