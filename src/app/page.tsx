@@ -1,83 +1,107 @@
-'use client'; // Required for the onClick alert
-
 import Link from 'next/link';
+import {
+  AcademicCapIcon,
+  ShieldCheckIcon,
+  LightBulbIcon,
+  BookOpenIcon,
+  RocketLaunchIcon,
+} from '@heroicons/react/24/outline';
 
 export default function Home() {
-
-  const handleSubscribeClick = () => {
-    alert('Thank you for subscribing!');
-  };
-
   return (
-    <main className="bg-white min-h-screen">
+    <main className="min-h-screen">
       {/* Hero Section */}
-      <section className="flex flex-col items-center justify-center text-center px-4 py-20">
-        <div className="text-slate-900 max-w-4xl mx-auto">
-          <h1 className="text-5xl font-extrabold text-[#0F172A] mb-6">
-            Teaching Students to Think With AI, Not Just Use It.
+      <section className="flex flex-col items-center justify-center text-center px-4 py-24 md:py-32">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-6">
+            Teaching Students to{' '}
+            <span className="bg-gradient-to-r from-[#D4A843] to-[#E8C97A] bg-clip-text text-transparent">
+              Think With AI
+            </span>
+            , Not Just Use It.
           </h1>
-          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto mb-8">
+          <p className="text-base md:text-lg text-white/65 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
             Hands-on AI literacy programs that connect technology to students&rsquo; real interests. We build tools for thinking, not shortcuts for answers.
           </p>
           <Link href="#programs">
-            <button className="bg-[#0F172A] text-white px-8 py-3 rounded-lg font-bold hover:bg-slate-800 transition-all">
+            <button className="bg-[#D4A843] text-[#060606] px-8 py-3.5 rounded-xl font-semibold text-sm cursor-pointer hover:shadow-[0_8px_24px_rgba(212,168,67,0.15)] hover:-translate-y-px transition-all duration-250">
               View Our Programs
             </button>
           </Link>
         </div>
       </section>
 
-        {/* NEW: Philosophy Section */}
-      <section className="py-20 md:py-24 px-4 bg-slate-50">
+      {/* Philosophy Section */}
+      <section className="py-20 md:py-24 px-4 border-t border-white/[0.06]">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#0F172A] mb-6">Different Means, Same End.</h2>
-          <p className="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-12">
-           Whether your child is interested in coding, digital art, music, or entrepreneurship, they will use their passion as a &quot;means&quot; to achieve the same &quot;end&quot;: AI Literacy and Critical Thinking. We achieve these ends through different means, where student education is tailored to their specific interests—whether that is coding, music production, or digital storytelling.
+          <p className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-[#D4A843] mb-3">Our Philosophy</p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">Different Means, Same End.</h2>
+          <p className="text-base md:text-lg text-white/65 max-w-3xl mx-auto mb-12 leading-relaxed font-light">
+            Whether your child is interested in coding, digital art, music, or entrepreneurship, they will use their passion as a &quot;means&quot; to achieve the same &quot;end&quot;: AI Literacy and Critical Thinking. We achieve these ends through different means, where student education is tailored to their specific interests.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="p-6 bg-white rounded-lg shadow-md border border-slate-200">
-              <h4 className="text-xl font-bold text-[#0F172A] mb-2">Prompt Engineering</h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-6 bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-xl hover:border-white/10 hover:shadow-[0_8px_40px_rgba(0,0,0,0.3)] hover:-translate-y-0.5 transition-all duration-300">
+              <div className="w-9 h-9 rounded-lg bg-[rgba(212,168,67,0.15)] flex items-center justify-center mb-4 mx-auto">
+                <LightBulbIcon className="w-5 h-5 text-[#D4A843]" />
+              </div>
+              <h4 className="text-lg font-semibold mb-1">Prompt Engineering</h4>
             </div>
-            <div className="p-6 bg-white rounded-lg shadow-md border border-slate-200">
-              <h4 className="text-xl font-bold text-[#0F172A] mb-2">Output Verification</h4>
+            <div className="p-6 bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-xl hover:border-white/10 hover:shadow-[0_8px_40px_rgba(0,0,0,0.3)] hover:-translate-y-0.5 transition-all duration-300">
+              <div className="w-9 h-9 rounded-lg bg-[rgba(212,168,67,0.15)] flex items-center justify-center mb-4 mx-auto">
+                <ShieldCheckIcon className="w-5 h-5 text-[#D4A843]" />
+              </div>
+              <h4 className="text-lg font-semibold mb-1">Output Verification</h4>
             </div>
-            <div className="p-6 bg-white rounded-lg shadow-md border border-slate-200">
-              <h4 className="text-xl font-bold text-[#0F172A] mb-2">Ethical Reasoning</h4>
+            <div className="p-6 bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-xl hover:border-white/10 hover:shadow-[0_8px_40px_rgba(0,0,0,0.3)] hover:-translate-y-0.5 transition-all duration-300">
+              <div className="w-9 h-9 rounded-lg bg-[rgba(212,168,67,0.15)] flex items-center justify-center mb-4 mx-auto">
+                <AcademicCapIcon className="w-5 h-5 text-[#D4A843]" />
+              </div>
+              <h4 className="text-lg font-semibold mb-1">Ethical Reasoning</h4>
             </div>
           </div>
         </div>
       </section>
 
-
       {/* Program Selection Section */}
-      <section id="programs" className="py-20 px-4 bg-white">
+      <section id="programs" className="py-20 px-4 border-t border-white/[0.06]">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-[#0F172A]">
+          <p className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-[#D4A843] mb-3 text-center">Programs</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
             Choose Your Learning Path
           </h2>
-          <div className="grid md:grid-cols-2 gap-10">
+          <div className="grid md:grid-cols-2 gap-6">
             {/* Card A: Library Programs */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 border border-slate-200 flex flex-col justify-between">
+            <div className="bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl overflow-hidden hover:border-white/10 hover:shadow-[0_8px_40px_rgba(0,0,0,0.3)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between">
               <div className="p-8">
-                <h3 className="text-2xl font-bold mb-3 text-[#0F172A]">Library Programs</h3>
-                <p className="text-slate-600 mb-6">Hands-on workshops like the &apos;AI Thinkers &amp; Builders Club&apos; for public libraries.</p>
+                <div className="w-10 h-10 rounded-xl bg-[rgba(52,211,153,0.12)] flex items-center justify-center mb-5">
+                  <BookOpenIcon className="w-5 h-5 text-[#34D399]" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">Library Programs</h3>
+                <p className="text-white/65 text-sm leading-relaxed">Hands-on workshops like the &apos;AI Thinkers &amp; Builders Club&apos; for public libraries.</p>
               </div>
               <div className="p-8 pt-0">
                 <Link href="/libraries">
-                  <button className="w-full bg-[#0F172A] text-white py-3 rounded-md font-bold hover:bg-slate-800 transition-all">For Librarians</button>
+                  <button className="w-full bg-[#D4A843] text-[#060606] py-3 rounded-xl font-semibold text-sm cursor-pointer hover:shadow-[0_8px_24px_rgba(212,168,67,0.15)] hover:-translate-y-px transition-all duration-250">
+                    For Librarians
+                  </button>
                 </Link>
               </div>
             </div>
 
             {/* Card B: After School */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 border border-slate-200 flex flex-col justify-between">
+            <div className="bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-2xl overflow-hidden hover:border-white/10 hover:shadow-[0_8px_40px_rgba(0,0,0,0.3)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between">
               <div className="p-8">
-                <h3 className="text-2xl font-bold mb-3 text-[#0F172A]">After School Accelerators</h3>
-                <p className="text-slate-600 mb-6">Structured multi-week programs for schools and parent-enrolled students.</p>
+                <div className="w-10 h-10 rounded-xl bg-[rgba(96,165,250,0.1)] flex items-center justify-center mb-5">
+                  <RocketLaunchIcon className="w-5 h-5 text-[#60A5FA]" />
+                </div>
+                <h3 className="text-xl font-bold mb-3">After School Accelerators</h3>
+                <p className="text-white/65 text-sm leading-relaxed">Structured multi-week programs for schools and parent-enrolled students.</p>
               </div>
               <div className="p-8 pt-0">
                 <Link href="/after-school">
-                 <button className="w-full bg-[#0F172A] text-white py-3 rounded-md font-bold hover:bg-slate-800 transition-all">For Parents</button>
+                  <button className="w-full bg-[#D4A843] text-[#060606] py-3 rounded-xl font-semibold text-sm cursor-pointer hover:shadow-[0_8px_24px_rgba(212,168,67,0.15)] hover:-translate-y-px transition-all duration-250">
+                    For Parents
+                  </button>
                 </Link>
               </div>
             </div>
@@ -86,29 +110,36 @@ export default function Home() {
       </section>
 
       {/* Trusted Organizations Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 border-t border-white/[0.06]">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-[#0F172A] mb-4">Trusted Organizations</h2>
-          <p className="text-center text-slate-600 mb-16">Empowering students through partnerships with leading schools and libraries.</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-12 gap-y-8 items-center justify-items-center">
-            <div className="text-center font-semibold text-slate-500 hover:text-[#0F172A] transition-colors">Babson College</div>
-            <div className="text-center font-semibold text-slate-500 hover:text-[#0F172A] transition-colors">Danbury Library</div>
-            <div className="text-center font-semibold text-slate-500 hover:text-[#0F172A] transition-colors">Ridgefield Library</div>
-            <div className="text-center font-semibold text-slate-500 hover:text-[#0F172A] transition-colors">Wooster School</div>
-            <div className="text-center font-semibold text-slate-500 hover:text-[#0F172A] transition-colors">Woodstock Public Schools</div>
-            <div className="text-center font-semibold text-slate-500 hover:text-[#0F172A] transition-colors">Danbury High School</div>
+          <p className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-[#D4A843] mb-3 text-center">Credibility</p>
+          <h2 className="text-3xl font-bold text-center mb-4">Trusted Organizations</h2>
+          <p className="text-center text-white/65 text-sm mb-12">Empowering students through partnerships with leading schools and libraries.</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {['Babson College', 'Danbury Library', 'Ridgefield Library', 'Wooster School', 'Woodstock Public Schools', 'Danbury High School'].map((name) => (
+              <div key={name} className="bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-xl p-5 text-center hover:border-white/10 hover:-translate-y-px transition-all duration-300 cursor-default">
+                <span className="text-sm font-semibold">{name}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Blog / Newsletter Section */}
-      <section className="bg-slate-50 py-20 px-4">
+      {/* Newsletter Section */}
+      <section className="py-20 px-4 border-t border-white/[0.06]">
         <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-[#0F172A] mb-4">Join the AI Literacy Journey</h2>
-          <p className="text-slate-600 mb-8">Get weekly AI thinking prompts and program updates delivered to your inbox.</p>
-          <div className="flex flex-col md:flex-.row gap-4 max-w-md mx-auto">
-            <input type="email" placeholder="Enter your email" className="flex-grow px-4 py-3 rounded-md border border-slate-300 focus:ring-2 focus:ring-[#4FD1C5] focus:outline-none" />
-            <button onClick={handleSubscribeClick} className="bg-[#0F172A] text-white px-6 py-3 rounded-md font-bold hover:bg-slate-800 transition-all">Subscribe</button>
+          <p className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-[#D4A843] mb-3">Stay Connected</p>
+          <h2 className="text-3xl font-bold mb-4">Join the AI Literacy Journey</h2>
+          <p className="text-white/65 text-sm mb-8">Get weekly AI thinking prompts and program updates delivered to your inbox.</p>
+          <div className="flex flex-col md:flex-row gap-3 max-w-md mx-auto">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="flex-grow px-4 py-3 rounded-xl bg-transparent border border-white/10 text-white placeholder-white/35 focus:border-[#D4A843]/50 focus:outline-none focus:ring-1 focus:ring-[#D4A843]/30 transition-colors duration-200 text-sm"
+            />
+            <button className="bg-[#D4A843] text-[#060606] px-6 py-3 rounded-xl font-semibold text-sm cursor-pointer hover:shadow-[0_8px_24px_rgba(212,168,67,0.15)] hover:-translate-y-px transition-all duration-250">
+              Subscribe
+            </button>
           </div>
         </div>
       </section>
