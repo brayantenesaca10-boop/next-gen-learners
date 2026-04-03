@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NGL — AI for the Classroom</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{width:100%;height:100%;overflow:hidden;font-family:'Plus Jakarta Sans',sans-serif;background:#060606;color:#fff}
+
+    .deck{width:100%;height:100%;position:relative}
+    .slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 80px;opacity:0;pointer-events:none;transition:opacity .5s ease,transform .5s ease;transform:scale(.98);text-align:center}
+    .slide.active{opacity:1;pointer-events:auto;transform:scale(1)}
+
+    /* Backgrounds */
+    .bg-dark{background:#060606}
+    .bg-gradient{background:linear-gradient(135deg,#4F46E5,#7C3AED,#06B6D4,#10B981);background-size:400% 400%;animation:gf 15s ease infinite}
+    .bg-indigo{background:linear-gradient(135deg,#312E81,#4F46E5)}
+    .bg-violet{background:linear-gradient(135deg,#4C1D95,#7C3AED)}
+    .bg-emerald{background:linear-gradient(135deg,#064E3B,#10B981)}
+    .bg-warm{background:linear-gradient(135deg,#78350F,#F59E0B)}
+    .bg-cyan{background:linear-gradient(135deg,#164E63,#06B6D4)}
+    .bg-white{background:#FAFBFF;color:#1E1B4B}
+    @keyframes gf{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+    /* Typography */
+    .mega{font-size:clamp(2.8rem,6.5vw,5.5rem);font-weight:800;letter-spacing:-.04em;line-height:1.05}
+    .large{font-size:clamp(1.8rem,4vw,3.2rem);font-weight:700;letter-spacing:-.03em;line-height:1.15}
+    .medium{font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:600;line-height:1.35}
+    .body{font-size:clamp(.95rem,1.8vw,1.3rem);font-weight:300;line-height:1.7;max-width:700px;opacity:.8}
+    .label{font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;font-weight:700;opacity:.5;margin-bottom:20px}
+    .accent{color:#10B981}.accent-i{color:#818CF8}.accent-w{color:#FBBF24}.accent-c{color:#22D3EE}
+    .dim{opacity:.5}
+    .hl{background:linear-gradient(135deg,#4F46E5,#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+    /* Orbs */
+    .orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.18;pointer-events:none;animation:of 20s ease-in-out infinite}
+    @keyframes of{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
+
+    /* Lists */
+    .items{text-align:left;max-width:640px;width:100%}
+    .items li{font-size:clamp(1rem,2vw,1.3rem);line-height:1.6;margin-bottom:12px;opacity:.85;list-style:none;padding-left:24px;position:relative}
+    .items li::before{content:'';position:absolute;left:0;top:10px;width:8px;height:8px;border-radius:50%;background:#818CF8}
+    .items.green li::before{background:#10B981}
+    .items.warm li::before{background:#FBBF24}
+    .items.cyan li::before{background:#22D3EE}
+    .items.red li::before{background:#F87171}
+
+    /* Prompt blocks */
+    .prompt-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:24px 28px;max-width:720px;width:100%;text-align:left;font-size:clamp(.9rem,1.6vw,1.15rem);line-height:1.6;margin-top:24px;position:relative}
+    .bg-white .prompt-card{background:rgba(79,70,229,.06);border-color:rgba(79,70,229,.15);color:#1E1B4B}
+
+    /* Two col */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:48px;text-align:left;width:100%;max-width:900px}
+    .two-col h3{font-size:1.3rem;font-weight:700;margin-bottom:8px}
+    .two-col p{font-size:1rem;opacity:.7;line-height:1.5}
+
+    /* Steps grid */
+    .steps{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:720px;width:100%;margin-top:24px}
+    .step{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px 18px;text-align:left}
+    .step-label{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;margin-bottom:4px}
+    .step p{font-size:.92rem;line-height:1.45;opacity:.8}
+    .bg-white .step{background:rgba(79,70,229,.04);border-color:rgba(79,70,229,.1)}
+
+    /* Progress */
+    .progress{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:100}
+    .pdot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s;cursor:pointer}
+    .pdot.active{background:#fff;width:22px;border-radius:4px}
+    .counter{position:fixed;top:24px;right:32px;font-size:.7rem;letter-spacing:.1em;opacity:.3;z-index:100}
+    .nav-hint{position:fixed;bottom:24px;right:32px;font-size:.6rem;opacity:.2;z-index:100}
+  </style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- 1: Title -->
+  <div class="slide bg-dark active" data-bg="dark">
+    <div class="orb" style="width:400px;height:400px;background:#4F46E5;top:-100px;right:-100px"></div>
+    <div class="orb" style="width:300px;height:300px;background:#10B981;bottom:-80px;left:-60px;animation-delay:5s"></div>
+    <p class="label">Woodstock Public Schools &mdash; April 3, 2026</p>
+    <h1 class="mega">Your New Creative<br><span class="accent-i">Partner</span></h1>
+    <p class="body" style="margin-top:20px">Unlocking New Possibilities with AI</p>
+    <p class="body" style="margin-top:16px;opacity:.5;font-size:.95rem">Gina Williams</p>
+  </div>
+
+  <!-- 2: Be Honest -->
+  <div class="slide bg-indigo" data-bg="dark">
+    <h1 class="large">Be honest...</h1>
+    <p class="medium" style="margin-top:24px;opacity:.7">How many of you have ever:</p>
+    <ul class="items" style="margin-top:20px">
+      <li>Spent 30 minutes planning one lesson?</li>
+      <li>Rewritten the same email 3 times?</li>
+      <li>Had a lesson flop?</li>
+    </ul>
+  </div>
+
+  <!-- 3: AI in Everyday Life -->
+  <div class="slide bg-dark" data-bg="dark">
+    <div class="orb" style="width:350px;height:350px;background:#7C3AED;top:10%;left:5%"></div>
+    <p class="label">AI in Everyday Life</p>
+    <h1 class="large">Examples students<br>already <span class="accent">see</span></h1>
+    <ul class="items green" style="margin-top:24px">
+      <li>Siri / Alexa</li>
+      <li>Predictive text</li>
+      <li>YouTube recommendations</li>
+      <li>Navigation apps</li>
+    </ul>
+  </div>
+
+  <!-- 4: Learning Objectives -->
+  <div class="slide bg-gradient" data-bg="dark">
+    <h1 class="large">Today&rsquo;s Learning<br>Objectives</h1>
+    <ul class="items" style="margin-top:28px">
+      <li>Explore what AI is</li>
+      <li>Discover how AI sparks creativity</li>
+      <li>Learn simple workflows with Copilot</li>
+      <li>Refresh familiar lessons</li>
+      <li>Leave with ready-to-use ideas</li>
+    </ul>
+  </div>
+
+  <!-- 5: Why Explore AI Now -->
+  <div class="slide bg-dark" data-bg="dark">
+    <p class="label">Why Explore AI Now?</p>
+    <ul class="items green" style="margin-top:8px">
+      <li>Save time on planning</li>
+      <li>Inspire fresh lesson ideas</li>
+      <li>Add creative twists to routines</li>
+      <li>Free up time for students</li>
+    </ul>
+  </div>
+
+  <!-- 6: What Is AI -->
+  <div class="slide bg-dark" data-bg="dark">
+    <div class="orb" style="width:400px;height:400px;background:#06B6D4;bottom:-120px;right:-80px"></div>
+    <p class="label">What Is AI?</p>
+    <div class="two-col">
+      <div>
+        <h3 style="color:#818CF8">AI is a tool that:</h3>
+        <p>Recognizes patterns<br>Makes predictions<br>Generates text, images, or ideas</p>
+      </div>
+      <div>
+        <h3 style="color:#10B981">AI can be used to:</h3>
+        <p>Brainstorm<br>Draft responses based on existing data</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7: What AI Is Not -->
+  <div class="slide bg-violet" data-bg="dark">
+    <p class="label">What AI Is Not</p>
+    <h1 class="large" style="margin-bottom:24px">AI is <em>not:</em></h1>
+    <ul class="items red" style="margin-top:8px">
+      <li>A replacement for teachers</li>
+      <li>A source of guaranteed accuracy</li>
+      <li>Capable of emotional intelligence</li>
+    </ul>
+  </div>
+
+  <!-- 8: AI Analogy -->
+  <div class="slide bg-emerald" data-bg="dark">
+    <h1 class="large">If Google gives you<br><span class="accent-w">ingredients...</span></h1>
+    <p class="large" style="margin-top:20px;opacity:.75">AI gives you <em>recipe ideas.</em></p>
+  </div>
+
+  <!-- 9: Why Teachers Use AI -->
+  <div class="slide bg-dark" data-bg="dark">
+    <p class="label">Why Teachers Use AI</p>
+    <h1 class="large" style="margin-bottom:20px">AI can help with:</h1>
+    <div class="steps">
+      <div class="step"><p>Saving time</p></div>
+      <div class="step"><p>Lesson planning</p></div>
+      <div class="step"><p>Communication</p></div>
+      <div class="step"><p>Differentiation</p></div>
+      <div class="step"><p>MTSS / RTI support</p></div>
+      <div class="step"><p>Creating materials</p></div>
+    </div>
+  </div>
+
+  <!-- 10: You Can't Do This Wrong -->
+  <div class="slide bg-gradient" data-bg="dark">
+    <h1 class="mega">You can&rsquo;t do<br>this <em>wrong.</em></h1>
+    <ul class="items" style="margin-top:28px">
+      <li>There is no &ldquo;perfect&rdquo; prompt</li>
+      <li>AI expects revision</li>
+      <li>You can always say: &ldquo;Try again, but...&rdquo;</li>
+    </ul>
+  </div>
+
+  <!-- 11: How to Write a Great Prompt -->
+  <div class="slide bg-white" data-bg="light">
+    <p class="label" style="color:#4F46E5">Prompt Framework</p>
+    <h1 class="large" style="margin-bottom:24px">How to Write a<br><span class="hl">Great Prompt</span></h1>
+    <div class="steps">
+      <div class="step"><div class="step-label" style="color:#4F46E5">Role</div><p>&ldquo;You are a...&rdquo;</p></div>
+      <div class="step"><div class="step-label" style="color:#7C3AED">Task</div><p>&ldquo;Create / Suggest...&rdquo;</p></div>
+      <div class="step"><div class="step-label" style="color:#10B981">Details</div><p>Grade level, topic</p></div>
+      <div class="step"><div class="step-label" style="color:#06B6D4">Format</div><p>List, script, table</p></div>
+      <div class="step" style="grid-column:1/-1"><div class="step-label" style="color:#F59E0B">Constraints</div><p>Simple, fun, age-appropriate, in Spanish...</p></div>
+    </div>
+  </div>
+
+  <!-- 12: Role -->
+  <div class="slide bg-dark" data-bg="dark">
+    <p class="label">Prompt Building &mdash; Role</p>
+    <h1 class="large" style="margin-bottom:24px">Who should AI<br><span class="accent-i">pretend to be?</span></h1>
+    <ul class="items" style="margin-top:8px">
+      <li>You are a K&ndash;5 reading specialist.</li>
+      <li>You are a creative writing coach for 3rd graders.</li>
+      <li>You are a math tutor who uses real-life examples.</li>
+    </ul>
+  </div>
+
+  <!-- 13: Task -->
+  <div class="slide bg-dark" data-bg="dark">
+    <p class="label">Prompt Building &mdash; Task</p>
+    <h1 class="large" style="margin-bottom:24px">What do you want<br><span class="accent">to do?</span></h1>
+    <ul class="items green" style="margin-top:8px">
+      <li>Create a lesson hook...</li>
+      <li>Write a set of practice problems...</li>
+      <li>Suggest 5 activity variations...</li>
+    </ul>
+  </div>
+
+  <!-- 14: Details -->
+  <div class="slide bg-indigo" data-bg="dark">
+    <p class="label">Prompt Building &mdash; Details</p>
+    <h1 class="large" style="margin-bottom:24px">Give grade level<br>+ <span class="accent-w">topic</span></h1>
+    <ul class="items warm" style="margin-top:8px">
+      <li>For Grade 2 adding and subtracting within 20...</li>
+      <li>For Grade 4 explorers of North America...</li>
+    </ul>
+  </div>
+
+  <!-- 15: Format -->
+  <div class="slide bg-dark" data-bg="dark">
+    <p class="label">Prompt Building &mdash; Format</p>
+    <h1 class="large" style="margin-bottom:24px">How should the<br><span class="accent-c">answer look?</span></h1>
+    <ul class="items cyan" style="margin-top:8px">
+      <li>In a list</li>
+      <li>In a table</li>
+      <li>As a script I can read aloud</li>
+      <li>In kid-friendly language</li>
+      <li>To the tune of Wheels on the Bus</li>
+    </ul>
+  </div>
+
+  <!-- 16: Constraints -->
+  <div class="slide bg-violet" data-bg="dark">
+    <p class="label">Prompt Building &mdash; Constraints</p>
+    <h1 class="large" style="margin-bottom:24px">What <span class="accent-w">guardrails</span><br>do you want?</h1>
+    <ul class="items warm" style="margin-top:8px">
+      <li>Keep it simple</li>
+      <li>Use common classroom materials only</li>
+      <li>Make it fun and age-appropriate</li>
+    </ul>
+  </div>
+
+  <!-- 17: Prompt Example 1 -->
+  <div class="slide bg-dark" data-bg="dark">
+    <p class="label">Prompt Example #1</p>
+    <h1 class="large" style="margin-bottom:8px">Creative <span class="accent-i">Hook</span></h1>
+    <div class="prompt-card">You are a K&ndash;5 creative lesson designer. Create a fun, 3-minute hook for a Grade 2 math lesson on place value. Make it hands-on, simple, and playful. Provide a script I can read aloud.</div>
+  </div>
+
+  <!-- 18: Prompt Example 2 -->
+  <div class="slide bg-dark" data-bg="dark">
+    <p class="label">Prompt Example #2</p>
+    <h1 class="large" style="margin-bottom:8px">Activity <span class="accent">Ideas</span></h1>
+    <div class="prompt-card">You are a literacy coach. Suggest 5 new ways to teach character traits to 3rd graders. Mix movement, talk, drawing, and writing. Keep directions short and classroom-ready.</div>
+  </div>
+
+  <!-- 19: Prompt Example 3 -->
+  <div class="slide bg-dark" data-bg="dark">
+    <p class="label">Prompt Example #3</p>
+    <h1 class="large" style="margin-bottom:8px">Parent <span class="accent-w">Email</span></h1>
+    <div class="prompt-card">You are a friendly school communication assistant. Draft a clear, warm parent email explaining our upcoming science unit on weather. Keep it brief and conversational.</div>
+  </div>
+
+  <!-- 20: Practice vs Improved Prompt -->
+  <div class="slide bg-white" data-bg="light">
+    <p class="label" style="color:#4F46E5">Before &amp; After</p>
+    <div class="two-col" style="max-width:800px">
+      <div>
+        <h3 style="color:#EF4444">Practice Prompt</h3>
+        <div class="prompt-card" style="margin-top:12px;font-size:.95rem">Make a lesson for fractions.</div>
+      </div>
+      <div>
+        <h3 style="color:#10B981">Improved Prompt</h3>
+        <div class="prompt-card" style="margin-top:12px;font-size:.95rem">You are a Grade 4 math teacher. Create a 20-minute lesson on equivalent fractions using visual models. Include:<br>&bull; A quick opener<br>&bull; A guided practice activity<br>&bull; A 3-question exit ticket<br>Keep it simple and student-friendly.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 21: Safe & Ethical AI Use -->
+  <div class="slide bg-dark" data-bg="dark">
+    <div class="orb" style="width:400px;height:400px;background:#EF4444;top:-100px;left:-80px;opacity:.1"></div>
+    <p class="label">Safe &amp; Ethical AI Use</p>
+    <h1 class="large" style="margin-bottom:20px">In <span class="accent-i">Elementary</span></h1>
+    <ul class="items" style="margin-top:8px">
+      <li>Follow COPPA + FERPA</li>
+      <li>No identifying student data</li>
+      <li>Teacher-facing use only</li>
+      <li>Always review / edit AI output</li>
+      <li>Avoid apps not approved by your district</li>
+    </ul>
+  </div>
+
+  <!-- 22: Red Flags -->
+  <div class="slide bg-dark" data-bg="dark">
+    <p class="label">Red Flags to Watch For</p>
+    <ul class="items red" style="margin-top:8px">
+      <li>Inaccurate information (hallucinations)</li>
+      <li>Biased content</li>
+      <li>Inappropriate suggestions</li>
+      <li>Overly advanced or simplified text</li>
+      <li>Requests for student data</li>
+    </ul>
+  </div>
+
+  <!-- 23: Quick Wins -->
+  <div class="slide bg-emerald" data-bg="dark">
+    <p class="label">Quick Wins with Copilot</p>
+    <ul class="items" style="margin-top:8px">
+      <li>New hooks and openers</li>
+      <li>Fresh lesson variations</li>
+      <li>Creative prompts and center ideas</li>
+      <li>Drafts for communication</li>
+    </ul>
+  </div>
+
+  <!-- 24: Workshop 1 -->
+  <div class="slide bg-indigo" data-bg="dark">
+    <p class="label">Hands-On Workshop #1</p>
+    <h1 class="large" style="margin-bottom:16px">Refresh a<br><span class="accent-w">familiar lesson</span></h1>
+    <p class="body">With new hooks, activities, and variations</p>
+    <div class="prompt-card" style="margin-top:24px">Create three new, engaging ways to introduce ______.</div>
+  </div>
+
+  <!-- 25: Workshop 2 -->
+  <div class="slide bg-cyan" data-bg="dark">
+    <p class="label">Hands-On Workshop #2</p>
+    <h1 class="large" style="margin-bottom:16px">Creative<br><span class="accent-w">Problem-Solving</span></h1>
+    <p class="body" style="margin-bottom:16px">Discussions, writing, math, communication</p>
+    <div class="prompt-card" style="margin-bottom:12px">Create 5 fun writing prompts based on a spring theme.</div>
+    <div class="prompt-card">Give me new ideas for math centers using simple materials.</div>
+  </div>
+
+  <!-- 26: What AI Can Do -->
+  <div class="slide bg-gradient" data-bg="dark">
+    <h1 class="large" style="margin-bottom:24px">What AI <em>Can</em> Do</h1>
+    <ul class="items" style="margin-top:8px">
+      <li>Support creativity</li>
+      <li>Offer fresh ideas</li>
+      <li>Add flexibility</li>
+      <li>Make planning energizing</li>
+    </ul>
+  </div>
+
+  <!-- 27: Try This Tomorrow -->
+  <div class="slide bg-dark" data-bg="dark">
+    <div class="orb" style="width:350px;height:350px;background:#10B981;bottom:-100px;right:-60px"></div>
+    <p class="label">Try This Tomorrow</p>
+    <ul class="items green" style="margin-top:8px">
+      <li>Create a fun 5-minute warm-up for teaching _____</li>
+      <li>Turn this worksheet into a game: _____</li>
+      <li>Write a kind email about _____</li>
+    </ul>
+  </div>
+
+  <!-- 28: Thank You -->
+  <div class="slide bg-dark" data-bg="dark">
+    <div class="orb" style="width:400px;height:400px;background:#4F46E5;top:-100px;left:-100px"></div>
+    <div class="orb" style="width:300px;height:300px;background:#10B981;bottom:-100px;right:-60px"></div>
+    <p class="label">Thank You</p>
+    <h1 class="mega">Thank You!</h1>
+    <p class="body" style="margin-top:16px">Gina Williams</p>
+  </div>
+
+</div>
+
+<div class="progress" id="progress"></div>
+<div class="counter" id="counter">1 / 28</div>
+<div class="nav-hint">Arrow keys or swipe to navigate</div>
+
+<script>
+const slides=document.querySelectorAll('.slide');let cur=0;
+const prog=document.getElementById('progress');
+slides.forEach((_,i)=>{const d=document.createElement('div');d.className='pdot'+(i===0?' active':'');d.onclick=()=>go(i);prog.appendChild(d)});
+
+function go(n){
+  if(n<0||n>=slides.length)return;
+  slides[cur].classList.remove('active');prog.children[cur].classList.remove('active');
+  cur=n;
+  slides[cur].classList.add('active');prog.children[cur].classList.add('active');
+  document.getElementById('counter').textContent=`${cur+1} / ${slides.length}`;
+  const bg=slides[cur].dataset.bg;
+  document.querySelectorAll('.pdot').forEach(d=>{
+    d.style.background=d.classList.contains('active')?(bg==='light'?'#4F46E5':'#fff'):(bg==='light'?'rgba(30,27,75,.15)':'rgba(255,255,255,.2)');
+  });
+  document.getElementById('counter').style.color=bg==='light'?'#1E1B4B':'#fff';
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter'){e.preventDefault();go(cur+1)}
+  if(e.key==='ArrowLeft'||e.key==='Backspace'){e.preventDefault();go(cur-1)}
+  if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen()}
+});
+
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(dx<-50)go(cur+1);if(dx>50)go(cur-1)});
+document.addEventListener('click',e=>{if(e.target.closest('.progress'))return;if(e.clientX>window.innerWidth*.5)go(cur+1);else go(cur-1)});
+</script>
+
+</body>
+</html>
