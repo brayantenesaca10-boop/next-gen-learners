@@ -62,6 +62,10 @@
     /* Stage directions */
     .stage{font-size:0.78rem;color:var(--violet);font-weight:600;font-style:italic;margin:10px 0}
 
+    /* Slide cue */
+    .slide-cue{display:inline-flex;align-items:center;gap:8px;background:#1E1B4B;color:#E0E7FF;font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:6px 14px;border-radius:8px;margin:16px 0 8px;cursor:default}
+    .slide-cue::before{content:'';width:0;height:0;border-left:6px solid #E0E7FF;border-top:4px solid transparent;border-bottom:4px solid transparent}
+
     /* Demo box */
     .demo-box{background:#1E1B4B;color:#E0E7FF;border-radius:12px;padding:16px 20px;margin:12px 0;font-family:'Courier New',monospace;font-size:0.82rem;line-height:1.6;white-space:pre-wrap}
     .demo-say{font-size:0.85rem;color:var(--emerald);font-weight:600;margin-top:8px;font-family:'Plus Jakarta Sans',sans-serif;font-style:normal}
@@ -176,11 +180,18 @@
         <h3>Who I Am</h3>
         <span class="part-time">3 min</span>
       </div>
-      <div class="stage">No slide needed. Just you talking.</div>
+      <div class="slide-cue">Slide 1 &mdash; "AI as Your Partner" title</div>
+      <div class="stage">You're on the title slide. Start talking.</div>
       <div class="speak">"Good morning. My name is Brayan Tenesaca. I grew up in Danbury. I went to AIS Magnet School &mdash; Mr. Roche was actually my principal."</div>
       <div class="stage">Pause. Let the room react. Roche will smile.</div>
+
+      <div class="slide-cue">Slide 2 &mdash; "How many of you used AI this week?"</div>
+      <div class="speak">"Quick show of hands &mdash; how many of you used AI this week? Even Siri, even autocomplete."</div>
+      <div class="speak">"Now... how many of your students did?"</div>
+      <div class="stage">Let the gap sink in.</div>
+
+      <div class="slide-cue">Slide 3 &mdash; "Danbury kid. Babson student. 18-year-old founder."</div>
       <div class="speak">"I played soccer all four years of high school. Won five trophies. Scored over 100 goals. I now train mixed martial arts at Babson College, where I'm a freshman."</div>
-      <div class="stage">You're not a "tech kid." You're an athlete. They need to see that.</div>
       <div class="speak">"I'm also the co-founder of Next Generation Learners. We run AI literacy programs in libraries and schools across Connecticut &mdash; Danbury, Ridgefield, Easton, and now here in Woodstock. I'm 18 years old."</div>
       <div class="stage">Let that land. 18. Founded a company. In their building.</div>
     </div>
@@ -192,16 +203,21 @@
         <h3>The Fear &mdash; Why I'm Here</h3>
         <span class="part-time">4 min</span>
       </div>
+      <div class="slide-cue">Slide 4 &mdash; Giant "FEAR" &mdash; "I saw fear everywhere."</div>
       <div class="stage">This is the emotional core. Slow down. Mean every word.</div>
       <div class="speak">"When I got to Babson, I saw something that scared me. I saw students my age building entire businesses with AI &mdash; real revenue, real products &mdash; while other students were terrified to even open it. The gap was massive. And I realized: that gap doesn't start in college. It starts now. It starts in your classrooms."</div>
       <div class="speak">"So I started paying attention. And I saw fear <strong>everywhere.</strong>"</div>
+
+      <div class="slide-cue">Slide 5 &mdash; The four fears (stacked, teachers highlighted)</div>
       <div class="speak">"I saw the fear of parents &mdash; worried their kids will never get exposed to AI, or worried they'll get too exposed without guidance."</div>
       <div class="speak">"I saw the fear of students &mdash; afraid they'll get caught using AI, not knowing there's a right way."</div>
       <div class="speak">"I saw the fear of schools &mdash; that they won't adapt fast enough, that the world is moving and they're standing still."</div>
       <div class="speak" style="border-left-color:#EF4444;background:rgba(239,68,68,0.05)">"And I saw the fear of <strong>teachers.</strong>"</div>
       <div class="stage">Pause here. Look at them.</div>
       <div class="speak">"I saw teachers afraid that AI will replace them. That their job &mdash; the job they pour their heart into &mdash; is somehow disposable. That a machine can do what they do."</div>
-      <div class="stage">Pause again.</div>
+
+      <div class="slide-cue">Slide 6 &mdash; "You will NOT be replaced." (flowing gradient)</div>
+      <div class="stage">Pause. Let the slide and the silence do the work.</div>
       <div class="speak" style="border-left-color:#7C3AED;background:rgba(124,58,237,0.06)">"And I thought: <strong>I have to do something about this.</strong> Because that fear? It's wrong."</div>
     </div>
 
@@ -212,12 +228,17 @@
         <h3>Why Teachers Matter</h3>
         <span class="part-time">3 min</span>
       </div>
+      <div class="slide-cue">Slide 7 &mdash; "AI cannot care about your students."</div>
       <div class="stage">This is where you earn the room. Every teacher needs to hear this.</div>
       <div class="speak">"AI is not going to replace you. It will never replace you. Here's what it WILL do: it will replace people who refuse to learn how to use it. That's different. That's a choice, not a fate."</div>
       <div class="speak" style="border-left-color:#10B981;background:rgba(16,185,129,0.06)">"AI cannot <strong>care</strong> about your students. You can tell a machine what to do. You can tell it how to respond. But you cannot teach it to care. It doesn't stay after school because it noticed a kid was having a bad day. It doesn't throw a football with a 5th grader because that kid needed someone to show up for him."</div>
       <div class="stage">This is about Roche. He'll know. The room will feel it.</div>
+
+      <div class="slide-cue">Slide 8 &mdash; "Teaching is the most important job on earth."</div>
       <div class="speak">"No one can take away your teaching style. No one can take away the way you connect with a student who's about to give up. No one can replicate the moment a kid's eyes light up because YOU explained it in the way that finally made sense."</div>
       <div class="speak" style="border-left-color:#F59E0B;background:rgba(245,158,11,0.06)">"Teaching is one of the <strong>most important jobs on earth.</strong> Our first teachers were our parents. Then you. You pass wisdom from one generation to the next. You fuel the next generation. Without you, we don't have a society."</div>
+
+      <div class="slide-cue">Slide 9 &mdash; "AI makes the most important job easier."</div>
       <div class="speak">"So no &mdash; AI is not here to replace you. AI is here to make the most important job in the world <strong>a little easier.</strong> Less time on admin. More time on what only YOU can do: caring about your students."</div>
       <div class="stage">Let the room breathe. Don't rush.</div>
     </div>
@@ -229,8 +250,11 @@
         <h3>What We Found</h3>
         <span class="part-time">3 min</span>
       </div>
+      <div class="slide-cue">Slide 10 &mdash; "We taught 4th graders to disagree with AI."</div>
       <div class="speak">"So we went and tested this. We ran a 4-session AI literacy program for 4th and 5th graders at the Danbury Library. And what we found surprised even us."</div>
       <div class="speak">"Students showed up thinking AI was magic. By session 4, those same kids were <strong>disagreeing with AI.</strong> They were revising their own prompts. They were explaining WHY."</div>
+
+      <div class="slide-cue">Slide 11 &mdash; "AI literacy makes thinking visible."</div>
       <div class="speak" style="border-left-color:#06B6D4;background:rgba(6,182,212,0.06)">"AI literacy doesn't replace thinking. It makes thinking <strong>visible.</strong>"</div>
       <div class="speak">"The students who asked the worst questions learned the most. Because they saw the gap between a vague question and a specific one in real time. That skill &mdash; asking better questions &mdash; transfers to everything. Not just AI. Life."</div>
     </div>
@@ -242,6 +266,7 @@
         <h3>Partner vs Employee</h3>
         <span class="part-time">2 min</span>
       </div>
+      <div class="slide-cue">Slide 12 &mdash; Employee vs Partner (two columns)</div>
       <div class="speak">"There are two ways to use AI. As an <strong>employee:</strong> 'Do this for me.' One prompt, one answer, done. That's what cheating looks like."</div>
       <div class="speak">"Or as a <strong>partner:</strong> 'Help me think.' Back-and-forth. Questions. Iteration. The human stays in control."</div>
       <div class="speak">"When we taught 4th graders this distinction, something clicked. They stopped asking AI for answers and started asking AI for <strong>better questions.</strong>"</div>
@@ -254,9 +279,11 @@
         <h3>Live Demos</h3>
         <span class="part-time">10 min</span>
       </div>
+      <div class="slide-cue">Slide 13 &mdash; "Let me show you." (gradient)</div>
       <div class="speak">"Enough talking. Let me show you."</div>
-      <div class="stage">Switch to ChatGPT. Run all 4 demos live.</div>
+      <div class="stage">Click to slide 13, let it sit for 2 seconds, then switch to ChatGPT window.</div>
 
+      <div class="slide-cue">Switch to ChatGPT &mdash; Demos happen off-slides</div>
       <p style="font-size:0.78rem;font-weight:700;color:var(--primary);margin:20px 0 8px;letter-spacing:0.1em;text-transform:uppercase">Demo 1: Lesson Plan Partner (3 min)</p>
       <div class="demo-box">I teach 6th grade ELA. I'm starting a unit on persuasive writing next week. Before you give me a lesson plan, ask me 5 questions about my students so you can personalize it.</div>
       <div class="demo-say">SAY: "I asked it to ask ME questions first. That's the partner mindset."</div>
@@ -282,9 +309,11 @@
         <h3>The Toolkit</h3>
         <span class="part-time">2 min</span>
       </div>
+      <div class="slide-cue">Slide 18 &mdash; Toolkit + QR code (switch back to slides)</div>
+      <div class="stage">Switch back from ChatGPT to the presentation. Click to slide 18.</div>
       <div class="speak">"Everything I just showed you is yours. 6 AI drivers. A 15-minute lesson you can run Monday. 3 rules you can print and put on every desk."</div>
       <div class="speak" style="border-left-color:#10B981;background:rgba(16,185,129,0.06)">"Scan this. Everything is there. It's free. It's yours."</div>
-      <div class="stage">Show QR code &rarr; nextgenerationlearners.com/woodstock</div>
+      <div class="stage">Give them 15-20 seconds to scan the QR code / click the link.</div>
     </div>
 
     <!-- Part 8 -->
@@ -294,9 +323,12 @@
         <h3>Close</h3>
         <span class="part-time">2 min</span>
       </div>
+      <div class="slide-cue">Slide 19 &mdash; "Your students are watching." (gradient)</div>
       <div class="speak">"I started this because I saw fear. Fear from every direction. And I realized that fear doesn't go away by avoiding the thing you're afraid of. It goes away when someone shows you how to use it."</div>
       <div class="speak" style="border-left-color:#F59E0B;background:rgba(245,158,11,0.06)">"<strong>You</strong> are that someone for your students. You are the ones who will teach them to think with AI, not outsource their thinking to it. Nobody else is going to do that. Not an app. Not a YouTube video. <strong>You.</strong>"</div>
       <div class="speak">"Your students are watching. Show them what's possible."</div>
+
+      <div class="slide-cue">Slide 20 &mdash; Thank you (your name + email)</div>
       <div class="stage">"Gina and Kristy are going to take you deeper. I'll be there too. Come find me."</div>
     </div>
   </div>
