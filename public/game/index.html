@@ -51,7 +51,10 @@
     .menu-card.blue{border-color:var(--blue)}.menu-card.blue:hover{background:rgba(59,130,246,.1)}
     .menu-card.purple{border-color:var(--purple)}.menu-card.purple:hover{background:rgba(139,92,246,.1)}
     .menu-card.orange{border-color:var(--orange)}.menu-card.orange:hover{background:rgba(245,158,11,.1)}
+    .menu-card.pink{border-color:var(--pink)}.menu-card.pink:hover{background:rgba(236,72,153,.1)}
+    .menu-card.red{border-color:var(--red)}.menu-card.red:hover{background:rgba(239,68,68,.1)}
     .menu-card .badge{position:absolute;top:10px;right:10px;background:var(--pink);font-size:.6rem;font-weight:800;padding:3px 8px;border-radius:8px;letter-spacing:.05em}
+    .menu-card .badge.challenge{background:var(--red)}
     @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
     /* Game area */
@@ -156,6 +159,55 @@
     @keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
     .reset-coins{background:var(--card2);border:none;color:#fff;padding:8px 20px;border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}
 
+    /* Timer bar */
+    .timer-bar{width:100%;height:10px;background:var(--card2);border-radius:5px;overflow:hidden;margin-bottom:16px}
+    .timer-fill{height:100%;border-radius:5px;transition:width .1s linear;background:linear-gradient(90deg,var(--green),var(--orange),var(--red))}
+    .timer-text{text-align:center;font-size:1.4rem;font-weight:900;margin-bottom:8px}
+    .timer-text.warn{color:var(--orange)}
+    .timer-text.danger{color:var(--red);animation:pulse .5s infinite}
+
+    /* Change game */
+    .change-scenario{background:var(--card);border-radius:20px;padding:24px;text-align:center;margin-bottom:16px}
+    .change-scenario .scene-emoji{font-size:2.4rem;display:block;margin-bottom:8px}
+    .change-scenario .scene-text{font-size:1rem;opacity:.7;line-height:1.5;margin-bottom:12px}
+    .change-scenario .scene-math{font-size:1.3rem;font-weight:800}
+    .change-scenario .scene-math .paid{color:var(--blue)}
+    .change-scenario .scene-math .cost{color:var(--orange)}
+    .change-input{display:flex;align-items:center;justify-content:center;gap:8px;margin:16px 0}
+    .change-input span{font-size:1.6rem;font-weight:900;color:var(--green)}
+    .change-input input{width:120px;padding:14px;border:3px solid var(--card2);border-radius:14px;background:var(--card);color:#fff;font-size:1.4rem;font-weight:800;text-align:center;font-family:inherit;outline:none;transition:border-color .2s}
+    .change-input input:focus{border-color:var(--blue)}
+    .submit-change{background:linear-gradient(135deg,var(--green),#16A34A);border:none;color:#fff;padding:14px 40px;border-radius:14px;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s;display:block;margin:0 auto}
+    .submit-change:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(34,197,94,.3)}
+
+    /* Lemonade stand */
+    .lemon-day{background:var(--card);border-radius:20px;padding:24px;text-align:center;margin-bottom:16px}
+    .lemon-day .day-num{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:8px}
+    .lemon-weather{font-size:2.4rem;display:block;margin-bottom:4px}
+    .lemon-weather-text{font-size:1rem;font-weight:700;margin-bottom:4px}
+    .lemon-temp{font-size:.85rem;opacity:.5}
+    .lemon-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0}
+    .lemon-stat{background:var(--card);border:2px solid var(--card2);border-radius:14px;padding:12px;text-align:center}
+    .lemon-stat .ls-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;opacity:.4;font-weight:700}
+    .lemon-stat .ls-val{font-size:1.3rem;font-weight:900;margin-top:2px}
+    .lemon-stat .ls-val.money{color:var(--green)}
+    .lemon-choices{background:var(--card);border-radius:20px;padding:24px;margin-bottom:16px}
+    .lemon-choices h3{font-size:1rem;font-weight:800;margin-bottom:16px;text-align:center}
+    .lemon-slider{margin-bottom:20px}
+    .lemon-slider label{display:flex;justify-content:space-between;font-size:.85rem;font-weight:700;margin-bottom:6px}
+    .lemon-slider label span{color:var(--orange);font-weight:800}
+    .lemon-slider input[type=range]{width:100%;height:8px;-webkit-appearance:none;appearance:none;border-radius:4px;background:var(--card2);outline:none}
+    .lemon-slider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--orange);cursor:pointer;border:3px solid #fff}
+    .lemon-go{background:linear-gradient(135deg,var(--orange),#D97706);border:none;color:#fff;padding:14px 40px;border-radius:14px;font-size:1.1rem;font-weight:800;cursor:pointer;font-family:inherit;display:block;margin:0 auto;transition:all .2s}
+    .lemon-go:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(245,158,11,.3)}
+    .lemon-report{background:var(--card);border-radius:20px;padding:24px;text-align:center;margin-bottom:16px;display:none;animation:fadeIn .4s ease}
+    .lemon-report.show{display:block}
+    .lemon-report h3{font-size:1.1rem;font-weight:800;margin-bottom:12px}
+    .report-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--card2);font-size:.9rem}
+    .report-row:last-child{border-bottom:none;font-weight:800;font-size:1rem;padding-top:12px}
+    .report-row .positive{color:var(--green)}
+    .report-row .negative{color:var(--red)}
+
     /* Results screen */
     .results{text-align:center;padding:32px 0}
     .results .r-emoji{font-size:4rem;display:block;margin-bottom:16px;animation:bounce 1s ease infinite}
@@ -218,7 +270,18 @@
         <span class="emoji">🏪</span>
         <h3>Budget Boss</h3>
         <p>Spend wisely at the store!</p>
-        <span class="badge">NEW</span>
+      </div>
+      <div class="menu-card pink" onclick="startGame('change')">
+        <span class="emoji">⏱️</span>
+        <h3>Make Change!</h3>
+        <p>Race the clock to make correct change!</p>
+        <span class="badge challenge">CHALLENGE</span>
+      </div>
+      <div class="menu-card red" onclick="startGame('lemonade')">
+        <span class="emoji">🍋</span>
+        <h3>Lemonade Stand</h3>
+        <p>Run your own business for 5 days!</p>
+        <span class="badge challenge">CHALLENGE</span>
       </div>
     </div>
   </div>
@@ -320,6 +383,77 @@
     <button class="check-btn" id="budgetCheck" onclick="checkBudget()" style="margin-top:16px">Done Shopping! ✓</button>
   </div>
 
+  <!-- MAKE CHANGE SCREEN -->
+  <div class="screen" id="changeScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goMenu()">←</button>
+      <h2>Make Change!</h2>
+      <div class="progress-bar"><div class="progress-fill" id="changeProgress" style="width:0%"></div></div>
+    </div>
+    <div class="timer-text" id="changeTimer">15</div>
+    <div class="timer-bar"><div class="timer-fill" id="changeTimerBar" style="width:100%"></div></div>
+    <div class="change-scenario">
+      <span class="scene-emoji" id="changeEmoji">🛒</span>
+      <p class="scene-text" id="changeText"></p>
+      <p class="scene-math">Paid: <span class="paid" id="changePaid"></span> &nbsp;|&nbsp; Cost: <span class="cost" id="changeCost"></span></p>
+    </div>
+    <p style="text-align:center;font-size:.9rem;font-weight:700;margin-bottom:8px">How much change do they get back?</p>
+    <div class="change-input">
+      <span>$</span>
+      <input type="text" id="changeAnswer" inputmode="decimal" placeholder="0.00" autocomplete="off" />
+    </div>
+    <button class="submit-change" onclick="submitChange()">Check! ✓</button>
+    <div class="feedback" id="changeFeedback">
+      <span class="fb-emoji" id="changeFbEmoji"></span>
+      <p class="fb-text" id="changeFbText"></p>
+      <p class="fb-explain" id="changeFbExplain"></p>
+      <button class="next-btn" onclick="nextChangeRound()">Next →</button>
+    </div>
+  </div>
+
+  <!-- LEMONADE STAND SCREEN -->
+  <div class="screen" id="lemonadeScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goMenu()">←</button>
+      <h2>Lemonade Stand</h2>
+    </div>
+    <div class="lemon-stats">
+      <div class="lemon-stat"><div class="ls-label">Money</div><div class="ls-val money" id="lemonMoney">$20.00</div></div>
+      <div class="lemon-stat"><div class="ls-label">Cups</div><div class="ls-val" id="lemonCups">0</div></div>
+      <div class="lemon-stat"><div class="ls-label">Day</div><div class="ls-val" id="lemonDayNum">1 / 5</div></div>
+    </div>
+    <div class="lemon-day">
+      <div class="day-num" id="lemonDayLabel">Day 1</div>
+      <span class="lemon-weather" id="lemonWeatherEmoji">☀️</span>
+      <p class="lemon-weather-text" id="lemonWeatherText">Sunny and Hot!</p>
+      <p class="lemon-temp" id="lemonTemp">85°F — Lots of thirsty people!</p>
+    </div>
+    <div class="lemon-choices" id="lemonChoices">
+      <h3>Set Up Your Stand</h3>
+      <div class="lemon-slider">
+        <label>Cups of lemonade to make <span id="cupsLabel">10</span></label>
+        <input type="range" min="0" max="30" value="10" id="cupsSlider" oninput="updateLemonLabels()" />
+        <p style="font-size:.72rem;opacity:.4;margin-top:2px">Cost: $0.50 per cup to make</p>
+      </div>
+      <div class="lemon-slider">
+        <label>Price per cup <span id="priceLabel">$1.00</span></label>
+        <input type="range" min="25" max="300" value="100" step="25" id="priceSlider" oninput="updateLemonLabels()" />
+      </div>
+      <div class="lemon-slider">
+        <label>Signs to buy <span id="signsLabel">0</span></label>
+        <input type="range" min="0" max="5" value="0" id="signsSlider" oninput="updateLemonLabels()" />
+        <p style="font-size:.72rem;opacity:.4;margin-top:2px">$0.50 each — more signs = more customers!</p>
+      </div>
+      <p style="text-align:center;font-size:.9rem;font-weight:700;margin:12px 0;color:var(--orange)">Today's cost: <span id="lemonTodayCost">$5.00</span></p>
+      <button class="lemon-go" onclick="runLemonDay()">Open for Business! 🍋</button>
+    </div>
+    <div class="lemon-report" id="lemonReport">
+      <h3>📊 End of Day Report</h3>
+      <div id="reportRows"></div>
+      <button class="next-btn" onclick="nextLemonDay()" id="lemonNextBtn" style="margin-top:16px">Next Day →</button>
+    </div>
+  </div>
+
   <!-- RESULTS SCREEN -->
   <div class="screen" id="resultsScreen">
     <div class="results">
@@ -415,6 +549,8 @@ function startGame(game){
   else if(game==='needs')initNeeds();
   else if(game==='coins')initCoins();
   else if(game==='budget')initBudget();
+  else if(game==='change')initChange();
+  else if(game==='lemonade')initLemonade();
 }
 
 function replayGame(){startGame(lastGame)}
@@ -690,6 +826,207 @@ function updateStats(){
 }
 
 function shuffleArray(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+
+// ===== MAKE CHANGE GAME =====
+const changeScenarios=[
+  {item:"candy bar",emoji:"🍫",cost:75,paid:100,text:"A candy bar costs $0.75. The customer pays with $1.00."},
+  {item:"apple",emoji:"🍎",cost:50,paid:100,text:"An apple costs $0.50. The customer pays with $1.00."},
+  {item:"juice box",emoji:"🧃",cost:125,paid:200,text:"A juice box costs $1.25. The customer pays with $2.00."},
+  {item:"pencil pack",emoji:"✏️",cost:230,paid:300,text:"A pencil pack costs $2.30. The customer pays with $3.00."},
+  {item:"sandwich",emoji:"🥪",cost:350,paid:500,text:"A sandwich costs $3.50. The customer pays with $5.00."},
+  {item:"notebook",emoji:"📓",cost:175,paid:200,text:"A notebook costs $1.75. The customer pays with $2.00."},
+  {item:"cookie",emoji:"🍪",cost:60,paid:100,text:"A cookie costs $0.60. The customer pays with $1.00."},
+  {item:"water bottle",emoji:"💧",cost:125,paid:500,text:"A water bottle costs $1.25. The customer pays with $5.00."},
+  {item:"toy car",emoji:"🚗",cost:425,paid:500,text:"A toy car costs $4.25. The customer pays with $5.00."},
+  {item:"sticker book",emoji:"⭐",cost:275,paid:300,text:"A sticker book costs $2.75. The customer pays with $3.00."}
+];
+
+let changeRound=0,changeTimerId=null,changeTimeLeft=0;
+const CHANGE_TIME=15;
+
+function initChange(){
+  changeRound=0;score=0;totalQ=8;
+  shuffleArray(changeScenarios);
+  showScreen('changeScreen');
+  loadChangeRound();
+}
+
+function loadChangeRound(){
+  if(changeRound>=totalQ){clearInterval(changeTimerId);endGame();return}
+  const s=changeScenarios[changeRound%changeScenarios.length];
+  document.getElementById('changeEmoji').textContent=s.emoji;
+  document.getElementById('changeText').textContent=s.text;
+  document.getElementById('changePaid').textContent=formatCents(s.paid);
+  document.getElementById('changeCost').textContent=formatCents(s.cost);
+  document.getElementById('changeProgress').style.width=(changeRound/totalQ*100)+'%';
+  document.getElementById('changeAnswer').value='';
+  document.getElementById('changeFeedback').className='feedback';
+  document.getElementById('changeAnswer').focus();
+  startChangeTimer();
+}
+
+function startChangeTimer(){
+  clearInterval(changeTimerId);
+  changeTimeLeft=CHANGE_TIME*10;
+  const el=document.getElementById('changeTimer');
+  const bar=document.getElementById('changeTimerBar');
+  el.textContent=CHANGE_TIME;el.className='timer-text';
+  bar.style.width='100%';
+  changeTimerId=setInterval(()=>{
+    changeTimeLeft--;
+    const secs=(changeTimeLeft/10).toFixed(1);
+    el.textContent=Math.ceil(changeTimeLeft/10);
+    bar.style.width=(changeTimeLeft/(CHANGE_TIME*10)*100)+'%';
+    if(changeTimeLeft<=50)el.className='timer-text danger';
+    else if(changeTimeLeft<=100)el.className='timer-text warn';
+    if(changeTimeLeft<=0){clearInterval(changeTimerId);submitChange(true)}
+  },100);
+}
+
+function submitChange(timeout){
+  clearInterval(changeTimerId);
+  const s=changeScenarios[changeRound%changeScenarios.length];
+  const correctCents=s.paid-s.cost;
+  const correctStr=(correctCents/100).toFixed(2);
+  const input=document.getElementById('changeAnswer').value.replace('$','').trim();
+  const userCents=Math.round(parseFloat(input||'0')*100);
+  const fb=document.getElementById('changeFeedback');
+  if(!timeout&&userCents===correctCents){
+    score++;streak++;coins+=15;
+    fb.className='feedback show good';
+    document.getElementById('changeFbEmoji').textContent='⚡';
+    document.getElementById('changeFbText').textContent=changeTimeLeft>100?'Lightning fast!':'Got it!';
+    document.getElementById('changeFbExplain').textContent=`$${correctStr} is correct!`;
+  }else{
+    streak=0;
+    fb.className='feedback show bad';
+    document.getElementById('changeFbEmoji').textContent=timeout?'⏰':'😅';
+    document.getElementById('changeFbText').textContent=timeout?'Time\'s up!':'Not quite!';
+    document.getElementById('changeFbExplain').textContent=`The correct change was $${correctStr}.`;
+  }
+  updateStats();
+}
+
+function nextChangeRound(){changeRound++;loadChangeRound()}
+
+// Enter key submits change
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('changeScreen').classList.contains('active')&&e.key==='Enter'){
+    const fb=document.getElementById('changeFeedback');
+    if(fb.classList.contains('show'))nextChangeRound();
+    else submitChange(false);
+  }
+});
+
+// ===== LEMONADE STAND =====
+const weatherTypes=[
+  {emoji:"☀️",name:"Sunny and Hot!",temp:92,demand:1.3,tip:"Lots of thirsty people!"},
+  {emoji:"🌤️",name:"Warm and Nice",temp:78,demand:1.0,tip:"A good day for lemonade!"},
+  {emoji:"⛅",name:"Partly Cloudy",temp:70,demand:0.8,tip:"Some people might want lemonade."},
+  {emoji:"🌧️",name:"Rainy",temp:58,demand:0.4,tip:"Not many people outside..."},
+  {emoji:"🌩️",name:"Stormy!",temp:52,demand:0.2,tip:"Almost nobody is outside!"},
+  {emoji:"🔥",name:"Heat Wave!",temp:98,demand:1.5,tip:"Everyone wants something cold!"}
+];
+
+let lemonDay=0,lemonMoney=2000,lemonCupsSold=0,lemonTotalCups=0;
+const LEMON_DAYS=5,COST_PER_CUP=50,COST_PER_SIGN=50;
+
+function initLemonade(){
+  lemonDay=0;lemonMoney=2000;score=0;totalQ=10;lemonTotalCups=0;
+  showScreen('lemonadeScreen');
+  loadLemonDay();
+}
+
+function loadLemonDay(){
+  if(lemonDay>=LEMON_DAYS){
+    score=lemonMoney>2000?Math.min(10,Math.round((lemonMoney-2000)/300)+5):Math.max(1,Math.round(lemonMoney/500));
+    totalQ=10;
+    coins+=Math.round(lemonMoney/100);
+    stars+=lemonMoney>3000?1:0;
+    streak=lemonMoney>2000?streak+1:0;
+    updateStats();endGame();return;
+  }
+  const w=weatherTypes[Math.floor(Math.random()*weatherTypes.length)];
+  document.getElementById('lemonDayLabel').textContent='Day '+(lemonDay+1);
+  document.getElementById('lemonDayNum').textContent=(lemonDay+1)+' / '+LEMON_DAYS;
+  document.getElementById('lemonWeatherEmoji').textContent=w.emoji;
+  document.getElementById('lemonWeatherText').textContent=w.name;
+  document.getElementById('lemonTemp').textContent=w.temp+'°F — '+w.tip;
+  document.getElementById('lemonMoney').textContent=formatCents(lemonMoney);
+  document.getElementById('lemonCups').textContent=lemonTotalCups;
+  document.getElementById('lemonChoices').style.display='block';
+  document.getElementById('lemonReport').className='lemon-report';
+  document.getElementById('cupsSlider').value=10;
+  document.getElementById('priceSlider').value=100;
+  document.getElementById('signsSlider').value=0;
+  updateLemonLabels();
+  // Store weather for day
+  document.getElementById('lemonadeScreen').dataset.weather=JSON.stringify(w);
+}
+
+function updateLemonLabels(){
+  const cups=parseInt(document.getElementById('cupsSlider').value);
+  const price=parseInt(document.getElementById('priceSlider').value);
+  const signs=parseInt(document.getElementById('signsSlider').value);
+  document.getElementById('cupsLabel').textContent=cups;
+  document.getElementById('priceLabel').textContent=formatCents(price);
+  document.getElementById('signsLabel').textContent=signs;
+  const cost=cups*COST_PER_CUP+signs*COST_PER_SIGN;
+  document.getElementById('lemonTodayCost').textContent=formatCents(cost);
+}
+
+function runLemonDay(){
+  const cups=parseInt(document.getElementById('cupsSlider').value);
+  const price=parseInt(document.getElementById('priceSlider').value);
+  const signs=parseInt(document.getElementById('signsSlider').value);
+  const w=JSON.parse(document.getElementById('lemonadeScreen').dataset.weather);
+  const cost=cups*COST_PER_CUP+signs*COST_PER_SIGN;
+
+  if(cost>lemonMoney){alert("You don't have enough money for that!");return}
+
+  // Calculate customers: base demand * weather * sign bonus * price sensitivity
+  let baseDemand=12*w.demand;
+  let signBonus=1+signs*0.15;
+  let priceFactor=price<=75?1.3:price<=100?1.1:price<=150?0.85:price<=200?0.6:0.35;
+  let customers=Math.round(baseDemand*signBonus*priceFactor*(0.8+Math.random()*0.4));
+  let sold=Math.min(customers,cups);
+  let revenue=sold*price;
+  let profit=revenue-cost;
+
+  lemonMoney+=profit;
+  lemonTotalCups+=sold;
+  lemonCupsSold=sold;
+
+  document.getElementById('lemonMoney').textContent=formatCents(lemonMoney);
+  document.getElementById('lemonCups').textContent=lemonTotalCups;
+  document.getElementById('lemonChoices').style.display='none';
+
+  // Build report
+  const rows=document.getElementById('reportRows');
+  rows.innerHTML='';
+  const data=[
+    ['Cups made',cups],
+    ['Customers who came',customers],
+    ['Cups sold',sold],
+    [cups>sold?'Unsold cups (wasted!)':'','cups>sold'?(cups-sold):''],
+    ['Revenue ('+sold+' × '+formatCents(price)+')',formatCents(revenue)],
+    ['Costs','-'+formatCents(cost)],
+    ['Profit',formatCents(profit)]
+  ].filter(r=>r[0]);
+  data.forEach((r,i)=>{
+    const row=document.createElement('div');row.className='report-row';
+    const isLast=i===data.length-1;
+    const val=typeof r[1]==='number'?r[1]:r[1];
+    const cls=isLast?(profit>=0?'positive':'negative'):'';
+    row.innerHTML=`<span>${r[0]}</span><span class="${cls}">${typeof r[1]==='number'?r[1]:r[1]}</span>`;
+    rows.appendChild(row);
+  });
+
+  document.getElementById('lemonReport').className='lemon-report show';
+  document.getElementById('lemonNextBtn').textContent=lemonDay>=LEMON_DAYS-1?'See Results →':'Next Day →';
+}
+
+function nextLemonDay(){lemonDay++;loadLemonDay()}
 </script>
 
 </body>
