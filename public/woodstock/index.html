@@ -194,6 +194,17 @@
     footer a{color:rgba(255,255,255,0.8);text-decoration:none;transition:color 0.2s}
     footer a:hover{color:white}
 
+    /* Toolkit grid */
+    .toolkit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .toolkit-card{display:flex;align-items:center;gap:16px;padding:20px 24px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);text-decoration:none;color:var(--text);transition:all .3s}
+    .toolkit-card:hover{transform:translateY(-4px);box-shadow:0 16px 32px -8px rgba(79,70,229,.15);border-color:var(--primary)}
+    .toolkit-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;flex-shrink:0}
+    .toolkit-card h3{font-size:.95rem;font-weight:700;margin-bottom:2px}
+    .toolkit-card p{font-size:.75rem;color:var(--text-2);line-height:1.4}
+    .toolkit-card .arrow{margin-left:auto;color:var(--text-3);font-size:1.1rem;transition:transform .2s}
+    .toolkit-card:hover .arrow{transform:translateX(4px);color:var(--primary)}
+    @media(max-width:600px){.toolkit-grid{grid-template-columns:1fr}}
+
     /* Animations */
     @media(prefers-reduced-motion:no-preference){
       .fade-up{opacity:0;transform:translateY(24px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
@@ -221,11 +232,11 @@
 
 <nav>
   <div class="inner">
-    <div class="nav-brand">Next Generation Learners</div>
+    <a href="/" class="nav-brand" style="text-decoration:none;color:var(--primary)">Next Generation Learners</a>
     <div class="nav-links">
+      <a href="#toolkit" class="nav-link">Toolkit</a>
       <a href="#partners" class="nav-link">Partners</a>
       <a href="#rules" class="nav-link">3 Rules</a>
-      <a href="#lesson" class="nav-link">First Lesson</a>
       <a href="#drivers" class="nav-link">Drivers</a>
       <a href="#results" class="nav-link">Results</a>
     </div>
@@ -251,6 +262,37 @@
     <div class="proof-item"><div class="proof-num">4</div><div class="proof-label">Session Curriculum</div></div>
     <div class="proof-item"><div class="proof-num">50+</div><div class="proof-label">Students Trained</div></div>
     <div class="proof-item"><div class="proof-num">K&ndash;8</div><div class="proof-label">Grade Range</div></div>
+  </div>
+</div>
+
+<!-- TOOLKIT -->
+<div class="section" id="toolkit" style="padding-bottom:40px">
+  <div class="container">
+    <div class="sh-label">Your Woodstock Toolkit</div>
+    <h2 class="sh-title">Everything in One Place</h2>
+    <p class="sh-desc">All the tools, presentations, and activities built for Woodstock Public Schools — click any card to open it.</p>
+    <div class="toolkit-grid fade-up">
+      <a href="/presentation" class="toolkit-card" target="_blank">
+        <div class="toolkit-icon" style="background:var(--indigo-glow)">🎤</div>
+        <div><h3>Keynote Presentation</h3><p>The full "AI as Your Partner" slide deck</p></div>
+        <span class="arrow">→</span>
+      </a>
+      <a href="/slides" class="toolkit-card" target="_blank">
+        <div class="toolkit-icon" style="background:var(--violet-glow)">📊</div>
+        <div><h3>AI for the Classroom</h3><p>Gina Williams' breakout session slides</p></div>
+        <span class="arrow">→</span>
+      </a>
+      <a href="/demo" class="toolkit-card" target="_blank">
+        <div class="toolkit-icon" style="background:var(--accent-glow)">⚡</div>
+        <div><h3>Live Demo Prompts</h3><p>Copy-paste prompts for the 4 live demos</p></div>
+        <span class="arrow">→</span>
+      </a>
+      <a href="/game" class="toolkit-card" target="_blank">
+        <div class="toolkit-icon" style="background:var(--warm-glow)">🎮</div>
+        <div><h3>Money Smart Kids</h3><p>Interactive financial literacy game for 3rd graders</p></div>
+        <span class="arrow">→</span>
+      </a>
+    </div>
   </div>
 </div>
 
