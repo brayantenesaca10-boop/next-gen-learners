@@ -208,6 +208,35 @@
     .report-row .positive{color:var(--green)}
     .report-row .negative{color:var(--red)}
 
+    /* Multiply game */
+    .mult-problem{text-align:center;margin:16px 0}
+    .mult-problem .mult-eq{font-size:clamp(2.8rem,8vw,4.5rem);font-weight:900;letter-spacing:-.02em;line-height:1}
+    .mult-problem .mult-x{color:var(--pink);margin:0 4px}
+    .mult-problem .mult-equals{color:var(--purple);margin:0 4px}
+    .mult-problem .mult-q{color:var(--orange);border-bottom:4px solid var(--orange);padding:0 8px}
+    .mult-input{display:flex;align-items:center;justify-content:center;gap:8px;margin:20px 0}
+    .mult-input input{width:100px;padding:14px;border:3px solid var(--card2);border-radius:14px;background:var(--card);color:#fff;font-size:1.6rem;font-weight:900;text-align:center;font-family:inherit;outline:none;transition:border-color .2s}
+    .mult-input input:focus{border-color:var(--pink)}
+    .mult-input input.correct-flash{border-color:var(--green);background:rgba(34,197,94,.1)}
+    .mult-input input.wrong-flash{border-color:var(--red);background:rgba(239,68,68,.1)}
+    .mult-streak-bar{display:flex;gap:6px;justify-content:center;margin:12px 0;flex-wrap:wrap}
+    .mult-dot{width:20px;height:20px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:.55rem;transition:all .2s}
+    .mult-dot.hit{background:var(--green);color:#fff;animation:popIn .2s ease}
+    .mult-dot.miss{background:var(--red);color:#fff;animation:shake .3s ease}
+    .mult-level{text-align:center;margin-bottom:16px}
+    .mult-level .lvl-badge{display:inline-block;padding:6px 16px;border-radius:10px;font-size:.75rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+    .mult-level .lvl-badge.easy{background:rgba(34,197,94,.15);color:var(--green)}
+    .mult-level .lvl-badge.medium{background:rgba(245,158,11,.15);color:var(--orange)}
+    .mult-level .lvl-badge.hard{background:rgba(239,68,68,.15);color:var(--red)}
+    .mult-level .lvl-badge.boss{background:rgba(139,92,246,.15);color:var(--purple)}
+    .mult-pick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+    .mult-pick-btn{background:var(--card);border:3px solid var(--card2);border-radius:14px;padding:16px;text-align:center;cursor:pointer;font-family:inherit;color:#fff;transition:all .2s}
+    .mult-pick-btn:hover{border-color:var(--pink);transform:translateY(-2px)}
+    .mult-pick-btn .mp-num{font-size:1.8rem;font-weight:900;display:block;margin-bottom:2px}
+    .mult-pick-btn .mp-label{font-size:.65rem;opacity:.4;font-weight:700}
+    .mult-pick-btn.mastered{border-color:var(--green);background:rgba(34,197,94,.06)}
+    .mult-pick-btn.mastered .mp-num{color:var(--green)}
+
     /* Results screen */
     .results{text-align:center;padding:32px 0}
     .results .r-emoji{font-size:4rem;display:block;margin-bottom:16px;animation:bounce 1s ease infinite}
@@ -270,6 +299,12 @@
         <span class="emoji">🏪</span>
         <h3>Budget Boss</h3>
         <p>Spend wisely at the store!</p>
+      </div>
+      <div class="menu-card pink" onclick="startGame('multiply')">
+        <span class="emoji">✖️</span>
+        <h3>Multiplication Blitz</h3>
+        <p>Master your times tables! (4th Grade)</p>
+        <span class="badge">4TH GRADE</span>
       </div>
       <div class="menu-card pink" onclick="startGame('change')">
         <span class="emoji">⏱️</span>
@@ -454,6 +489,40 @@
     </div>
   </div>
 
+  <!-- MULTIPLICATION BLITZ SCREEN -->
+  <div class="screen" id="multiplyScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="clearInterval(multTimerId);goMenu()">←</button>
+      <h2>Multiplication Blitz</h2>
+      <div class="progress-bar"><div class="progress-fill" id="multProgress" style="width:0%"></div></div>
+    </div>
+    <!-- Table picker -->
+    <div id="multPicker">
+      <div class="q-card">
+        <span class="q-emoji">✖️</span>
+        <p class="q-text">Pick a times table to practice!</p>
+        <p class="q-hint">Master each one to turn it green</p>
+      </div>
+      <div class="mult-pick" id="multPickGrid"></div>
+      <div style="text-align:center;margin-top:16px">
+        <button class="check-btn" onclick="startMultMix()" style="background:linear-gradient(135deg,var(--pink),var(--purple))">🔀 Random Mix (All Tables)</button>
+      </div>
+    </div>
+    <!-- Active game -->
+    <div id="multGame" style="display:none">
+      <div class="mult-level"><span class="lvl-badge" id="multLevelBadge">×2 Table</span></div>
+      <div class="timer-text" id="multTimer">10</div>
+      <div class="timer-bar"><div class="timer-fill" id="multTimerBar" style="width:100%"></div></div>
+      <div class="mult-problem">
+        <span class="mult-eq"><span id="multA">7</span><span class="mult-x">×</span><span id="multB">8</span><span class="mult-equals">=</span><span class="mult-q" id="multQ">?</span></span>
+      </div>
+      <div class="mult-input">
+        <input type="text" id="multAnswer" inputmode="numeric" placeholder="?" autocomplete="off" />
+      </div>
+      <div class="mult-streak-bar" id="multStreakBar"></div>
+    </div>
+  </div>
+
   <!-- RESULTS SCREEN -->
   <div class="screen" id="resultsScreen">
     <div class="results">
@@ -551,6 +620,7 @@ function startGame(game){
   else if(game==='budget')initBudget();
   else if(game==='change')initChange();
   else if(game==='lemonade')initLemonade();
+  else if(game==='multiply')initMultiply();
 }
 
 function replayGame(){startGame(lastGame)}
@@ -1027,6 +1097,141 @@ function runLemonDay(){
 }
 
 function nextLemonDay(){lemonDay++;loadLemonDay()}
+
+// ===== MULTIPLICATION BLITZ =====
+let multTable=0,multRound=0,multTimerId=null,multTimeLeft=0,multResults=[];
+const MULT_ROUNDS=12,MULT_TIME=8;
+let multMastered={};
+
+function initMultiply(){
+  showScreen('multiplyScreen');
+  document.getElementById('multPicker').style.display='block';
+  document.getElementById('multGame').style.display='none';
+  // Build picker grid (2-12)
+  const grid=document.getElementById('multPickGrid');grid.innerHTML='';
+  for(let n=2;n<=12;n++){
+    const btn=document.createElement('button');
+    btn.className='mult-pick-btn'+(multMastered[n]?' mastered':'');
+    btn.innerHTML=`<span class="mp-num">×${n}</span><span class="mp-label">${multMastered[n]?'Mastered':'Practice'}</span>`;
+    btn.onclick=()=>startMultTable(n);
+    grid.appendChild(btn);
+  }
+}
+
+function startMultTable(n){
+  multTable=n;multRound=0;score=0;totalQ=MULT_ROUNDS;multResults=[];
+  document.getElementById('multPicker').style.display='none';
+  document.getElementById('multGame').style.display='block';
+  const badge=document.getElementById('multLevelBadge');
+  badge.textContent='×'+n+' Table';
+  badge.className='lvl-badge'+(n<=4?' easy':n<=7?' medium':n<=10?' hard':' boss');
+  // Build streak dots
+  const bar=document.getElementById('multStreakBar');bar.innerHTML='';
+  for(let i=0;i<MULT_ROUNDS;i++){
+    const d=document.createElement('div');d.className='mult-dot';d.textContent=i+1;
+    bar.appendChild(d);
+  }
+  loadMultRound();
+}
+
+function startMultMix(){
+  multTable=0;multRound=0;score=0;totalQ=MULT_ROUNDS;multResults=[];
+  document.getElementById('multPicker').style.display='none';
+  document.getElementById('multGame').style.display='block';
+  const badge=document.getElementById('multLevelBadge');
+  badge.textContent='Random Mix';badge.className='lvl-badge boss';
+  const bar=document.getElementById('multStreakBar');bar.innerHTML='';
+  for(let i=0;i<MULT_ROUNDS;i++){
+    const d=document.createElement('div');d.className='mult-dot';d.textContent=i+1;
+    bar.appendChild(d);
+  }
+  loadMultRound();
+}
+
+function loadMultRound(){
+  if(multRound>=MULT_ROUNDS){
+    clearInterval(multTimerId);
+    if(multTable>0&&score>=10)multMastered[multTable]=true;
+    coins+=score*5;
+    stars+=score>=10?1:0;
+    streak=score>=8?streak+1:0;
+    updateStats();endGame();return;
+  }
+  let a,b;
+  if(multTable>0){
+    a=multTable;b=Math.floor(Math.random()*12)+1;
+  }else{
+    a=Math.floor(Math.random()*11)+2;
+    b=Math.floor(Math.random()*12)+1;
+  }
+  // Randomly swap so it's not always table×something
+  if(Math.random()>.5)[a,b]=[b,a];
+  document.getElementById('multA').textContent=a;
+  document.getElementById('multB').textContent=b;
+  document.getElementById('multQ').textContent='?';
+  document.getElementById('multAnswer').value='';
+  document.getElementById('multAnswer').className='';
+  document.getElementById('multProgress').style.width=(multRound/MULT_ROUNDS*100)+'%';
+  document.getElementById('multAnswer').focus();
+  startMultTimer();
+}
+
+function startMultTimer(){
+  clearInterval(multTimerId);
+  multTimeLeft=MULT_TIME*10;
+  const el=document.getElementById('multTimer');
+  const bar=document.getElementById('multTimerBar');
+  el.textContent=MULT_TIME;el.className='timer-text';
+  bar.style.width='100%';
+  multTimerId=setInterval(()=>{
+    multTimeLeft--;
+    el.textContent=Math.ceil(multTimeLeft/10);
+    bar.style.width=(multTimeLeft/(MULT_TIME*10)*100)+'%';
+    if(multTimeLeft<=30)el.className='timer-text danger';
+    else if(multTimeLeft<=50)el.className='timer-text warn';
+    if(multTimeLeft<=0){clearInterval(multTimerId);submitMult(true)}
+  },100);
+}
+
+function submitMult(timeout){
+  clearInterval(multTimerId);
+  const a=parseInt(document.getElementById('multA').textContent);
+  const b=parseInt(document.getElementById('multB').textContent);
+  const correct=a*b;
+  const input=parseInt(document.getElementById('multAnswer').value)||0;
+  const dot=document.getElementById('multStreakBar').children[multRound];
+  const inp=document.getElementById('multAnswer');
+
+  if(!timeout&&input===correct){
+    score++;streak++;
+    dot.classList.add('hit');dot.textContent='✓';
+    inp.className='correct-flash';
+    document.getElementById('multQ').textContent=correct;
+    document.getElementById('multQ').style.color='var(--green)';
+    multResults.push(true);
+  }else{
+    streak=0;
+    dot.classList.add('miss');dot.textContent='✗';
+    inp.className='wrong-flash';
+    document.getElementById('multQ').textContent=correct;
+    document.getElementById('multQ').style.color='var(--red)';
+    multResults.push(false);
+  }
+  updateStats();
+  multRound++;
+  setTimeout(()=>{
+    document.getElementById('multQ').style.color='';
+    loadMultRound();
+  },800);
+}
+
+// Enter key for multiply
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('multiplyScreen').classList.contains('active')&&
+     document.getElementById('multGame').style.display!=='none'&&e.key==='Enter'){
+    submitMult(false);
+  }
+});
 </script>
 
 </body>
