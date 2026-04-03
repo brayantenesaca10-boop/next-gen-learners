@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stay Connected — Next Generation Learners</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--primary:#4F46E5;--accent:#10B981;--bg:#FAFBFF;--surface:#fff;--text:#1E1B4B;--text2:#64748B;--border:#E2E8F0}
+    body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow-x:hidden}
+
+    /* Background orbs */
+    .bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.12}
+
+    .card{position:relative;z-index:1;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:48px 40px;max-width:460px;width:100%;text-align:center;box-shadow:0 4px 24px rgba(79,70,229,.06)}
+
+    .logo{font-size:.7rem;letter-spacing:.22em;text-transform:uppercase;color:var(--primary);font-weight:700;margin-bottom:24px}
+    .logo a{color:inherit;text-decoration:none}
+    .emoji{font-size:2.8rem;display:block;margin-bottom:16px}
+    h1{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-bottom:8px}
+    h1 span{background:linear-gradient(135deg,var(--primary),#7C3AED);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .sub{font-size:.9rem;color:var(--text2);line-height:1.6;margin-bottom:28px;max-width:360px;margin-left:auto;margin-right:auto}
+
+    /* What you get */
+    .perks{display:flex;flex-direction:column;gap:10px;text-align:left;margin-bottom:28px}
+    .perk{display:flex;align-items:center;gap:10px;font-size:.85rem;color:var(--text2)}
+    .perk .check{width:22px;height:22px;border-radius:8px;background:rgba(16,185,129,.1);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7rem;font-weight:800}
+
+    /* Form */
+    form{display:flex;flex-direction:column;gap:12px}
+    .input-row{display:flex;gap:10px}
+    input[type="text"],input[type="email"]{flex:1;padding:14px 16px;border:2px solid var(--border);border-radius:12px;font-size:.92rem;font-family:inherit;color:var(--text);background:var(--bg);transition:border-color .2s;outline:none}
+    input:focus{border-color:var(--primary)}
+    input::placeholder{color:#94A3B8}
+    select{padding:14px 16px;border:2px solid var(--border);border-radius:12px;font-size:.92rem;font-family:inherit;color:var(--text);background:var(--bg);cursor:pointer;outline:none;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394A3B8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+    select:focus{border-color:var(--primary)}
+    .submit-btn{background:linear-gradient(135deg,var(--primary),#7C3AED);color:#fff;border:none;padding:15px;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.01em}
+    .submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(79,70,229,.3)}
+    .submit-btn:active{transform:scale(.98)}
+
+    .privacy{font-size:.7rem;color:#94A3B8;margin-top:8px;line-height:1.5}
+
+    /* Success state */
+    .success{display:none;animation:fadeIn .4s ease}
+    .success.show{display:block}
+    .form-wrap.hidden{display:none}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .success .s-emoji{font-size:3rem;display:block;margin-bottom:12px}
+    .success h2{font-size:1.3rem;font-weight:800;margin-bottom:8px}
+    .success p{font-size:.88rem;color:var(--text2);line-height:1.6}
+    .success .toolkit-link{display:inline-flex;align-items:center;gap:8px;margin-top:20px;background:var(--accent);color:#fff;padding:12px 28px;border-radius:12px;text-decoration:none;font-weight:700;font-size:.88rem;transition:all .2s}
+    .success .toolkit-link:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(16,185,129,.3)}
+
+    .footer{position:relative;z-index:1;margin-top:24px;text-align:center;font-size:.78rem;color:#94A3B8}
+    .footer a{color:var(--primary);text-decoration:none}
+
+    @media(max-width:500px){
+      .card{padding:36px 24px}
+      .input-row{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="orb" style="width:400px;height:400px;background:#4F46E5;top:-100px;right:-100px"></div>
+  <div class="orb" style="width:300px;height:300px;background:#10B981;bottom:-80px;left:-80px"></div>
+</div>
+
+<div class="card">
+  <div class="logo"><a href="/">Next Generation Learners</a></div>
+  <span class="emoji">🚀</span>
+  <h1>Join the <span>AI Education</span> Movement</h1>
+  <p class="sub">Get free AI tools, lesson plans, and resources delivered to your inbox. Built by educators, for educators.</p>
+
+  <div class="perks">
+    <div class="perk"><span class="check">✓</span>Free AI drivers and lesson templates</div>
+    <div class="perk"><span class="check">✓</span>New tools as we build them</div>
+    <div class="perk"><span class="check">✓</span>Tips for using AI in your classroom</div>
+    <div class="perk"><span class="check">✓</span>Early access to NGL programs</div>
+  </div>
+
+  <div class="form-wrap" id="formWrap">
+    <form action="https://formsubmit.co/brayan@nextgenerationlearners.com" method="POST" id="emailForm">
+      <!-- FormSubmit config -->
+      <input type="hidden" name="_subject" value="New NGL Email Signup!">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_next" id="redirectUrl">
+
+      <div class="input-row">
+        <input type="text" name="first_name" placeholder="First name" required />
+        <input type="text" name="last_name" placeholder="Last name" required />
+      </div>
+      <input type="email" name="email" placeholder="Your email address" required />
+      <select name="role" required>
+        <option value="" disabled selected>I am a...</option>
+        <option value="Teacher">Teacher</option>
+        <option value="Administrator">Administrator</option>
+        <option value="Parent">Parent</option>
+        <option value="Student">Student</option>
+        <option value="Librarian">Librarian</option>
+        <option value="Other">Other</option>
+      </select>
+      <input type="text" name="school" placeholder="School or organization (optional)" />
+      <button type="submit" class="submit-btn">Join the List →</button>
+      <p class="privacy">No spam, ever. Just useful AI tools for your classroom.</p>
+    </form>
+  </div>
+
+  <div class="success" id="success">
+    <span class="s-emoji">🎉</span>
+    <h2>You're in!</h2>
+    <p>Welcome to the NGL community. We'll send you free tools and resources as we build them.</p>
+    <a href="/woodstock" class="toolkit-link">Open Your Toolkit →</a>
+  </div>
+</div>
+
+<div class="footer">
+  Questions? <a href="mailto:brayan@nextgenerationlearners.com">brayan@nextgenerationlearners.com</a>
+</div>
+
+<script>
+// Set redirect URL to show success on same page
+document.getElementById('redirectUrl').value = window.location.href + '?success=1';
+
+// Check if returning from successful submission
+if (window.location.search.includes('success=1')) {
+  document.getElementById('formWrap').classList.add('hidden');
+  document.getElementById('success').classList.add('show');
+}
+</script>
+
+</body>
+</html>
