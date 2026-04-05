@@ -6,9 +6,8 @@ export async function POST(req: NextRequest) {
   if (!password) return NextResponse.json({ error: 'Password required' }, { status: 400 });
 
   const hash = hashPassword(password);
-  const envHash = process.env.NGL_AUTH_HASH || 'NOT_SET';
-  if (hash !== envHash) {
-    return NextResponse.json({ error: 'Wrong password', debug_computed: hash.slice(0, 8), debug_env: envHash.slice(0, 8), debug_env_len: envHash.length }, { status: 401 });
+  if (hash !== process.env.NGL_AUTH_HASH) {
+    return NextResponse.json({ error: 'Wrong password' }, { status: 401 });
   }
 
   const token = generateSessionToken();
