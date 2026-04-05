@@ -10,6 +10,43 @@ let initialized = false;
 export async function initDb() {
   if (initialized) return;
   await db.execute(`
+    CREATE TABLE IF NOT EXISTS contacts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      title TEXT DEFAULT '',
+      organization TEXT DEFAULT '',
+      email TEXT DEFAULT '',
+      status TEXT DEFAULT 'cold',
+      times_contacted INTEGER DEFAULT 0,
+      last_contact_date TEXT DEFAULT NULL,
+      notes TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS interactions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      contact_id INTEGER NOT NULL,
+      type TEXT DEFAULT 'email',
+      subject TEXT DEFAULT '',
+      body TEXT DEFAULT '',
+      notes TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE CASCADE
+    )
+  `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS oauth_tokens (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      provider TEXT NOT NULL DEFAULT 'gmail',
+      access_token TEXT NOT NULL,
+      refresh_token TEXT NOT NULL,
+      expiry TEXT NOT NULL,
+      email TEXT DEFAULT '',
+      updated_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+  await db.execute(`
     CREATE TABLE IF NOT EXISTS pnl_entries (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       date TEXT NOT NULL,
@@ -60,6 +97,70 @@ export async function updatePnlEntry(id: number, data: { date: string; type: str
 export async function deletePnlEntry(id: number) {
   await initDb();
   await db.execute({ sql: 'DELETE FROM pnl_entries WHERE id = ?', args: [id] });
+}
+
+// ── CRM ─────────────────────────────────────────────────────────────
+export async function getContacts() {
+  await initDb();
+  return (await db.execute('SELECT * FROM contacts ORDER BY created_at DESC')).rows;
+}
+
+export async function getContact(id: number) {
+  await initDb();
+  return (await db.execute({ sql: 'SELECT * FROM contacts WHERE id = ?', args: [id] })).rows[0];
+}
+
+export async function insertContact(data: { name: string; title: string; organization: string; email: string; status: string; notes: string }) {
+  await initDb();
+  const r = await db.execute({ sql: 'INSERT INTO contacts (name,title,organization,email,status,notes) VALUES (?,?,?,?,?,?)', args: [data.name, data.title, data.organization, data.email, data.status || 'cold', data.notes] });
+  return r.lastInsertRowid;
+}
+
+export async function updateContact(id: number, data: { name: string; title: string; organization: string; email: string; status: string; notes: string }) {
+  await initDb();
+  await db.execute({ sql: 'UPDATE contacts SET name=?, title=?, organization=?, email=?, status=?, notes=? WHERE id=?', args: [data.name, data.title, data.organization, data.email, data.status, data.notes, id] });
+}
+
+export async function deleteContact(id: number) {
+  await initDb();
+  await db.execute({ sql: 'DELETE FROM contacts WHERE id = ?', args: [id] });
+}
+
+export async function updateContactStatus(id: number, status: string, lastContactDate?: string) {
+  await initDb();
+  if (lastContactDate) {
+    await db.execute({ sql: 'UPDATE contacts SET status=?, last_contact_date=?, times_contacted=times_contacted+1 WHERE id=?', args: [status, lastContactDate, id] });
+  } else {
+    await db.execute({ sql: 'UPDATE contacts SET status=? WHERE id=?', args: [status, id] });
+  }
+}
+
+// ── Interactions ─────────────────────────────────────────────────────
+export async function getInteractions(contactId: number) {
+  await initDb();
+  return (await db.execute({ sql: 'SELECT * FROM interactions WHERE contact_id = ? ORDER BY created_at DESC', args: [contactId] })).rows;
+}
+
+export async function insertInteraction(data: { contact_id: number; type: string; subject: string; body: string; notes: string }) {
+  await initDb();
+  const r = await db.execute({ sql: 'INSERT INTO interactions (contact_id,type,subject,body,notes) VALUES (?,?,?,?,?)', args: [data.contact_id, data.type, data.subject, data.body, data.notes] });
+  return r.lastInsertRowid;
+}
+
+// ── OAuth ────────────────────────────────────────────────────────────
+export async function getOAuthToken(provider: string) {
+  await initDb();
+  return (await db.execute({ sql: 'SELECT * FROM oauth_tokens WHERE provider = ?', args: [provider] })).rows[0];
+}
+
+export async function upsertOAuthToken(data: { provider: string; access_token: string; refresh_token: string; expiry: string; email: string }) {
+  await initDb();
+  const existing = await getOAuthToken(data.provider);
+  if (existing) {
+    await db.execute({ sql: 'UPDATE oauth_tokens SET access_token=?, refresh_token=?, expiry=?, email=?, updated_at=datetime(\'now\') WHERE provider=?', args: [data.access_token, data.refresh_token, data.expiry, data.email, data.provider] });
+  } else {
+    await db.execute({ sql: 'INSERT INTO oauth_tokens (provider,access_token,refresh_token,expiry,email) VALUES (?,?,?,?,?)', args: [data.provider, data.access_token, data.refresh_token, data.expiry, data.email] });
+  }
 }
 
 export async function bulkInsertPnlEntries(entries: { date: string; type: string; category: string; description: string; amount: number; person: string }[]) {

@@ -98,6 +98,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
 <div class="topbar">
   <div class="topbar-title" onclick="switchTab('dashboard')">NGL</div>
   <div class="tabs">
+    <button class="tab" onclick="switchTab('crm')">CRM</button>
     <button class="tab" onclick="switchTab('pnl')">P&amp;L</button>
   </div>
 </div>
@@ -169,6 +170,91 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
 
     <div style="text-align:center;padding:24px;border-top:1px solid var(--border);margin-top:24px">
       <p style="font-size:.68rem;color:var(--text-3)">Next Generation Learners &middot; Making the most important job easier.</p>
+    </div>
+  </div>
+
+  <!-- P&L VIEW -->
+  <!-- CRM VIEW -->
+  <div class="view" id="view-crm">
+    <div class="card" style="padding:14px 20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div style="font-size:0.85rem;font-weight:700;color:var(--primary)">CRM</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="text" id="crmSearch" placeholder="Search..." oninput="renderContacts()" style="font-size:0.75rem;padding:5px 10px;max-width:200px" />
+          <button class="btn primary" onclick="openContactModal()" style="padding:6px 14px;font-size:0.72rem">+ Add</button>
+          <button class="btn" onclick="openComposeModal()" style="padding:6px 14px;font-size:0.72rem">Send Email</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gmail status -->
+    <div class="card" style="margin-top:12px;padding:12px 16px" id="gmailStatusBar">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:0.75rem;color:var(--text-3)" id="gmailLabel">Checking Gmail...</span>
+        <a href="/api/auth/gmail" class="btn primary" id="gmailConnectBtn" style="font-size:0.65rem;padding:4px 10px;text-decoration:none;display:none">Connect Gmail</a>
+      </div>
+    </div>
+
+    <!-- Pipeline counts -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px" id="crmPipeline">
+      <div class="card" style="padding:12px;text-align:center;margin:0;cursor:pointer" onclick="filterCRM('cold')">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--text)" id="cnt-cold">0</div>
+        <div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Cold</div>
+      </div>
+      <div class="card" style="padding:12px;text-align:center;margin:0;cursor:pointer" onclick="filterCRM('emailed')">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--primary)" id="cnt-emailed">0</div>
+        <div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Emailed</div>
+      </div>
+      <div class="card" style="padding:12px;text-align:center;margin:0;cursor:pointer" onclick="filterCRM('replied')">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--warm)" id="cnt-replied">0</div>
+        <div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Replied</div>
+      </div>
+      <div class="card" style="padding:12px;text-align:center;margin:0;cursor:pointer" onclick="filterCRM('all')">
+        <div style="font-size:1.2rem;font-weight:800;color:var(--accent)" id="cnt-all">0</div>
+        <div style="font-size:0.6rem;color:var(--text-3);text-transform:uppercase;letter-spacing:0.08em">Total</div>
+      </div>
+    </div>
+
+    <!-- Contacts list -->
+    <div class="card" style="margin-top:12px;padding:16px">
+      <div id="contactsList"></div>
+    </div>
+    <div class="alert" id="crmAlert" style="margin-top:12px"></div>
+  </div>
+
+  <!-- Contact Add/Edit Modal -->
+  <div class="modal-overlay" id="contactModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeContactModal()">&times;</button>
+      <div class="modal-title" id="contactModalTitle">Add Contact</div>
+      <input type="hidden" id="contactEditId" />
+      <div class="field"><label>Name *</label><input type="text" id="cf-name" /></div>
+      <div class="field"><label>Title</label><input type="text" id="cf-title" /></div>
+      <div class="field"><label>Organization</label><input type="text" id="cf-org" /></div>
+      <div class="field"><label>Email</label><input type="email" id="cf-email" /></div>
+      <div class="field"><label>Status</label>
+        <select id="cf-status">
+          <option value="cold">Cold</option>
+          <option value="emailed">Emailed</option>
+          <option value="replied">Replied</option>
+          <option value="signed">Signed</option>
+        </select>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="cf-notes" style="min-height:60px"></textarea></div>
+      <button class="btn primary" onclick="saveContact()" style="width:100%;margin-top:12px">Save</button>
+    </div>
+  </div>
+
+  <!-- Compose Email Modal -->
+  <div class="modal-overlay" id="composeModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeComposeModal()">&times;</button>
+      <div class="modal-title">Send Email</div>
+      <div class="field"><label>To</label><input type="email" id="compose-to" placeholder="email@example.com" /></div>
+      <div class="field"><label>Subject</label><input type="text" id="compose-subject" /></div>
+      <div class="field"><label>Body</label><textarea id="compose-body" style="min-height:120px"></textarea></div>
+      <button class="btn primary" onclick="sendComposedEmail()" style="width:100%;margin-top:12px">Send</button>
+      <div class="alert" id="composeAlert" style="margin-top:8px"></div>
     </div>
   </div>
 
@@ -291,11 +377,12 @@ function switchTab(t){
   document.getElementById('view-'+t).classList.add('active');
   document.querySelectorAll('.tab').forEach(b=>{if(b.textContent.toLowerCase().replace('&','').includes(t))b.classList.add('active')});
   if(t==='pnl')loadPnl();
+  if(t==='crm')loadCRM();
   history.replaceState(null,'','#'+t);
 }
 (function(){
   const hash=location.hash.replace('#','');
-  if(['pnl','dashboard'].includes(hash))setTimeout(()=>switchTab(hash),100);
+  if(['pnl','crm','dashboard'].includes(hash))setTimeout(()=>switchTab(hash),100);
 })();
 
 // Clock
@@ -309,6 +396,133 @@ function updateDashClock(){
 }
 updateDashClock();
 setInterval(updateDashClock,30000);
+
+// ── CRM ─────────────────────────────────────────────────────────────────────
+let _contacts=[];
+let _crmFilter='all';
+
+async function loadCRM(){
+  try{
+    _contacts=await fetch('/api/contacts').then(r=>r.json());
+    if(_contacts.error){_contacts=[];return}
+    renderPipeline();
+    renderContacts();
+    // Check Gmail
+    const gs=await fetch('/api/auth/gmail/status').then(r=>r.json()).catch(()=>({connected:false}));
+    document.getElementById('gmailLabel').textContent=gs.connected?'Gmail connected: '+gs.email:'Gmail not connected';
+    document.getElementById('gmailConnectBtn').style.display=gs.connected?'none':'inline-block';
+  }catch(e){console.error(e)}
+}
+
+function renderPipeline(){
+  const counts={cold:0,emailed:0,replied:0};
+  _contacts.forEach(c=>{if(counts[c.status]!==undefined)counts[c.status]++});
+  document.getElementById('cnt-cold').textContent=counts.cold;
+  document.getElementById('cnt-emailed').textContent=counts.emailed;
+  document.getElementById('cnt-replied').textContent=counts.replied;
+  document.getElementById('cnt-all').textContent=_contacts.length;
+}
+
+function filterCRM(status){_crmFilter=status;renderContacts()}
+
+function renderContacts(){
+  const search=(document.getElementById('crmSearch')?.value||'').toLowerCase();
+  const filtered=_contacts.filter(c=>{
+    if(_crmFilter!=='all'&&c.status!==_crmFilter)return false;
+    if(search&&!c.name.toLowerCase().includes(search)&&!(c.organization||'').toLowerCase().includes(search))return false;
+    return true;
+  });
+  const statusColors={cold:'var(--text-3)',emailed:'var(--primary)',replied:'var(--warm)',signed:'var(--accent)'};
+  document.getElementById('contactsList').innerHTML=filtered.length?filtered.map(c=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--primary-glow);display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;color:var(--primary);flex-shrink:0">${esc(c.name.charAt(0))}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:0.82rem;font-weight:600">${esc(c.name)}</div>
+        <div style="font-size:0.7rem;color:var(--text-3)">${esc(c.title||'')}${c.title&&c.organization?' · ':''}${esc(c.organization||'')}</div>
+      </div>
+      <div style="font-size:0.6rem;padding:3px 8px;border-radius:4px;background:${statusColors[c.status]||'var(--text-3)'}15;color:${statusColors[c.status]||'var(--text-3)'};font-weight:600;text-transform:uppercase">${c.status}</div>
+      ${c.email?`<button class="btn" style="font-size:0.6rem;padding:3px 8px" onclick="event.stopPropagation();quickEmail('${esc(c.email)}','${esc(c.name)}',${c.id})">Email</button>`:''}
+      <button class="btn" style="font-size:0.6rem;padding:3px 8px" onclick="editContact(${c.id})">Edit</button>
+      <button class="btn danger" style="font-size:0.6rem;padding:3px 8px" onclick="deleteContactById(${c.id})">x</button>
+    </div>
+  `).join(''):'<div class="empty">No contacts yet. Click "+ Add" to start building your CRM.</div>';
+}
+
+function openContactModal(){
+  document.getElementById('contactEditId').value='';
+  document.getElementById('contactModalTitle').textContent='Add Contact';
+  document.getElementById('cf-name').value='';
+  document.getElementById('cf-title').value='';
+  document.getElementById('cf-org').value='';
+  document.getElementById('cf-email').value='';
+  document.getElementById('cf-status').value='cold';
+  document.getElementById('cf-notes').value='';
+  document.getElementById('contactModal').classList.add('show');
+}
+function closeContactModal(){document.getElementById('contactModal').classList.remove('show')}
+
+function editContact(id){
+  const c=_contacts.find(x=>x.id===id);if(!c)return;
+  document.getElementById('contactEditId').value=id;
+  document.getElementById('contactModalTitle').textContent='Edit: '+c.name;
+  document.getElementById('cf-name').value=c.name;
+  document.getElementById('cf-title').value=c.title||'';
+  document.getElementById('cf-org').value=c.organization||'';
+  document.getElementById('cf-email').value=c.email||'';
+  document.getElementById('cf-status').value=c.status;
+  document.getElementById('cf-notes').value=c.notes||'';
+  document.getElementById('contactModal').classList.add('show');
+}
+
+async function saveContact(){
+  const editId=document.getElementById('contactEditId').value;
+  const data={name:document.getElementById('cf-name').value,title:document.getElementById('cf-title').value,organization:document.getElementById('cf-org').value,email:document.getElementById('cf-email').value,status:document.getElementById('cf-status').value,notes:document.getElementById('cf-notes').value};
+  if(!data.name){showAlert('crmAlert','Name required','err');return}
+  try{
+    if(editId){await fetch(`/api/contacts/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})}
+    else{await fetch('/api/contacts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})}
+    closeContactModal();loadCRM();
+  }catch(e){showAlert('crmAlert',e.message,'err')}
+}
+
+async function deleteContactById(id){
+  await fetch(`/api/contacts/${id}`,{method:'DELETE'});
+  loadCRM();
+}
+
+function quickEmail(email,name,contactId){
+  document.getElementById('compose-to').value=email;
+  document.getElementById('compose-subject').value='';
+  document.getElementById('compose-body').value='';
+  document.getElementById('composeModal').classList.add('show');
+  document.getElementById('composeModal').dataset.contactId=contactId;
+}
+
+function openComposeModal(){
+  document.getElementById('compose-to').value='';
+  document.getElementById('compose-subject').value='';
+  document.getElementById('compose-body').value='';
+  document.getElementById('composeModal').classList.add('show');
+  document.getElementById('composeModal').dataset.contactId='';
+}
+function closeComposeModal(){document.getElementById('composeModal').classList.remove('show')}
+
+async function sendComposedEmail(){
+  const to=document.getElementById('compose-to').value;
+  const subject=document.getElementById('compose-subject').value;
+  const body=document.getElementById('compose-body').value;
+  const contactId=document.getElementById('composeModal').dataset.contactId;
+  if(!to||!subject||!body){showAlert('composeAlert','Fill in all fields','err');return}
+  try{
+    const data={to,subject,body};
+    if(contactId)data.contact_id=parseInt(contactId);
+    const r=await fetch('/api/send-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json());
+    if(r.error)throw new Error(r.error);
+    closeComposeModal();
+    showAlert('crmAlert','Email sent to '+to,'ok');
+    loadCRM();
+  }catch(e){showAlert('composeAlert',e.message,'err')}
+}
 
 // P&L
 function getPnlDateRange(){
