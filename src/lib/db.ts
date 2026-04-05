@@ -58,6 +58,29 @@ export async function initDb() {
       created_at TEXT DEFAULT (datetime('now'))
     )
   `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS classrooms (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      grade TEXT NOT NULL,
+      subject TEXT NOT NULL,
+      class_size INTEGER DEFAULT 25,
+      special_notes TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS lesson_plans (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      classroom_id INTEGER,
+      topic TEXT NOT NULL,
+      objectives TEXT DEFAULT '',
+      additional_notes TEXT DEFAULT '',
+      generated_plan TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
+    )
+  `);
   // Migrations
   try { await db.execute("ALTER TABLE contacts ADD COLUMN source TEXT DEFAULT 'brayan'"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN channel TEXT DEFAULT ''"); } catch {}
@@ -200,4 +223,53 @@ export async function bulkInsertPnlEntries(entries: { date: string; type: string
     count++;
   }
   return count;
+}
+
+// ── Classrooms ──────────────────────────────────────────────────────
+export async function getClassrooms() {
+  await initDb();
+  return (await db.execute('SELECT * FROM classrooms ORDER BY name')).rows;
+}
+
+export async function getClassroom(id: number) {
+  await initDb();
+  return (await db.execute({ sql: 'SELECT * FROM classrooms WHERE id = ?', args: [id] })).rows[0];
+}
+
+export async function insertClassroom(data: { name: string; grade: string; subject: string; class_size: number; special_notes: string }) {
+  await initDb();
+  const r = await db.execute({ sql: 'INSERT INTO classrooms (name,grade,subject,class_size,special_notes) VALUES (?,?,?,?,?)', args: [data.name, data.grade, data.subject, data.class_size, data.special_notes] });
+  return r.lastInsertRowid;
+}
+
+export async function updateClassroom(id: number, data: { name: string; grade: string; subject: string; class_size: number; special_notes: string }) {
+  await initDb();
+  await db.execute({ sql: 'UPDATE classrooms SET name=?, grade=?, subject=?, class_size=?, special_notes=? WHERE id=?', args: [data.name, data.grade, data.subject, data.class_size, data.special_notes, id] });
+}
+
+export async function deleteClassroom(id: number) {
+  await initDb();
+  await db.execute({ sql: 'DELETE FROM classrooms WHERE id = ?', args: [id] });
+}
+
+// ── Lesson Plans ────────────────────────────────────────────────────
+export async function getLessonPlans() {
+  await initDb();
+  return (await db.execute('SELECT lp.*, c.name as classroom_name, c.grade, c.subject FROM lesson_plans lp LEFT JOIN classrooms c ON lp.classroom_id = c.id ORDER BY lp.created_at DESC')).rows;
+}
+
+export async function getLessonPlan(id: number) {
+  await initDb();
+  return (await db.execute({ sql: 'SELECT lp.*, c.name as classroom_name, c.grade, c.subject, c.class_size, c.special_notes as classroom_notes FROM lesson_plans lp LEFT JOIN classrooms c ON lp.classroom_id = c.id WHERE lp.id = ?', args: [id] })).rows[0];
+}
+
+export async function insertLessonPlan(data: { classroom_id: number; topic: string; objectives: string; additional_notes: string; generated_plan: string }) {
+  await initDb();
+  const r = await db.execute({ sql: 'INSERT INTO lesson_plans (classroom_id,topic,objectives,additional_notes,generated_plan) VALUES (?,?,?,?,?)', args: [data.classroom_id, data.topic, data.objectives, data.additional_notes, data.generated_plan] });
+  return r.lastInsertRowid;
+}
+
+export async function deleteLessonPlan(id: number) {
+  await initDb();
+  await db.execute({ sql: 'DELETE FROM lesson_plans WHERE id = ?', args: [id] });
 }
