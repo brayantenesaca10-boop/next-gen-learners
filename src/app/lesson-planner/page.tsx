@@ -24,10 +24,11 @@ interface LessonPlan {
   created_at: string;
 }
 
-type View = 'dashboard' | 'setup' | 'generate' | 'view';
+type View = 'login' | 'dashboard' | 'setup' | 'generate' | 'view';
 
 export default function LessonPlanner() {
-  const [view, setView] = useState<View>('dashboard');
+  const [view, setView] = useState<View>('login');
+  const [password, setPassword] = useState('');
   const [classrooms, setClassrooms] = useState<Classroom[]>([]);
   const [plans, setPlans] = useState<LessonPlan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<LessonPlan | null>(null);
@@ -44,19 +45,43 @@ export default function LessonPlanner() {
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
+      const authCheck = await fetch('/api/auth/check');
+      if (!authCheck.ok) {
+        setView('login');
+        setLoading(false);
+        return;
+      }
       const [classroomsRes, plansRes] = await Promise.all([
         fetch('/api/classrooms'),
         fetch('/api/lesson-plans'),
       ]);
       if (classroomsRes.ok) setClassrooms(await classroomsRes.json());
       if (plansRes.ok) setPlans(await plansRes.json());
+      if (view === 'login') setView('dashboard');
     } catch {
       setError('Failed to load data');
     }
     setLoading(false);
-  }, []);
+  }, [view]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    if (res.ok) {
+      setPassword('');
+      setView('dashboard');
+      await loadData();
+    } else {
+      setError('Invalid password.');
+    }
+  };
 
   const createClassroom = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,10 +146,35 @@ export default function LessonPlanner() {
     }
   };
 
-  if (loading && classrooms.length === 0) {
+  if (loading && classrooms.length === 0 && view !== 'login') {
     return (
       <div className="min-h-screen bg-[#FAFBFF] flex items-center justify-center">
         <p className="text-[#6B7280]">Loading...</p>
+      </div>
+    );
+  }
+
+  if (view === 'login') {
+    return (
+      <div className="min-h-screen bg-[#FAFBFF] flex items-center justify-center">
+        <form onSubmit={handleLogin} className="bg-white border border-[#E5E7EB] rounded-xl p-8 w-full max-w-sm">
+          <h1 className="text-2xl font-bold text-[#1E1B4B] text-center mb-1">Lesson Plan Partner</h1>
+          <p className="text-sm text-[#6B7280] text-center mb-6">Sign in to get started</p>
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>
+          )}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-[#374151] mb-1">Password</label>
+            <input
+              type="password" required placeholder="Enter password"
+              className="w-full px-3 py-2 border border-[#E5E7EB] rounded-lg text-sm focus:outline-none focus:border-[#4F46E5]"
+              value={password} onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <button type="submit" className="w-full px-4 py-2 bg-[#4F46E5] text-white rounded-lg hover:bg-[#4338CA] transition font-medium text-sm">
+            Sign In
+          </button>
+        </form>
       </div>
     );
   }
