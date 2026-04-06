@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { isAuthenticated } from '@/lib/auth';
-import { getClassroom, insertLessonPlan } from '@/lib/db';
+import { getClassroom, insertLessonPlan, logActivity } from '@/lib/db';
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' });
 
@@ -75,6 +75,7 @@ IMPORTANT GUIDELINES:
       generated_plan: generatedPlan,
     });
 
+    await logActivity({ person: data._actor || 'unknown', action: 'generated lesson plan', resource_type: 'lesson_plan', resource_name: topic, details: `for ${classroom.name}` });
     return NextResponse.json({ id: Number(id), generated_plan: generatedPlan });
   } catch (e) {
     const errorMessage = e instanceof Error ? e.message : 'Unknown error';

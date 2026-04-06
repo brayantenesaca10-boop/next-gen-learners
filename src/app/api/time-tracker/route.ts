@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
-import { getTimeEntries, insertTimeEntry } from '@/lib/db';
+import { getTimeEntries, insertTimeEntry, logActivity } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
   if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -23,5 +23,6 @@ export async function POST(req: NextRequest) {
   if (!date) return NextResponse.json({ error: 'Date is required' }, { status: 400 });
 
   const id = await insertTimeEntry({ category, description: description || '', minutes: Number(minutes), date });
+  await logActivity({ person: data._actor || 'unknown', action: 'logged time', resource_type: 'time_entry', resource_name: category, details: `${minutes} min — ${description || ''}`.trim() });
   return NextResponse.json({ id: Number(id) });
 }
