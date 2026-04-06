@@ -1377,7 +1377,10 @@ function actColor(person){
 }
 
 function timeAgo(dateStr){
-  const d=new Date(dateStr+'Z');
+  if(!dateStr)return '';
+  let d=new Date(dateStr+'Z');
+  if(isNaN(d.getTime()))d=new Date(dateStr);
+  if(isNaN(d.getTime()))return '';
   const now=new Date();
   const diff=Math.floor((now-d)/1000);
   let ago='';
