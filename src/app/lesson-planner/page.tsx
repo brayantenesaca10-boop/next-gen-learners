@@ -280,6 +280,7 @@ export default function LessonPlanner() {
                 { name: 'Differentiation Engine', desc: 'Adapt lessons for ELL, advanced, and IEP students', href: '/differentiation-engine' },
                 { name: 'Student Feedback Writer', desc: 'Draft growth-focused feedback on student work', href: '/student-feedback' },
                 { name: 'Parent Email Partner', desc: 'Draft professional parent communications', href: '/parent-email' },
+                { name: 'Time Tracker', desc: 'See where you spend your time each week', href: '/time-tracker' },
               ].map((tool) => (
                 <a key={tool.name} href={tool.href} className="bg-white border border-[#E5E7EB] rounded-xl p-4 hover:border-[#4F46E5] transition cursor-pointer">
                   <h3 className="font-semibold text-[#1E1B4B] text-sm">{tool.name}</h3>

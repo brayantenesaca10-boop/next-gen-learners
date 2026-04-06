@@ -92,6 +92,16 @@ export async function initDb() {
       FOREIGN KEY (classroom_id) REFERENCES classrooms(id)
     )
   `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS time_entries (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      category TEXT NOT NULL,
+      description TEXT DEFAULT '',
+      minutes INTEGER NOT NULL,
+      date TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
   // Migrations
   try { await db.execute("ALTER TABLE contacts ADD COLUMN source TEXT DEFAULT 'brayan'"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN channel TEXT DEFAULT ''"); } catch {}
@@ -307,4 +317,29 @@ export async function insertToolOutput(data: { classroom_id: number; tool: strin
 export async function deleteToolOutput(id: number) {
   await initDb();
   await db.execute({ sql: 'DELETE FROM tool_outputs WHERE id = ?', args: [id] });
+}
+
+// ── Time Tracker ───────────────────────────────────────────────────
+export async function getTimeEntries(from?: string, to?: string) {
+  await initDb();
+  if (from && to) {
+    return (await db.execute({ sql: 'SELECT * FROM time_entries WHERE date >= ? AND date <= ? ORDER BY date DESC, id DESC', args: [from, to] })).rows;
+  }
+  return (await db.execute('SELECT * FROM time_entries ORDER BY date DESC, id DESC')).rows;
+}
+
+export async function insertTimeEntry(data: { category: string; description: string; minutes: number; date: string }) {
+  await initDb();
+  const r = await db.execute({ sql: 'INSERT INTO time_entries (category,description,minutes,date) VALUES (?,?,?,?)', args: [data.category, data.description, data.minutes, data.date] });
+  return r.lastInsertRowid;
+}
+
+export async function deleteTimeEntry(id: number) {
+  await initDb();
+  await db.execute({ sql: 'DELETE FROM time_entries WHERE id = ?', args: [id] });
+}
+
+export async function getTimeSummary(from: string, to: string) {
+  await initDb();
+  return (await db.execute({ sql: 'SELECT category, SUM(minutes) as total_minutes, COUNT(*) as entry_count FROM time_entries WHERE date >= ? AND date <= ? GROUP BY category ORDER BY total_minutes DESC', args: [from, to] })).rows;
 }
