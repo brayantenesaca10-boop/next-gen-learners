@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NGL Scaling Roadmap — Next Generation Learners</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#FAFBFF;--surface:#FFFFFF;--surface-2:#F1F5F9;
+      --border:#E2E8F0;--border-2:#CBD5E1;
+      --text:#1E1B4B;--text-2:#64748B;--text-3:#94A3B8;
+      --primary:#4F46E5;--secondary:#7C3AED;
+      --accent:#10B981;--accent-glow:rgba(16,185,129,0.15);
+      --warm:#F59E0B;--warm-glow:rgba(245,158,11,0.12);
+      --cyan:#06B6D4;--cyan-glow:rgba(6,182,212,0.12);
+      --indigo-glow:rgba(79,70,229,0.1);
+      --violet-glow:rgba(124,58,237,0.1);
+      --rose:#FB7185;--rose-glow:rgba(251,113,133,0.1);
+      --radius:12px;--radius-lg:20px;--radius-xl:24px;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    .container{max-width:860px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
+    .section{padding:72px 0}
+
+    /* Nav */
+    nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.8);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(79,70,229,0.08);padding:14px 24px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+    nav .inner{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .nav-brand{font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--primary);font-weight:700;text-decoration:none}
+    .nav-links{display:flex;gap:24px}
+    .nav-link{font-size:0.8rem;color:var(--text-2);text-decoration:none;cursor:pointer;transition:color 0.2s;font-weight:500}
+    .nav-link:hover{color:var(--primary)}
+
+    /* Hero */
+    .hero{position:relative;padding:80px 0 60px;text-align:center;overflow:hidden}
+    .hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,#4F46E5,#7C3AED,#06B6D4,#10B981,#4F46E5);background-size:400% 400%;z-index:0;border-radius:0 0 40px 40px}
+    @media(prefers-reduced-motion:no-preference){
+      .hero-bg{animation:gf 15s ease infinite}
+      @keyframes gf{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    }
+    .hero-orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.3;pointer-events:none}
+    .hero-content{position:relative;z-index:2}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;font-size:0.68rem;letter-spacing:0.16em;text-transform:uppercase;color:white;border:1px solid rgba(255,255,255,0.3);padding:8px 20px;border-radius:100px;margin-bottom:28px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);font-weight:600}
+    .hero-badge .pulse{width:6px;height:6px;border-radius:50%;background:#10B981;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+    .hero h1{font-size:clamp(2rem,4.5vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.03em;margin-bottom:16px;color:white}
+    .hero-sub{font-size:1rem;color:rgba(255,255,255,0.8);max-width:560px;margin:0 auto;line-height:1.75;font-weight:300}
+
+    /* Section headings */
+    .sh-label{font-size:0.65rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--primary);margin-bottom:12px;font-weight:700}
+    .sh-title{font-size:clamp(1.5rem,3vw,2rem);font-weight:800;line-height:1.15;letter-spacing:-0.02em;margin-bottom:12px}
+    .sh-desc{font-size:0.92rem;color:var(--text-2);max-width:560px;line-height:1.75;margin-bottom:36px}
+
+    /* Pipeline cards */
+    .pipe-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:32px;margin-bottom:20px;transition:all 0.3s}
+    .pipe-card:hover{box-shadow:0 16px 32px -8px rgba(79,70,229,0.12)}
+    .pipe-header{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+    .pipe-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+    .pipe-header h3{font-size:1.1rem;font-weight:800;letter-spacing:-0.01em}
+    .pipe-header .pipe-tag{font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;padding:4px 12px;border-radius:100px;font-weight:700;margin-top:4px;display:inline-block}
+    .pipe-card p{font-size:0.88rem;color:var(--text-2);line-height:1.7;margin-bottom:16px}
+
+    /* Tables */
+    .t-wrap{overflow-x:auto;margin:16px 0}
+    table{width:100%;border-collapse:collapse;font-size:0.82rem}
+    th{text-align:left;font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);font-weight:700;padding:10px 12px;border-bottom:2px solid var(--border)}
+    td{padding:10px 12px;border-bottom:1px solid var(--surface-2);color:var(--text-2);vertical-align:top}
+    tr:last-child td{border-bottom:none}
+    td:first-child{color:var(--text);font-weight:600}
+
+    /* Phase timeline */
+    .phase{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:32px;margin-bottom:20px;position:relative;overflow:hidden;transition:all 0.3s}
+    .phase:hover{box-shadow:0 16px 32px -8px rgba(79,70,229,0.12)}
+    .phase-bar{position:absolute;top:0;left:0;bottom:0;width:4px}
+    .phase-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px}
+    .phase h3{font-size:1.05rem;font-weight:800}
+    .phase-dates{font-size:0.72rem;color:var(--text-3);font-weight:600;letter-spacing:0.04em}
+    .phase-target{font-size:0.75rem;font-weight:700;padding:4px 12px;border-radius:100px;display:inline-block;margin-bottom:16px}
+    .phase p{font-size:0.88rem;color:var(--text-2);line-height:1.7}
+
+    /* Action rows */
+    .action-grid{display:grid;gap:10px;margin-top:16px}
+    .action-row{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;background:var(--surface-2);border-radius:var(--radius);font-size:0.85rem}
+    .action-date{font-size:0.68rem;font-weight:700;color:var(--primary);min-width:70px;padding-top:2px;letter-spacing:0.02em}
+    .action-text{color:var(--text-2);line-height:1.5}
+    .action-text strong{color:var(--text);font-weight:700}
+
+    /* Metric cards */
+    .metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .metric-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;text-align:center;transition:all 0.3s}
+    .metric-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px -8px rgba(79,70,229,0.12)}
+    .metric-num{font-size:1.8rem;font-weight:800;letter-spacing:-0.02em;line-height:1}
+    .metric-label{font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);margin-top:8px;font-weight:600}
+
+    /* Moat cards */
+    .moat-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .moat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;transition:all 0.3s}
+    .moat-card:hover{transform:translateY(-4px);box-shadow:0 12px 24px -8px rgba(79,70,229,0.12)}
+    .moat-card h4{font-size:0.92rem;font-weight:700;margin-bottom:6px}
+    .moat-card p{font-size:0.82rem;color:var(--text-2);line-height:1.6}
+    .moat-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:10px;font-size:0.78rem;font-weight:800;margin-bottom:12px}
+
+    /* Role cards */
+    .role-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .role-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:28px;transition:all 0.3s}
+    .role-card:hover{box-shadow:0 12px 24px -8px rgba(79,70,229,0.12)}
+    .role-card h4{font-size:1rem;font-weight:800;margin-bottom:4px}
+    .role-card .role-sub{font-size:0.72rem;color:var(--primary);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px}
+    .role-card ul{font-size:0.85rem;color:var(--text-2);line-height:1.9;padding-left:18px}
+    .role-card li::marker{color:var(--primary)}
+
+    /* Quote */
+    .north-star{background:var(--indigo-glow);border:1px solid rgba(79,70,229,0.15);border-radius:var(--radius-xl);padding:40px;text-align:center;margin-top:40px}
+    .north-star p{font-size:1.1rem;font-weight:700;color:var(--text);line-height:1.6;max-width:600px;margin:0 auto}
+    .north-star .ns-sub{font-size:0.82rem;color:var(--text-2);font-weight:400;margin-top:12px}
+
+    /* Footer */
+    footer{background:linear-gradient(135deg,#4F46E5,#7C3AED,#06B6D4);padding:48px 0;text-align:center}
+    .footer-brand{font-size:0.8rem;letter-spacing:0.14em;text-transform:uppercase;color:white;font-weight:700;margin-bottom:6px}
+    footer p{font-size:0.75rem;color:rgba(255,255,255,0.6);line-height:1.6}
+    footer a{color:rgba(255,255,255,0.8);text-decoration:none}
+
+    /* Animations */
+    @media(prefers-reduced-motion:no-preference){
+      .fade-up{opacity:0;transform:translateY(24px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+      .fade-up.visible{opacity:1;transform:translateY(0)}
+    }
+
+    @media(max-width:768px){
+      .section{padding:56px 0}
+      .hero{padding:64px 0 48px}
+      .metric-grid{grid-template-columns:1fr}
+      .moat-grid,.role-grid{grid-template-columns:1fr}
+      .nav-links{display:none}
+      .action-row{flex-direction:column;gap:4px}
+      .action-date{min-width:auto}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="/" class="nav-brand">Next Generation Learners</a>
+    <div class="nav-links">
+      <a href="#pipelines" class="nav-link">Pipelines</a>
+      <a href="#phases" class="nav-link">Execution</a>
+      <a href="#growth" class="nav-link">$10K Plan</a>
+      <a href="#moat" class="nav-link">Moat</a>
+      <a href="#roles" class="nav-link">Roles</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-orb" style="width:300px;height:300px;background:#4F46E5;top:-60px;left:-60px"></div>
+  <div class="hero-orb" style="width:220px;height:220px;background:#06B6D4;bottom:-40px;right:-30px"></div>
+  <div class="hero-content container">
+    <div class="hero-badge"><span class="pulse"></span>Internal Roadmap &mdash; April 2026</div>
+    <h1>The NGL<br>Scaling Blueprint</h1>
+    <p class="hero-sub">Three pipelines. Four phases. One mission: give leaders back the hours that matter so they can lead instead of manage.</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- WHERE WE ARE -->
+  <div class="section">
+    <div class="sh-label">Current Position</div>
+    <h2 class="sh-title">What We Have Today</h2>
+    <div class="metric-grid fade-up">
+      <div class="metric-card">
+        <div class="metric-num" style="color:var(--primary)">3</div>
+        <div class="metric-label">Library Partners</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num" style="color:var(--accent)">50</div>
+        <div class="metric-label">Educators Trained</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num" style="color:var(--secondary)">1</div>
+        <div class="metric-label">Validated PD Model</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num" style="color:var(--warm)">1</div>
+        <div class="metric-label">Proposal Sent</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num" style="color:var(--cyan)">2</div>
+        <div class="metric-label">Backers</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-num" style="color:var(--rose)">90+</div>
+        <div class="metric-label">Languages (Danbury)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THREE PIPELINES -->
+  <div class="section" id="pipelines">
+    <div class="sh-label">Revenue Engines</div>
+    <h2 class="sh-title">The Three Pipelines</h2>
+    <p class="sh-desc">Each pipeline serves a different purpose. Not every conversation is a sale. Some are relationships. Know the difference.</p>
+
+    <!-- Pipeline 1 -->
+    <div class="pipe-card fade-up">
+      <div class="pipe-header">
+        <div class="pipe-icon" style="background:var(--indigo-glow)">🧠</div>
+        <div>
+          <h3>Sovereign OS</h3>
+          <span class="pipe-tag" style="background:var(--indigo-glow);color:var(--primary)">Personal AI Systems for Leaders</span>
+        </div>
+      </div>
+      <p>A private AI operating system installed on the leader's machine. Their data stays local. We set it up, train them, maintain it, and push new tools over time. No competitor exists for this.</p>
+      <div class="t-wrap">
+        <table>
+          <tr><th>Client Stage</th><th>Price</th><th>Justification</th></tr>
+          <tr><td>Client #1 (Roche)</td><td>$2,500</td><td>Loss-leader. Buying the case study.</td></tr>
+          <tr><td>Clients #2-3</td><td>$3,500-4,000</td><td>Case study exists. Price goes up.</td></tr>
+          <tr><td>Clients #4-5</td><td>$5,000-8,000</td><td>Skills library built. Setup faster.</td></tr>
+          <tr><td>Clients #6+</td><td>$5K setup + $1-3K/mo</td><td>Productized. Recurring revenue.</td></tr>
+          <tr><td>Legatus CEOs</td><td>$5-10K + $3-5K/mo</td><td>Higher income. Higher ROI.</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Pipeline 2 -->
+    <div class="pipe-card fade-up">
+      <div class="pipe-header">
+        <div class="pipe-icon" style="background:var(--accent-glow)">🏫</div>
+        <div>
+          <h3>District Contracts</h3>
+          <span class="pipe-tag" style="background:var(--accent-glow);color:var(--accent)">Institutional Sales</span>
+        </div>
+      </div>
+      <p>AI integration frameworks, PD workshops, curriculum design, and the language+content tool for multilingual districts. Wooster School and Danbury Public Schools are the two targets.</p>
+      <div class="t-wrap">
+        <table>
+          <tr><th>Engagement</th><th>Price</th><th>Budget Category</th></tr>
+          <tr><td>PD Workshop (1 day)</td><td>$2,000-3,500</td><td>Professional Learning</td></tr>
+          <tr><td>AI Framework Design</td><td>$10,000-25,000</td><td>Consulting / Curriculum</td></tr>
+          <tr><td>4-Week School Pilot</td><td>$5,000-8,000</td><td>Professional Learning</td></tr>
+          <tr><td>Language+Content (District)</td><td>$25,000-100,000</td><td>Technology / Curriculum</td></tr>
+          <tr><td>Ongoing Support</td><td>$1,000-2,000/mo</td><td>Technology</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:16px;font-size:0.85rem;padding:14px 18px;background:var(--accent-glow);border-radius:var(--radius);border:1px solid rgba(16,185,129,0.15)"><strong style="color:var(--accent)">Killer use case:</strong> Language + content simultaneously. Danbury has 90+ languages. Current tools only support Spanish. Roche said: "If you could do that... you'd be a very wealthy individual."</p>
+    </div>
+
+    <!-- Pipeline 3 -->
+    <div class="pipe-card fade-up">
+      <div class="pipe-header">
+        <div class="pipe-icon" style="background:var(--warm-glow)">🔧</div>
+        <div>
+          <h3>Side Projects</h3>
+          <span class="pipe-tag" style="background:var(--warm-glow);color:var(--warm)">Building for Trusted People</span>
+        </div>
+      </div>
+      <p>Custom AI tools for people who already trust us. Not every conversation is a pipeline conversation. Some are relationships. Some are learning. The Applied AI playbook: "Your first clients are not strangers. They are people who already know you."</p>
+      <div class="t-wrap">
+        <table>
+          <tr><th>Person</th><th>Connection</th><th>Status</th></tr>
+          <tr><td>Jeff Carlson</td><td>Clever (cold email &rarr; call)</td><td>Proposal page live</td></tr>
+          <tr><td>Rish Pathak</td><td>Via Brian B, AAFMAA</td><td>Draft email ready</td></tr>
+          <tr><td>Brian B</td><td>Direct</td><td>Need to call</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXECUTION PHASES -->
+  <div class="section" id="phases">
+    <div class="sh-label">Execution Plan</div>
+    <h2 class="sh-title">Four Phases to Scale</h2>
+    <p class="sh-desc">Each phase builds on the last. Revenue targets are ambitious but grounded in the pipeline we already have.</p>
+
+    <!-- Phase 1 -->
+    <div class="phase fade-up">
+      <div class="phase-bar" style="background:var(--primary)"></div>
+      <div style="padding-left:16px">
+        <div class="phase-header">
+          <h3>Phase 1: Close What's Warm</h3>
+          <span class="phase-dates">April 7-30</span>
+        </div>
+        <div class="phase-target" style="background:var(--indigo-glow);color:var(--primary)">Target: $15,000-30,000 signed</div>
+        <div class="action-grid">
+          <div class="action-row"><span class="action-date">Apr 7</span><div class="action-text"><strong>Gregory Goehner</strong> meeting. Listen. Get Legatus introductions.</div></div>
+          <div class="action-row"><span class="action-date">Apr 8-10</span><div class="action-text"><strong>CT trip.</strong> See Havard, Bazemore, Rowella. Drive to Woodstock: follow up with <strong>Roche</strong> in person.</div></div>
+          <div class="action-row"><span class="action-date">Apr 10</span><div class="action-text"><strong>Pannone</strong> at Wooster (noon). Get intel on Byrnes scope, budget, timeline.</div></div>
+          <div class="action-row"><span class="action-date">Apr 14</span><div class="action-text"><strong>Byrnes</strong> at Babson (1 PM). Bring written scope + price for AI framework grades 5-12.</div></div>
+          <div class="action-row"><span class="action-date">Apr 14</span><div class="action-text"><strong>Gary Sheng</strong> meeting. Walk in with progress: Roche proposal sent, Byrnes in scope, Gregory opened Legatus.</div></div>
+          <div class="action-row"><span class="action-date">Apr 15-30</span><div class="action-text"><strong>Close Roche.</strong> Build his Jarvis. Document everything for case study.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase fade-up">
+      <div class="phase-bar" style="background:var(--accent)"></div>
+      <div style="padding-left:16px">
+        <div class="phase-header">
+          <h3>Phase 2: Deliver and Prove</h3>
+          <span class="phase-dates">May - June</span>
+        </div>
+        <div class="phase-target" style="background:var(--accent-glow);color:var(--accent)">Target: $30,000-60,000 cumulative</div>
+        <div class="action-grid">
+          <div class="action-row"><span class="action-date">May</span><div class="action-text"><strong>Roche's Jarvis</strong> is running. Document before/after. Film testimonial.</div></div>
+          <div class="action-row"><span class="action-date">May</span><div class="action-text"><strong>Byrnes</strong> AI framework engagement begins at Wooster. ($10K-25K)</div></div>
+          <div class="action-row"><span class="action-date">May-Jun</span><div class="action-text">Use Roche case study to approach <strong>2-3 superintendent friends.</strong> ($7K-12K)</div></div>
+          <div class="action-row"><span class="action-date">Jun</span><div class="action-text">Pilot <strong>language+content tool</strong> at one Danbury school via Zaleta. ($5K-8K)</div></div>
+          <div class="action-row"><span class="action-date">Jun</span><div class="action-text">Gregory's <strong>Legatus introductions</strong> &rarr; 1-2 Catholic CEO discovery calls.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase fade-up">
+      <div class="phase-bar" style="background:var(--secondary)"></div>
+      <div style="padding-left:16px">
+        <div class="phase-header">
+          <h3>Phase 3: Scale Through Networks</h3>
+          <span class="phase-dates">July - September</span>
+        </div>
+        <div class="phase-target" style="background:var(--violet-glow);color:var(--secondary)">Target: $100,000-200,000 cumulative</div>
+        <div class="action-grid">
+          <div class="action-row"><span class="action-date">Jul</span><div class="action-text"><strong>Ed Advance</strong> presentation to superintendent network. 5-10 warm leads.</div></div>
+          <div class="action-row"><span class="action-date">Jul-Aug</span><div class="action-text">Danbury language+content results &rarr; propose <strong>district-wide contract.</strong> ($25K-50K)</div></div>
+          <div class="action-row"><span class="action-date">Aug-Sep</span><div class="action-text"><strong>Legatus retainers</strong> compounding. 3-5 CEOs at $3K-5K/mo.</div></div>
+          <div class="action-row"><span class="action-date">Sep</span><div class="action-text"><strong>Ryan delivering</strong> Jarvis setups independently. Capacity doubles.</div></div>
+          <div class="action-row"><span class="action-date">Summer</span><div class="action-text"><strong>Texas trip</strong> &mdash; Applied AI Society backing, academy model expansion.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="phase fade-up">
+      <div class="phase-bar" style="background:var(--warm)"></div>
+      <div style="padding-left:16px">
+        <div class="phase-header">
+          <h3>Phase 4: Productize and Expand</h3>
+          <span class="phase-dates">October - December</span>
+        </div>
+        <div class="phase-target" style="background:var(--warm-glow);color:var(--warm)">Target: $300,000-500,000 cumulative</div>
+        <div class="action-grid">
+          <div class="action-row"><span class="action-date">Q4</span><div class="action-text"><strong>10+ sovereign OS</strong> clients running. Shared skills library is the product.</div></div>
+          <div class="action-row"><span class="action-date">Q4</span><div class="action-text"><strong>2-3 district contracts</strong> active. Language+content tool proven at scale.</div></div>
+          <div class="action-row"><span class="action-date">Q4</span><div class="action-text">Begin packaging language+content as <strong>licensable software</strong> (not consulting).</div></div>
+          <div class="action-row"><span class="action-date">Q4</span><div class="action-text">Expand beyond CT: <strong>NY, MA</strong> districts through network referrals.</div></div>
+          <div class="action-row"><span class="action-date">Q4</span><div class="action-text"><strong>First hire</strong> &mdash; employee or contractor for delivery.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- $10K PLAN -->
+  <div class="section" id="growth">
+    <div class="sh-label">Growth Investment</div>
+    <h2 class="sh-title">The $10K Deployment</h2>
+    <p class="sh-desc">Every dollar toward growth. No ads. No tools. No rebrand. Just getting in rooms and building proof.</p>
+
+    <div class="t-wrap fade-up">
+      <table>
+        <tr><th>Allocation</th><th>Amount</th><th>Why</th></tr>
+        <tr><td>Travel (CT trips through June)</td><td>$3,000</td><td>Every deal closes in person. You cannot close from Babson.</td></tr>
+        <tr><td>Legatus event access</td><td>$2,000</td><td>One conversation with a Catholic CEO = $5K-10K/month retainer.</td></tr>
+        <tr><td>Language+content prototype</td><td>$2,000</td><td>The product that turns NGL from services to software.</td></tr>
+        <tr><td>Emergency reserve</td><td>$1,500</td><td>Zero in reserve makes you desperate. Desperate founders make bad deals.</td></tr>
+        <tr><td>Professional materials</td><td>$500</td><td>Business cards, one-pagers, hosting costs.</td></tr>
+        <tr><td style="color:var(--text-3)">Marketing / ads</td><td style="color:var(--text-3)">$0</td><td style="color:var(--text-3)">Not yet. Every client comes from relationships.</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- HOW WE MEASURE -->
+  <div class="section">
+    <div class="sh-label">Progress</div>
+    <h2 class="sh-title">How We Measure</h2>
+    <p class="sh-desc">We do NOT measure hours worked. We measure pipeline progression. How many people moved forward this week?</p>
+
+    <div class="metric-grid fade-up" style="grid-template-columns:repeat(2,1fr)">
+      <div class="metric-card" style="text-align:left;padding:20px 24px">
+        <div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--primary);font-weight:700;margin-bottom:12px">Pipeline Stages</div>
+        <div style="font-size:0.85rem;color:var(--text-2);line-height:2.2">
+          1. Conversation<br>
+          2. Pain Identified<br>
+          3. Proposal Sent<br>
+          4. Signed<br>
+          5. Delivered<br>
+          6. Referral
+        </div>
+      </div>
+      <div class="metric-card" style="text-align:left;padding:20px 24px">
+        <div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:12px">Weekly Check</div>
+        <div style="font-size:0.85rem;color:var(--text-2);line-height:2.2">
+          How many moved forward?<br>
+          That's the only number.<br><br>
+          <strong style="color:var(--text)">Monthly:</strong> Revenue signed.<br>
+          Revenue collected.<br>
+          Pipeline value ($).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPETITIVE MOAT -->
+  <div class="section" id="moat">
+    <div class="sh-label">Why We Win</div>
+    <h2 class="sh-title">The Competitive Moat</h2>
+    <p class="sh-desc">Six reasons nobody else can do what we do.</p>
+
+    <div class="moat-grid fade-up">
+      <div class="moat-card">
+        <div class="moat-num" style="background:var(--indigo-glow);color:var(--primary)">1</div>
+        <h4>We are practitioners</h4>
+        <p>We built our own Jarvis and run our entire business on it. No competitor demos their product by showing their own daily workflow.</p>
+      </div>
+      <div class="moat-card">
+        <div class="moat-num" style="background:var(--accent-glow);color:var(--accent)">2</div>
+        <h4>Sovereign = no competitor</h4>
+        <p>Every AI tool trains on your data. Ours doesn't. For leaders with sensitive data, we are the only safe option.</p>
+      </div>
+      <div class="moat-card">
+        <div class="moat-num" style="background:var(--violet-glow);color:var(--secondary)">3</div>
+        <h4>We build live</h4>
+        <p>No pitch deck. No mockup. We build a working app in 5 minutes in front of 50 educators. Nobody else does that.</p>
+      </div>
+      <div class="moat-card">
+        <div class="moat-num" style="background:var(--warm-glow);color:var(--warm)">4</div>
+        <h4>We are 18</h4>
+        <p>Teachers preferred us over Harvard professors and The Breakthrough Coach. "He's a real person." Age is the superpower.</p>
+      </div>
+      <div class="moat-card">
+        <div class="moat-num" style="background:var(--cyan-glow);color:var(--cyan)">5</div>
+        <h4>We are in the building</h4>
+        <p>We know the teachers by name. We know who needs a report card generator. Nobody else has this depth of relationship.</p>
+      </div>
+      <div class="moat-card">
+        <div class="moat-num" style="background:var(--rose-glow);color:var(--rose)">6</div>
+        <h4>Language + content</h4>
+        <p>When this product works, we own a market that doesn't exist yet. 90+ languages. Current tools only support Spanish.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROLES -->
+  <div class="section" id="roles">
+    <div class="sh-label">The Team</div>
+    <h2 class="sh-title">Who Does What</h2>
+
+    <div class="role-grid fade-up">
+      <div class="role-card">
+        <h4>Brayan</h4>
+        <div class="role-sub">Sell, Relate, Lead</div>
+        <ul>
+          <li>Every sales conversation</li>
+          <li>Every in-person meeting and demo</li>
+          <li>Relationship touchpoints</li>
+          <li>Pricing and strategic direction</li>
+          <li>Client training and onboarding</li>
+          <li>Public speaking and PD delivery</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <h4>Ryan</h4>
+        <div class="role-sub">Build, Deliver, Scale</div>
+        <ul>
+          <li>Jarvis infrastructure and templates</li>
+          <li>Custom tool development</li>
+          <li>Language+content prototype</li>
+          <li>Website and platform maintenance</li>
+          <li>Client system setup (once productized)</li>
+          <li>Technical documentation</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="north-star fade-up">
+      <p>"I give leaders back the hours that matter and the capabilities they didn't know they could have, so they can lead instead of manage."</p>
+      <p class="ns-sub">Send the proposal. Close the deal. Build the system. Get the case study. Double the price. Repeat.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="container">
+    <div class="footer-brand">Next Generation Learners</div>
+    <p>Internal Roadmap &middot; April 2026</p>
+    <p style="margin-top:10px;font-size:0.78rem"><a href="/dashboard">Back to Dashboard</a></p>
+  </div>
+</footer>
+
+<script>
+const observer=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+</script>
+
+</body>
+</html>
