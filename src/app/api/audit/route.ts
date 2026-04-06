@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
 import { isAuthenticated } from '@/lib/auth';
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' });
 
 export async function POST(req: NextRequest) {
   if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -11,18 +8,27 @@ export async function POST(req: NextRequest) {
     const { prompt } = await req.json();
     if (!prompt) return NextResponse.json({ error: 'Prompt required' }, { status: 400 });
 
-    if (!process.env.ANTHROPIC_API_KEY) {
-      return NextResponse.json({ error: 'ANTHROPIC_API_KEY not configured. Add it to .env.local.' }, { status: 500 });
-    }
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) return NextResponse.json({ error: 'GEMINI_API_KEY not configured' }, { status: 500 });
 
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2000,
-      messages: [{ role: 'user', content: prompt }],
-    });
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 2000 },
+        }),
+      }
+    );
 
-    const text = message.content[0].type === 'text' ? message.content[0].text : '';
-    const audit = JSON.parse(text);
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message || 'Gemini API error');
+
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const audit = JSON.parse(cleaned);
     return NextResponse.json({ audit });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Audit generation failed';
