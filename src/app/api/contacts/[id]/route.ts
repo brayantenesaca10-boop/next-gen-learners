@@ -14,8 +14,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   const { id } = await params;
+  const actor = req.nextUrl.searchParams.get('_actor') || 'unknown';
   const contact = await getContact(parseInt(id));
   await deleteContact(parseInt(id));
-  await logActivity({ person: 'unknown', action: 'deleted', resource_type: 'contact', resource_name: contact?.name as string || `#${id}` });
+  await logActivity({ person: actor, action: 'deleted', resource_type: 'contact', resource_name: contact?.name as string || `#${id}` });
   return NextResponse.json({ success: true });
 }

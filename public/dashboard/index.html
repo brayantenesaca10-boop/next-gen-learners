@@ -106,6 +106,10 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <button class="tab" onclick="switchTab('audit')">Audit</button>
     <button class="tab" onclick="switchTab('emails')">Emails</button>
   </div>
+  <select id="currentUser" onchange="setCurrentUser(this.value)" style="padding:5px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface-2);color:var(--text);font-family:inherit;font-size:.72rem;font-weight:600;cursor:pointer">
+    <option value="ryan">Ryan</option>
+    <option value="brayan">Brayan</option>
+  </select>
 </div>
 
 <div style="margin:0 auto;padding:32px 24px;max-width:900px">
@@ -650,6 +654,17 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
 <script>
 const API_BASE = ''; // Same origin — NGL's own API
 
+// ── Current User ────────────────────────────────────────────────────
+function getCurrentUser(){return localStorage.getItem('ngl_user')||'ryan'}
+function setCurrentUser(name){
+  localStorage.setItem('ngl_user',name);
+  document.getElementById('currentUser').value=name;
+}
+(function(){
+  const saved=getCurrentUser();
+  document.getElementById('currentUser').value=saved;
+})();
+
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
 
 function showAlert(id,msg,type){
@@ -753,7 +768,7 @@ function openContactModal(){
   document.getElementById('cf-org').value='';
   document.getElementById('cf-email').value='';
   document.getElementById('cf-status').value='cold';
-  document.getElementById('cf-source').value='ryan';
+  document.getElementById('cf-source').value=getCurrentUser();
   document.getElementById('cf-channel').value='';
   document.getElementById('cf-revenue').value='';
   document.getElementById('cf-notes').value='';
@@ -788,15 +803,15 @@ async function saveContact(){
   const data={name:document.getElementById('cf-name').value,title:document.getElementById('cf-title').value,organization:document.getElementById('cf-org').value,email:document.getElementById('cf-email').value,status:document.getElementById('cf-status').value,source:document.getElementById('cf-source').value,channel:document.getElementById('cf-channel').value,revenue:parseFloat(document.getElementById('cf-revenue').value)||0,notes:document.getElementById('cf-notes').value,contact_type:document.getElementById('cf-contact-type').value,relationship_status:document.getElementById('cf-relstatus').value};
   if(!data.name){showAlert('crmAlert','Name required','err');return}
   try{
-    if(editId){await fetch(`/api/contacts/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,_actor:data.source||'unknown'})})}
-    else{await fetch('/api/contacts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})}
+    if(editId){await fetch(`/api/contacts/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,_actor:getCurrentUser()})})}
+    else{await fetch('/api/contacts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,source:getCurrentUser()})})}
     closeContactModal();loadCRM();
     if(_crmSubtab==='relationships')renderRelationships();
   }catch(e){showAlert('crmAlert',e.message,'err')}
 }
 
 async function deleteContactById(id){
-  await fetch(`/api/contacts/${id}`,{method:'DELETE'});
+  await fetch(`/api/contacts/${id}?_actor=${getCurrentUser()}`,{method:'DELETE'});
   loadCRM();
 }
 
@@ -824,7 +839,7 @@ async function sendComposedEmail(){
   const contactId=document.getElementById('composeModal').dataset.contactId;
   if(!to||!subject||!body){showAlert('composeAlert','Fill in all fields','err');return}
   try{
-    const data={to,subject,body};
+    const data={to,subject,body,_actor:getCurrentUser()};
     if(contactId)data.contact_id=parseInt(contactId);
     const r=await fetch('/api/send-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).then(r=>r.json());
     if(r.error)throw new Error(r.error);
@@ -1003,6 +1018,7 @@ async function savePnlEntry(){
   };
   if(!data.date||!data.amount){showAlert('pnlAlert','Date and amount required.','err');return}
   try{
+    data._actor=getCurrentUser();
     if(editId){
       await fetch(`${API_BASE}/api/pnl/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
     }else{
@@ -1028,7 +1044,7 @@ async function editPnl(id){
 }
 
 async function deletePnl(id){
-  await fetch(`${API_BASE}/api/pnl/${id}`,{method:'DELETE'});
+  await fetch(`${API_BASE}/api/pnl/${id}?_actor=${getCurrentUser()}`,{method:'DELETE'});
   loadPnl();
 }
 
@@ -1349,7 +1365,7 @@ async function saveTimeEntry(){
   if(totalMins<=0){showAlert('timeAlert','Enter a time greater than 0','err');return}
   if(!date){showAlert('timeAlert','Date is required','err');return}
   try{
-    const res=await fetch(API_BASE+'/api/time-tracker',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({category:cat,description:desc,minutes:totalMins,date})});
+    const res=await fetch(API_BASE+'/api/time-tracker',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({category:cat,description:desc,minutes:totalMins,date,_actor:getCurrentUser()})});
     if(res.ok){
       closeTimeLog();
       document.getElementById('timeDesc').value='';
@@ -1362,7 +1378,7 @@ async function saveTimeEntry(){
 
 async function deleteTimeEntry(id){
   if(!confirm('Delete this entry?'))return;
-  await fetch(API_BASE+'/api/time-tracker/'+id,{method:'DELETE'});
+  await fetch(API_BASE+'/api/time-tracker/'+id+'?_actor='+getCurrentUser(),{method:'DELETE'});
   loadTime();
 }
 

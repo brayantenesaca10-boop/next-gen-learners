@@ -15,7 +15,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   const { id } = await params;
+  const actor = req.nextUrl.searchParams.get('_actor') || 'unknown';
   await deletePnlEntry(parseInt(id));
-  await logActivity({ person: 'unknown', action: 'deleted', resource_type: 'pnl_entry', resource_name: `#${id}` });
+  await logActivity({ person: actor, action: 'deleted', resource_type: 'pnl_entry', resource_name: `#${id}` });
   return NextResponse.json({ success: true });
 }

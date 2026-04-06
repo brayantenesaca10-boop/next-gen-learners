@@ -5,7 +5,7 @@ import { insertInteraction, updateContactStatus, getContacts, logActivity } from
 
 export async function POST(req: NextRequest) {
   if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-  const { to, subject, body, contact_id } = await req.json();
+  const { to, subject, body, contact_id, _actor } = await req.json();
   if (!to || !subject || !body) return NextResponse.json({ error: 'to, subject, and body required' }, { status: 400 });
 
   try {
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       await updateContactStatus(contact_id, 'emailed', today);
     }
 
-    await logActivity({ person: 'brayan', action: 'sent email', resource_type: 'email', resource_name: to, details: subject });
+    await logActivity({ person: _actor || 'unknown', action: 'sent email', resource_type: 'email', resource_name: to, details: subject });
     return NextResponse.json({ success: true, sent_to: to });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Send failed';
