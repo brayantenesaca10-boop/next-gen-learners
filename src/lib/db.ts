@@ -102,6 +102,17 @@ export async function initDb() {
       created_at TEXT DEFAULT (datetime('now'))
     )
   `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS activity_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      person TEXT NOT NULL,
+      action TEXT NOT NULL,
+      resource_type TEXT NOT NULL,
+      resource_name TEXT DEFAULT '',
+      details TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
   // Migrations
   try { await db.execute("ALTER TABLE contacts ADD COLUMN source TEXT DEFAULT 'brayan'"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN channel TEXT DEFAULT ''"); } catch {}
@@ -342,4 +353,20 @@ export async function deleteTimeEntry(id: number) {
 export async function getTimeSummary(from: string, to: string) {
   await initDb();
   return (await db.execute({ sql: 'SELECT category, SUM(minutes) as total_minutes, COUNT(*) as entry_count FROM time_entries WHERE date >= ? AND date <= ? GROUP BY category ORDER BY total_minutes DESC', args: [from, to] })).rows;
+}
+
+// ── Activity Log ──────────────────────────────────────────────────
+export async function logActivity(data: { person: string; action: string; resource_type: string; resource_name: string; details?: string }) {
+  await initDb();
+  await db.execute({ sql: 'INSERT INTO activity_log (person, action, resource_type, resource_name, details) VALUES (?,?,?,?,?)', args: [data.person, data.action, data.resource_type, data.resource_name, data.details || ''] });
+}
+
+export async function getActivityLog(limit = 50) {
+  await initDb();
+  return (await db.execute({ sql: 'SELECT * FROM activity_log ORDER BY created_at DESC LIMIT ?', args: [limit] })).rows;
+}
+
+export async function getActivityByPerson(person: string, limit = 50) {
+  await initDb();
+  return (await db.execute({ sql: 'SELECT * FROM activity_log WHERE person = ? ORDER BY created_at DESC LIMIT ?', args: [person, limit] })).rows;
 }

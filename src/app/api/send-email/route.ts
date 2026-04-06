@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
 import { sendEmail } from '@/lib/gmail';
-import { insertInteraction, updateContactStatus, getContacts } from '@/lib/db';
+import { insertInteraction, updateContactStatus, getContacts, logActivity } from '@/lib/db';
 
 export async function POST(req: NextRequest) {
   if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
       await updateContactStatus(contact_id, 'emailed', today);
     }
 
+    await logActivity({ person: 'brayan', action: 'sent email', resource_type: 'email', resource_name: to, details: subject });
     return NextResponse.json({ success: true, sent_to: to });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : 'Send failed';

@@ -102,6 +102,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
     <button class="tab" onclick="switchTab('metrics')">Metrics</button>
     <button class="tab" onclick="switchTab('pnl')">P&amp;L</button>
     <button class="tab" onclick="switchTab('time')">Time</button>
+    <button class="tab" onclick="switchTab('activity')">Activity</button>
     <button class="tab" onclick="switchTab('audit')">Audit</button>
     <button class="tab" onclick="switchTab('emails')">Emails</button>
   </div>
@@ -157,6 +158,11 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
           <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--secondary-glow)">⏱️</div>
           <div style="font-size:.82rem;font-weight:700">Time Tracker</div>
           <div style="font-size:.65rem;color:var(--text-3)">Where your time goes</div>
+        </div>
+        <div class="card dash-app" onclick="switchTab('activity')" style="padding:24px 16px;text-align:center;cursor:pointer;margin:0">
+          <div style="width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:1.4rem;background:var(--warm-glow)">📋</div>
+          <div style="font-size:.82rem;font-weight:700">Activity</div>
+          <div style="font-size:.65rem;color:var(--text-3)">Who's doing what</div>
         </div>
       </div>
 
@@ -623,6 +629,19 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
   </div>
 </div>
 
+<!-- ACTIVITY -->
+<div class="view" id="view-activity">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <h2 style="font-size:1.2rem;font-weight:800">Activity Feed</h2>
+    <div style="display:flex;gap:6px">
+      <button class="btn" id="actFilterAll" onclick="filterActivity('all')" style="font-size:.65rem">All</button>
+      <button class="btn" id="actFilterRyan" onclick="filterActivity('ryan')" style="font-size:.65rem">Ryan</button>
+      <button class="btn" id="actFilterBrayan" onclick="filterActivity('brayan')" style="font-size:.65rem">Brayan</button>
+    </div>
+  </div>
+  <div id="activityList"></div>
+</div>
+
 <script>
 const API_BASE = ''; // Same origin — NGL's own API
 
@@ -648,11 +667,12 @@ function switchTab(t){
   if(t==='crm')loadCRM();
   if(t==='metrics')loadMetrics();
   if(t==='time')loadTime();
+  if(t==='activity')loadActivity();
   history.replaceState(null,'','#'+t);
 }
 (function(){
   const hash=location.hash.replace('#','');
-  if(['pnl','crm','metrics','dashboard','time','audit','emails'].includes(hash))setTimeout(()=>switchTab(hash),100);
+  if(['pnl','crm','metrics','dashboard','time','activity','audit','emails'].includes(hash))setTimeout(()=>switchTab(hash),100);
 })();
 
 // Clock
@@ -763,7 +783,7 @@ async function saveContact(){
   const data={name:document.getElementById('cf-name').value,title:document.getElementById('cf-title').value,organization:document.getElementById('cf-org').value,email:document.getElementById('cf-email').value,status:document.getElementById('cf-status').value,source:document.getElementById('cf-source').value,channel:document.getElementById('cf-channel').value,revenue:parseFloat(document.getElementById('cf-revenue').value)||0,notes:document.getElementById('cf-notes').value,contact_type:document.getElementById('cf-contact-type').value,relationship_status:document.getElementById('cf-relstatus').value};
   if(!data.name){showAlert('crmAlert','Name required','err');return}
   try{
-    if(editId){await fetch(`/api/contacts/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})}
+    if(editId){await fetch(`/api/contacts/${editId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({...data,_actor:data.source||'unknown'})})}
     else{await fetch('/api/contacts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})}
     closeContactModal();loadCRM();
     if(_crmSubtab==='relationships')renderRelationships();
@@ -1339,6 +1359,81 @@ async function deleteTimeEntry(id){
   if(!confirm('Delete this entry?'))return;
   await fetch(API_BASE+'/api/time-tracker/'+id,{method:'DELETE'});
   loadTime();
+}
+
+// ── Activity Feed ───────────────────────────────────────────────────
+let _actFilter='all';
+
+function actIcon(action,type){
+  if(action==='sent email')return '<span style="font-size:1.1rem">📧</span>';
+  if(type==='contact')return '<span style="font-size:1.1rem">👤</span>';
+  if(type==='pnl_entry')return '<span style="font-size:1.1rem">💰</span>';
+  if(type==='email')return '<span style="font-size:1.1rem">📧</span>';
+  return '<span style="font-size:1.1rem">📋</span>';
+}
+
+function actColor(person){
+  return person.toLowerCase()==='ryan'?'var(--primary)':'var(--accent)';
+}
+
+function timeAgo(dateStr){
+  const d=new Date(dateStr+'Z');
+  const now=new Date();
+  const diff=Math.floor((now-d)/1000);
+  if(diff<60)return 'just now';
+  if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return Math.floor(diff/3600)+'h ago';
+  if(diff<604800)return Math.floor(diff/86400)+'d ago';
+  return d.toLocaleDateString();
+}
+
+async function loadActivity(){
+  const list=document.getElementById('activityList');
+  list.innerHTML='<div class="empty">Loading...</div>';
+  try{
+    let url=API_BASE+'/api/activity?limit=100';
+    if(_actFilter!=='all')url+='&person='+_actFilter;
+    const data=await fetch(url).then(r=>r.json());
+    if(!data.length){list.innerHTML='<div class="empty">No activity yet</div>';return}
+
+    // Group by date
+    const groups={};
+    data.forEach(a=>{
+      const day=a.created_at?a.created_at.split('T')[0]:'unknown';
+      if(!groups[day])groups[day]=[];
+      groups[day].push(a);
+    });
+
+    let html='';
+    for(const[day,items]of Object.entries(groups)){
+      const label=day===new Date().toISOString().slice(0,10)?'Today':
+        day===new Date(Date.now()-86400000).toISOString().slice(0,10)?'Yesterday':
+        new Date(day+'T00:00:00').toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+      html+=`<div style="font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3);font-weight:700;margin:20px 0 10px;padding-left:4px">${label}</div>`;
+      items.forEach(a=>{
+        html+=`<div class="card" style="padding:14px 18px;margin-bottom:8px;display:flex;align-items:center;gap:14px">
+          ${actIcon(a.action,a.resource_type)}
+          <div style="flex:1">
+            <div style="font-size:.82rem;font-weight:600">
+              <span style="color:${actColor(a.person)};font-weight:700">${esc(a.person)}</span>
+              ${esc(a.action)} ${a.resource_name?'<span style="color:var(--text-2)">'+esc(a.resource_name)+'</span>':''}
+            </div>
+            ${a.details?`<div style="font-size:.72rem;color:var(--text-3);margin-top:2px">${esc(a.details)}</div>`:''}
+          </div>
+          <div style="font-size:.65rem;color:var(--text-3);white-space:nowrap">${timeAgo(a.created_at)}</div>
+        </div>`;
+      });
+    }
+    list.innerHTML=html;
+  }catch(e){list.innerHTML='<div class="empty">Failed to load activity</div>'}
+}
+
+function filterActivity(f){
+  _actFilter=f;
+  document.getElementById('actFilterAll').classList.toggle('primary',f==='all');
+  document.getElementById('actFilterRyan').classList.toggle('primary',f==='ryan');
+  document.getElementById('actFilterBrayan').classList.toggle('primary',f==='brayan');
+  loadActivity();
 }
 </script>
 </body>
