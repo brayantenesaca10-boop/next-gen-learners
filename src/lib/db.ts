@@ -141,6 +141,18 @@ export async function initDb() {
   try { await db.execute("ALTER TABLE contacts ADD COLUMN relationship_status TEXT DEFAULT ''"); } catch {}
   try { await db.execute("ALTER TABLE activity_log ADD COLUMN external_id TEXT DEFAULT NULL"); } catch {}
 
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS proposals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      slug TEXT NOT NULL UNIQUE,
+      business_name TEXT NOT NULL,
+      business_url TEXT DEFAULT '',
+      html TEXT NOT NULL,
+      proposal_data TEXT DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
   initialized = true;
 }
 
@@ -434,4 +446,27 @@ export async function getLatestResearchTime() {
   await initDb();
   const row = (await db.execute('SELECT created_at FROM research_feed ORDER BY created_at DESC LIMIT 1')).rows[0];
   return row?.created_at as string | undefined;
+}
+
+// ── Proposals ──────────────────────────────────────────────────
+export async function getProposal(slug: string) {
+  await initDb();
+  return (await db.execute({ sql: 'SELECT * FROM proposals WHERE slug = ?', args: [slug] })).rows[0];
+}
+
+export async function upsertProposal(data: { slug: string; business_name: string; business_url: string; html: string; proposal_data: string }) {
+  await initDb();
+  const existing = await getProposal(data.slug);
+  if (existing) {
+    await db.execute({ sql: 'UPDATE proposals SET html=?, proposal_data=?, business_url=? WHERE slug=?', args: [data.html, data.proposal_data, data.business_url, data.slug] });
+    return existing.id;
+  } else {
+    const r = await db.execute({ sql: 'INSERT INTO proposals (slug, business_name, business_url, html, proposal_data) VALUES (?,?,?,?,?)', args: [data.slug, data.business_name, data.business_url, data.html, data.proposal_data] });
+    return r.lastInsertRowid;
+  }
+}
+
+export async function getAllProposals() {
+  await initDb();
+  return (await db.execute('SELECT id, slug, business_name, business_url, created_at FROM proposals ORDER BY created_at DESC')).rows;
 }

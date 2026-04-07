@@ -1573,10 +1573,12 @@ async function runBusinessScan(){
         </div>
       </div>
 
-      <div style="margin-top:12px;display:flex;gap:8px">
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn primary" onclick="addScannedBizToCRM('${esc(name)}','${esc(url)}','${esc(a.industry||industry||'')}')">+ Add to CRM</button>
         <button class="btn" onclick="copyProposalPitch()">Copy Pitch</button>
+        <button class="btn" id="genProposalBtn" onclick="generateProposal()" style="background:var(--secondary);color:white;border-color:var(--secondary)">Generate Full Proposal Page</button>
       </div>
+      <div id="proposalStatus" style="margin-top:8px;display:none"></div>
     `;
     window._lastPitch=a.proposal_pitch||'';
   }catch(e){
@@ -1610,6 +1612,40 @@ async function addScannedBizToCRM(name,url,industry){
 function copyProposalPitch(){
   if(window._lastPitch){
     navigator.clipboard.writeText(window._lastPitch).then(()=>alert('Pitch copied!'));
+  }
+}
+
+async function generateProposal(){
+  const name=document.getElementById('scanBizName').value.trim();
+  if(!name){alert('Enter a business name first');return}
+  const url=document.getElementById('scanBizUrl').value.trim();
+  const industry=document.getElementById('scanBizIndustry').value.trim();
+  const notes=document.getElementById('scanBizNotes').value.trim();
+  const btn=document.getElementById('genProposalBtn');
+  const status=document.getElementById('proposalStatus');
+  btn.textContent='Generating...';btn.disabled=true;
+  status.style.display='block';
+  status.innerHTML='<div class="card" style="padding:16px;text-align:center;color:var(--text-3);font-size:0.78rem"><div style="margin-bottom:4px">Building full proposal page for '+esc(name)+'...</div><div style="font-size:0.68rem">This uses Claude Sonnet and takes 30-60 seconds</div></div>';
+  try{
+    const d=await fetch(`${API_BASE}/api/business-scan/generate-proposal`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,url,industry,notes}),
+    }).then(r=>r.json());
+    if(d.error)throw new Error(d.error);
+    status.innerHTML=`
+      <div class="card" style="padding:16px;background:var(--accent-glow);border-color:rgba(16,185,129,0.2)">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--accent);margin-bottom:6px">Proposal Page Generated!</div>
+        <div style="font-size:0.75rem;color:var(--text-2);margin-bottom:10px">Your custom proposal for <strong>${esc(name)}</strong> is live.</div>
+        <div style="display:flex;gap:8px">
+          <a href="${d.url}" target="_blank" class="btn primary" style="text-decoration:none;font-size:0.72rem">View Proposal Page →</a>
+          <button class="btn" onclick="navigator.clipboard.writeText(window.location.origin+'${d.url}').then(()=>alert('Link copied!'))" style="font-size:0.72rem">Copy Link</button>
+        </div>
+      </div>`;
+  }catch(e){
+    status.innerHTML=`<div class="card" style="padding:12px;color:var(--red);font-size:0.78rem">Error: ${esc(e.message)}</div>`;
+  }finally{
+    btn.textContent='Generate Full Proposal Page';btn.disabled=false;
   }
 }
 
