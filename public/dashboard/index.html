@@ -1327,6 +1327,9 @@ async function searchSchools(page){
       document.getElementById('schoolResults').innerHTML='<div class="card" style="padding:20px;text-align:center"><div class="empty">No schools found. Try a different search.</div></div>';
       return;
     }
+    // Load CRM contacts to check which schools are already added
+    const crmData=await fetch('/api/contacts').then(r=>r.json()).catch(()=>[]);
+    const crmNames=new Set((Array.isArray(crmData)?crmData:[]).map(c=>c.name?.toLowerCase()));
     document.getElementById('schoolResultInfo').textContent=`Found ${d.total.toLocaleString()} schools — showing page ${d.page}`;
     document.getElementById('schoolResults').innerHTML=d.schools.map(s=>{
       const grades=s.grade_low!=null&&s.grade_high!=null?`Grades ${s.grade_low<0?'PK':s.grade_low}–${s.grade_high}`:'';
@@ -1336,8 +1339,11 @@ async function searchSchools(page){
       if(s.title_i)tags.push('Title I');
       const enrollment=s.enrollment?`${s.enrollment.toLocaleString()} students`:'';
       const details=[grades,enrollment,...tags].filter(Boolean).join(' · ');
+      const inCrm=crmNames.has(s.name.toLowerCase());
+      const btnId='sch-btn-'+s.nces_id;
+      const sJson=JSON.stringify(s).replace(/'/g,"&#39;");
       return `
-        <div class="card" style="margin-top:4px;padding:14px 16px">
+        <div class="card" style="margin-top:4px;padding:14px 16px" id="sch-card-${esc(s.nces_id)}">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
             <div style="flex:1;min-width:0">
               <div style="font-size:0.82rem;font-weight:700;margin-bottom:2px">${esc(s.name)}</div>
@@ -1346,7 +1352,10 @@ async function searchSchools(page){
               <div style="font-size:0.68rem;color:var(--text-3);margin-top:4px">${esc(details)}</div>
               ${s.phone?`<div style="font-size:0.7rem;color:var(--text-2);margin-top:2px">📞 ${esc(s.phone)}</div>`:''}
             </div>
-            <button class="btn primary" style="font-size:0.6rem;padding:5px 10px;white-space:nowrap" onclick='addSchoolToCRM(${JSON.stringify(s).replace(/'/g,"&#39;")})'>+ Add to CRM</button>
+            ${inCrm
+              ?`<button class="btn" id="${btnId}" style="font-size:0.6rem;padding:5px 10px;white-space:nowrap;background:var(--red);color:#fff" onclick='removeSchoolFromCRM(${sJson},"${btnId}")'>Remove</button>`
+              :`<button class="btn primary" id="${btnId}" style="font-size:0.6rem;padding:5px 10px;white-space:nowrap" onclick='addSchoolToCRM(${sJson},"${btnId}")'>+ Add to CRM</button>`
+            }
           </div>
         </div>`;
     }).join('');
@@ -1360,8 +1369,7 @@ async function searchSchools(page){
   }
 }
 
-async function addSchoolToCRM(school){
-  if(!confirm(`Add ${school.name} to your CRM pipeline?`))return;
+async function addSchoolToCRM(school,btnId){
   try{
     await fetch(`${API_BASE}/api/contacts`,{
       method:'POST',
@@ -1378,9 +1386,36 @@ async function addSchoolToCRM(school){
         _actor:getCurrentUser(),
       }),
     });
-    alert(`${school.name} added to CRM!`);
+    const btn=document.getElementById(btnId);
+    if(btn){
+      btn.textContent='Remove';
+      btn.className='btn';
+      btn.style.background='var(--red)';
+      btn.style.color='#fff';
+      btn.setAttribute('onclick',`removeSchoolFromCRM(${JSON.stringify(school).replace(/'/g,"\\'")},"${btnId}")`);
+    }
   }catch(e){
     alert('Error adding to CRM: '+e.message);
+  }
+}
+
+async function removeSchoolFromCRM(school,btnId){
+  try{
+    const contacts=await fetch('/api/contacts').then(r=>r.json()).catch(()=>[]);
+    const match=(Array.isArray(contacts)?contacts:[]).find(c=>c.name?.toLowerCase()===school.name.toLowerCase());
+    if(match){
+      await fetch(`${API_BASE}/api/contacts/${match.id}?_actor=${getCurrentUser()}`,{method:'DELETE'});
+    }
+    const btn=document.getElementById(btnId);
+    if(btn){
+      btn.textContent='+ Add to CRM';
+      btn.className='btn primary';
+      btn.style.background='';
+      btn.style.color='';
+      btn.setAttribute('onclick',`addSchoolToCRM(${JSON.stringify(school).replace(/'/g,"\\'")},"${btnId}")`);
+    }
+  }catch(e){
+    alert('Error removing from CRM: '+e.message);
   }
 }
 
