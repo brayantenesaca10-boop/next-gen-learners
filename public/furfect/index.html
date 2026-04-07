@@ -543,13 +543,15 @@ Post-Adoption
     <div class="engage-card fade-up">
       <span class="engage-tag" style="background:var(--indigo-glow);color:var(--primary)">Solves: "I want to learn AI but don't have the time to learn complex coding"</span>
       <h4>3. AI Education Intensive</h4>
-      <p>You saw Perplexity Computer and built a website in five minutes. You said: "If only I knew how to work this better." That's what this is. I teach you how to use sovereign AI tools to build, deploy, and iterate on Furfect Match at 10x speed without becoming a full-time coder.</p>
+      <p>You saw Perplexity Computer and built a website in five minutes. You said: "If only I knew how to work this better." That's what this is. I teach you and Eli how to use sovereign AI tools to build, deploy, and iterate on Furfect Match at 10x speed — so you never need to depend on an outside dev team for day-to-day changes again.</p>
+      <p style="font-size:0.82rem;font-weight:700;color:var(--primary);margin-top:16px;margin-bottom:8px">Where you'll be when this is done:</p>
       <ul>
-        <li>Hands-on workshop: vibe coding, prompt engineering, deployment</li>
-        <li>Your own Jarvis system set up and configured for Furfect Match</li>
-        <li>How to build continuous improvement systems (things that get better on their own)</li>
-        <li>Sovereignty: your data stays local, no AI trains on your ideas, swap models anytime</li>
+        <li><strong>Eli can deploy a code change to your live app on his own.</strong> Not theoretically — we test it live during the intensive. He pushes a real update, you see it in the app. That's the bar.</li>
+        <li><strong>You can prompt-engineer a new feature from idea to working prototype</strong> in under an hour using sovereign AI tools. We do this together during the workshop until you can do it without me.</li>
+        <li><strong>Your own Jarvis system is set up and configured for Furfect Match</strong> — running locally, your data stays on your machine, no AI trains on your ideas, swap models anytime.</li>
+        <li><strong>You understand continuous improvement systems</strong> — how to build things that get better on their own (e.g., matching algorithm that learns from every swipe). We build one together so you see how it works.</li>
       </ul>
+      <p style="font-size:0.78rem;color:var(--text-3);margin-top:14px;padding:12px 16px;background:var(--surface-2);border-radius:var(--radius)"><strong style="color:var(--text-2)">How we know it's complete:</strong> The intensive is done when Eli has successfully deployed a live change, you've built a working prototype from a prompt, and your Jarvis system is running. These are pass/fail checkpoints — not open-ended hours. Estimated ~10 hours of hands-on work (can be split across sessions).</p>
     </div>
 
     <div class="engage-card fade-up">
@@ -568,13 +570,55 @@ Post-Adoption
     <div class="engage-card fade-up">
       <span class="engage-tag" style="background:var(--violet-glow);color:var(--secondary)">Solves: "It's super hard to communicate with them"</span>
       <h4>5. Indian Dev Team Navigation</h4>
-      <p>I've worked with Pakistani and Indian dev teams. I've lived the 37 calls at midnight. I know how to get what you need from them without getting overcharged or ghosted. And if you need to keep them for one-off changes, I'll help you manage that relationship.</p>
+      <p>I've worked with Pakistani and Indian dev teams. I've lived the 37 calls at midnight. I know how to get what you need from them without getting overcharged or ghosted. And if you need to keep them for one-off changes, I'll help you manage that relationship so you stay in control.</p>
+      <p style="font-size:0.82rem;font-weight:700;color:var(--primary);margin-top:16px;margin-bottom:8px">Where you'll be when this is done:</p>
       <ul>
-        <li>Review your current agreement and access to app/code</li>
-        <li>What to demand, what to ask, what to let go</li>
-        <li>How to scope requests so they can't inflate the price</li>
-        <li>Backup plan: what you handle yourself vs. what goes to them</li>
+        <li><strong>You own your code.</strong> I review your current agreement and make sure you have full access to the codebase, deployed on a repo you control. If they're holding it hostage, we fix that first.</li>
+        <li><strong>You know what to demand, what to ask, and what to let go.</strong> A written playbook specific to your Web Skitters relationship — not generic advice.</li>
+        <li><strong>You can scope requests so they can't inflate the price.</strong> Template messages you copy-paste that lock them into fixed quotes. Same framework from the free tools above, but customized to your app.</li>
+        <li><strong>You have a clear split:</strong> what you and Eli handle yourselves (after the AI intensive) vs. what still goes to Web Skitters. The goal is to shrink their role to near-zero over time.</li>
       </ul>
+      <p style="font-size:0.78rem;color:var(--text-3);margin-top:14px;padding:12px 16px;background:var(--surface-2);border-radius:var(--radius)"><strong style="color:var(--text-2)">How we know it's complete:</strong> You have the written playbook, scoping templates, and a documented split of responsibilities. One deliverable, not ongoing consulting.</p>
+
+      <!-- SAVINGS CALCULATOR -->
+      <div style="margin-top:24px;background:var(--surface-2);border-radius:var(--radius-lg);padding:24px;border:1px solid var(--border)">
+        <div style="font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--primary);font-weight:700;margin-bottom:4px">Cost Calculator</div>
+        <div style="font-size:0.95rem;font-weight:700;margin-bottom:16px">How Much Are You Really Spending on Dev Changes?</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+          <div>
+            <label style="display:block;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px;font-weight:600">Small changes per month</label>
+            <input type="number" id="calcChanges" value="4" min="1" max="30" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.88rem;background:var(--surface)" oninput="updateCalc()">
+          </div>
+          <div>
+            <label style="display:block;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-3);margin-bottom:5px;font-weight:600">Avg cost per change ($)</label>
+            <input type="number" id="calcCostPer" value="150" min="25" max="1000" step="25" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:0.88rem;background:var(--surface)" oninput="updateCalc()">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center">
+            <div style="font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--rose);font-weight:700;margin-bottom:6px">Staying with Web Skitters</div>
+            <div id="calcDevYear" style="font-size:1.6rem;font-weight:800;color:var(--text)">$7,200</div>
+            <div style="font-size:0.68rem;color:var(--text-3)">per year</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center">
+            <div style="font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px">After Jarvis + Training</div>
+            <div id="calcJarvisYear" style="font-size:1.6rem;font-weight:800;color:var(--accent)">$2,500</div>
+            <div style="font-size:0.68rem;color:var(--text-3)">one-time (you do it yourself after)</div>
+          </div>
+        </div>
+
+        <div style="background:var(--accent-glow);border:1px solid rgba(16,185,129,0.2);border-radius:var(--radius);padding:14px;text-align:center;margin-bottom:16px">
+          <div style="font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:4px">Year 1 Savings</div>
+          <div id="calcSavings" style="font-size:1.8rem;font-weight:800;color:var(--accent)">$4,700</div>
+          <div id="calcSavingsNote" style="font-size:0.75rem;color:var(--text-2);margin-top:4px">And $7,200/year every year after that — because you don't need them anymore.</div>
+        </div>
+
+        <div style="font-size:0.7rem;color:var(--text-3);line-height:1.7;border-top:1px solid var(--border);padding-top:12px">
+          <strong style="color:var(--text-2)">Where these numbers come from:</strong> Offshore dev teams (India, Pakistan) charge $25-75/hr for app modifications (<a href="https://www.toptal.com/developers/hourly-rate" style="color:var(--primary);text-decoration:underline" target="_blank">Toptal 2025 rate survey</a>). A "small edit" typically bills 2-4 hours due to scope inflation, communication overhead, and minimum billing increments. The $150/change default reflects the midpoint for a 2-3 hour task at $50-75/hr — consistent with what founders report paying shops like Web Skitters. Clutch.co's 2025 data shows the average outsourced mobile app change costs $100-300 depending on complexity. After the Jarvis training, you and Eli handle these changes yourselves in minutes, not hours.
+        </div>
+      </div>
     </div>
 
     <div class="engage-card fade-up">
@@ -775,6 +819,21 @@ Post-Adoption
 <script>
 const observer=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('visible')})},{threshold:0.08});
 document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+
+// Savings calculator
+function updateCalc(){
+  const changes=Math.max(1,parseInt(document.getElementById('calcChanges').value)||4);
+  const costPer=Math.max(25,parseInt(document.getElementById('calcCostPer').value)||150);
+  const devYear=changes*costPer*12;
+  const jarvisCost=2500;
+  const savings=devYear-jarvisCost;
+  document.getElementById('calcDevYear').textContent='$'+devYear.toLocaleString();
+  document.getElementById('calcSavings').textContent=savings>0?'$'+savings.toLocaleString():'-$'+Math.abs(savings).toLocaleString();
+  document.getElementById('calcSavingsNote').textContent=savings>0
+    ?'And $'+devYear.toLocaleString()+'/year every year after that \u2014 because you don\u2019t need them anymore.'
+    :'At this volume, the training still pays for itself in '+(jarvisCost/( changes*costPer )).toFixed(0)+' months.';
+}
+updateCalc();
 </script>
 
 </body>
