@@ -657,8 +657,13 @@ const API_BASE = ''; // Same origin — NGL's own API
 // ── Current User ────────────────────────────────────────────────────
 function getCurrentUser(){return localStorage.getItem('ngl_user')||'ryan'}
 function setCurrentUser(name){
+  const prev=getCurrentUser();
   localStorage.setItem('ngl_user',name);
   document.getElementById('currentUser').value=name;
+  if(prev!==name){
+    fetch(API_BASE+'/api/activity',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({person:name,action:'switched to dashboard',resource_type:'session',resource_name:'',details:''})});
+  }
 }
 (function(){
   const saved=getCurrentUser();
