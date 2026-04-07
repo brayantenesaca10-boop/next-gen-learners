@@ -520,6 +520,12 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
 
   <!-- EMAILS VIEW -->
   <div class="view" id="view-emails">
+    <div class="card" style="padding:12px 16px;margin-bottom:12px" id="emailGmailStatus">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:0.75rem;color:var(--text-3)" id="emailGmailLabel">Checking Gmail...</span>
+        <a href="/api/auth/gmail" class="btn primary" id="emailGmailConnectBtn" style="font-size:0.65rem;padding:4px 10px;text-decoration:none;display:none">Connect Gmail</a>
+      </div>
+    </div>
     <div class="card" style="padding:20px">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div>
@@ -757,6 +763,7 @@ function switchTab(t){
   if(t==='time')loadTime();
   if(t==='activity'){syncExternalActivity();loadActivity()}
   if(t==='research')loadResearch();
+  if(t==='emails')loadEmails();
   history.replaceState(null,'','#'+t);
 }
 (function(){
@@ -1118,6 +1125,14 @@ async function deletePnl(id){
 }
 
 // ── Email Search ────────────────────────────────────────────────────────────
+async function loadEmails(){
+  try{
+    const gs=await fetch('/api/auth/gmail/status').then(r=>r.json()).catch(()=>({connected:false}));
+    document.getElementById('emailGmailLabel').textContent=gs.connected?'Gmail connected: '+gs.email:'Gmail not connected';
+    document.getElementById('emailGmailConnectBtn').style.display=gs.connected?'none':'inline-block';
+  }catch(e){console.error(e)}
+}
+
 async function searchEmails(){
   const q=document.getElementById('emailSearchQ').value;
   const max=document.getElementById('emailSearchMax').value;
