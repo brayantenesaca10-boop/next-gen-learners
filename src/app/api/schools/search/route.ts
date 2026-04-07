@@ -1,19 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@libsql/client';
 
-export const maxDuration = 30;
-
-// NCES Education Data Portal — free, no API key needed
-const EDUCATION_DATA_BASE = 'https://educationdata.urban.org/api/v1';
-
-// FIPS state codes
-const STATE_FIPS: Record<string, number> = {
-  AL: 1, AK: 2, AZ: 4, AR: 5, CA: 6, CO: 8, CT: 9, DE: 10, FL: 12, GA: 13,
-  HI: 15, ID: 16, IL: 17, IN: 18, IA: 19, KS: 20, KY: 21, LA: 22, ME: 23, MD: 24,
-  MA: 25, MI: 26, MN: 27, MS: 28, MO: 29, MT: 30, NE: 31, NV: 32, NH: 33, NJ: 34,
-  NM: 35, NY: 36, NC: 37, ND: 38, OH: 39, OK: 40, OR: 41, PA: 42, RI: 44, SC: 45,
-  SD: 46, TN: 47, TX: 48, UT: 49, VT: 50, VA: 51, WA: 53, WV: 54, WI: 55, WY: 56,
-  DC: 11,
-};
+const db = createClient({
+  url: process.env.TURSO_DATABASE_URL || 'file:local.db',
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
 
 export async function GET(req: NextRequest) {
   const { isAuthenticated } = await import('@/lib/auth');
@@ -21,76 +12,77 @@ export async function GET(req: NextRequest) {
 
   const state = req.nextUrl.searchParams.get('state')?.toUpperCase() || '';
   const city = req.nextUrl.searchParams.get('city')?.toLowerCase() || '';
-  const level = req.nextUrl.searchParams.get('level') || ''; // elementary, middle, high
+  const level = req.nextUrl.searchParams.get('level') || '';
   const query = req.nextUrl.searchParams.get('q')?.toLowerCase() || '';
+  const type = req.nextUrl.searchParams.get('type') || ''; // public, private, or empty for all
   const page = parseInt(req.nextUrl.searchParams.get('page') || '1');
+  const perPage = 50;
+  const offset = (page - 1) * perPage;
 
   if (!state) {
     return NextResponse.json({ error: 'State is required (e.g., CT, FL, NY)' }, { status: 400 });
   }
 
-  const fips = STATE_FIPS[state];
-  if (!fips) {
-    return NextResponse.json({ error: `Invalid state code: ${state}` }, { status: 400 });
-  }
-
   try {
-    // Use the most recent available year
-    const year = 2022;
-    let url = `${EDUCATION_DATA_BASE}/schools/ccd/directory/${year}/?fips=${fips}&school_status=1`;
+    const conditions: string[] = ['state = ?'];
+    const args: (string | number)[] = [state];
 
-    // Filter by grade level
+    if (city) {
+      conditions.push('LOWER(city) LIKE ?');
+      args.push(`%${city}%`);
+    }
+    if (query) {
+      conditions.push('LOWER(name) LIKE ?');
+      args.push(`%${query}%`);
+    }
+    if (type === 'public' || type === 'private') {
+      conditions.push('school_type = ?');
+      args.push(type);
+    }
     if (level === 'elementary') {
-      url += '&lowest_grade_offered_lte=1&highest_grade_offered_lte=5';
+      conditions.push("school_level IN ('1', 'Elementary', 'elementary')");
     } else if (level === 'middle') {
-      url += '&lowest_grade_offered_lte=6&highest_grade_offered_gte=6&highest_grade_offered_lte=8';
+      conditions.push("school_level IN ('2', 'Middle', 'middle')");
     } else if (level === 'high') {
-      url += '&highest_grade_offered_gte=9';
+      conditions.push("school_level IN ('3', 'High', 'high')");
     }
 
-    url += `&page=${page}&per_page=50`;
+    const where = conditions.join(' AND ');
 
-    const resp = await fetch(url, {
-      headers: { 'User-Agent': 'NGL-SchoolFinder/1.0' },
-      next: { revalidate: 0 },
+    // Get total count
+    const countResult = await db.execute({ sql: `SELECT COUNT(*) as cnt FROM schools WHERE ${where}`, args });
+    const total = Number(countResult.rows[0]?.cnt || 0);
+
+    // Get page of results
+    const results = await db.execute({
+      sql: `SELECT * FROM schools WHERE ${where} ORDER BY enrollment DESC, name ASC LIMIT ? OFFSET ?`,
+      args: [...args, perPage, offset],
     });
 
-    if (!resp.ok) {
-      return NextResponse.json({ error: `Education Data API: ${resp.status}` }, { status: 502 });
-    }
-
-    const data = await resp.json();
-    const results = (data.results || [])
-      .filter((s: Record<string, unknown>) => {
-        if (city && !(s.city_location as string || '').toLowerCase().includes(city)) return false;
-        if (query && !(s.school_name as string || '').toLowerCase().includes(query)) return false;
-        return true;
-      })
-      .map((s: Record<string, unknown>) => ({
-        name: s.school_name || '',
-        nces_id: s.ncessch || '',
-        district: s.lea_name || '',
-        address: s.street_location || '',
-        city: s.city_location || '',
-        state: s.state_location || state,
-        zip: s.zip_location || '',
-        phone: s.phone || '',
-        grade_low: s.lowest_grade_offered,
-        grade_high: s.highest_grade_offered,
-        enrollment: s.enrollment,
-        school_type: s.school_type_text || '',
-        charter: s.charter === 1,
-        magnet: s.magnet === 1,
-        title_i: s.title_i_status === 1,
-        latitude: s.latitude,
-        longitude: s.longitude,
-      }));
+    const schools = results.rows.map(s => ({
+      name: s.name || '',
+      nces_id: s.nces_id || '',
+      district: s.district || '',
+      address: s.address || '',
+      city: s.city || '',
+      state: s.state || state,
+      zip: s.zip || '',
+      phone: s.phone || '',
+      grade_low: s.grade_low || '',
+      grade_high: s.grade_high || '',
+      enrollment: Number(s.enrollment) || 0,
+      school_level: s.school_level || '',
+      school_type: s.school_type || 'public',
+      charter: s.charter === 1,
+      title_i: s.title_i === 1,
+      county: s.county || '',
+    }));
 
     return NextResponse.json({
-      schools: results,
-      total: data.count || results.length,
+      schools,
+      total,
       page,
-      has_more: !!(data.next),
+      has_more: offset + perPage < total,
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error';

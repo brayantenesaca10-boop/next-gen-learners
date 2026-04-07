@@ -588,6 +588,11 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
           <option value="middle">Middle</option>
           <option value="high">High</option>
         </select>
+        <select id="schoolType" style="width:90px;font-size:0.75rem">
+          <option value="">All types</option>
+          <option value="public">Public</option>
+          <option value="private">Private</option>
+        </select>
         <button class="btn primary" onclick="searchSchools()">Search</button>
       </div>
     </div>
@@ -1306,6 +1311,7 @@ async function searchSchools(page){
   const city=document.getElementById('schoolCity').value;
   const q=document.getElementById('schoolQuery').value;
   const level=document.getElementById('schoolLevel').value;
+  const type=document.getElementById('schoolType').value;
   document.getElementById('schoolResults').innerHTML='<div class="card" style="padding:20px;text-align:center;color:var(--text-3)">Searching schools...</div>';
   document.getElementById('schoolResultInfo').textContent='';
   document.getElementById('schoolPagination').innerHTML='';
@@ -1314,6 +1320,7 @@ async function searchSchools(page){
     if(city)url+=`&city=${encodeURIComponent(city)}`;
     if(q)url+=`&q=${encodeURIComponent(q)}`;
     if(level)url+=`&level=${level}`;
+    if(type)url+=`&type=${type}`;
     const d=await fetch(url).then(r=>r.json());
     if(d.error)throw new Error(d.error);
     if(!d.schools||d.schools.length===0){
@@ -1324,8 +1331,8 @@ async function searchSchools(page){
     document.getElementById('schoolResults').innerHTML=d.schools.map(s=>{
       const grades=s.grade_low!=null&&s.grade_high!=null?`Grades ${s.grade_low<0?'PK':s.grade_low}–${s.grade_high}`:'';
       const tags=[];
+      if(s.school_type==='private')tags.push('Private');
       if(s.charter)tags.push('Charter');
-      if(s.magnet)tags.push('Magnet');
       if(s.title_i)tags.push('Title I');
       const enrollment=s.enrollment?`${s.enrollment.toLocaleString()} students`:'';
       const details=[grades,enrollment,...tags].filter(Boolean).join(' · ');
