@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
 import { createClient } from '@libsql/client';
 
-const db = createClient({
-  url: process.env.TURSO_DATABASE_URL!,
-  authToken: process.env.TURSO_AUTH_TOKEN,
-});
+export const dynamic = 'force-dynamic';
+
+function getDb() {
+  return createClient({
+    url: process.env.TURSO_DATABASE_URL!,
+    authToken: process.env.TURSO_AUTH_TOKEN,
+  });
+}
 
 export async function POST(req: NextRequest) {
   if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
@@ -20,6 +24,7 @@ export async function POST(req: NextRequest) {
     args.push(resource_name);
   }
 
+  const db = getDb();
   const result = await db.execute({ sql, args });
   return NextResponse.json({ ok: true, updated: result.rowsAffected });
 }
