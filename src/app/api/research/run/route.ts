@@ -90,22 +90,30 @@ async function runResearch() {
       max_tokens: 2000,
       messages: [{
         role: 'user',
-        content: `You are a research analyst for Next Generation Learners (NGL), an AI literacy education company teaching K-12 students to think critically with AI. Based in Boca Raton, FL, founded by Ryan Vincent.
+        content: `You are a research analyst for Next Generation Learners (NGL). NGL teaches K-12 students AI literacy — prompt engineering, output verification, critical thinking with AI, and ethical reasoning. Based in Boca Raton, FL, founded by Ryan Vincent. NGL sells programs directly to schools, libraries, and districts.
 
-Analyze these articles and extract valuable insights for NGL:
+Here are recent articles:
 
 ${articleList}
 
-For each RELEVANT article, return a JSON array with objects containing:
-- "category": "ai_education" | "competitors" | "ai_trends" | "market_opportunity"
-- "title": concise rewritten headline useful for Ryan
-- "summary": 2-3 sentences on what it means for NGL
-- "source_url": the URL
-- "source_name": publication name
-- "relevance": one sentence on why it matters to NGL
-- "action_item": specific action Ryan could take
+ONLY include an article if it meets at least ONE of these criteria:
+- A school district, library, or state is adopting AI education programs (potential customer)
+- A competitor is launching something NGL should know about
+- There's a grant, RFP, or funding opportunity NGL could apply for
+- A new AI policy or regulation directly affects K-12 AI education
+- A specific trend Ryan should act on NOW (not general AI hype)
 
-Skip irrelevant articles. Quality over quantity. Return ONLY a valid JSON array.`
+DO NOT include:
+- General AI news that doesn't connect to K-12 education sales
+- Vague "AI is changing education" think pieces
+- University/college-level AI news (NGL is K-12 only)
+- Big tech product launches unless they directly compete with NGL
+
+For each article that passes the filter, return a JSON array:
+[{"category":"ai_education|competitors|ai_trends|market_opportunity","title":"rewritten headline","summary":"2-3 sentences on what this means for NGL","source_url":"URL","source_name":"publication","relevance":"why Ryan needs to know this","action_item":"specific next step Ryan should take"}]
+
+If ZERO articles are worth Ryan's time, return an empty array: []
+Return ONLY valid JSON, no other text.`
       }]
     });
 
