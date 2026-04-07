@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-import { insertResearchItem, getLatestResearchTime, logActivity } from '@/lib/db';
+import { insertResearchItem, logActivity } from '@/lib/db';
+
+export const maxDuration = 60;
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' });
 
@@ -57,17 +59,12 @@ export async function POST(req: NextRequest) {
 }
 
 async function runResearch() {
-
-  // Pick 2-3 random topics to research this run
+  // Pick 2 random topics and fetch in parallel
   const shuffled = [...SEARCH_TOPICS].sort(() => Math.random() - 0.5);
-  const topics = shuffled.slice(0, 3);
+  const topics = shuffled.slice(0, 2);
 
-  let allArticles: { title: string; link: string; source: string; pubDate: string; query_category: string }[] = [];
-
-  for (const topic of topics) {
-    const articles = await fetchGoogleNews(topic.query);
-    allArticles.push(...articles.map(a => ({ ...a, query_category: topic.category })));
-  }
+  const results = await Promise.all(topics.map(t => fetchGoogleNews(t.query).then(articles => articles.map(a => ({ ...a, query_category: t.category })))));
+  let allArticles = results.flat();
 
   if (allArticles.length === 0) {
     return NextResponse.json({ ok: true, items: 0, message: 'No articles found' });
@@ -83,45 +80,37 @@ async function runResearch() {
   });
 
   // Use Claude to analyze and extract insights
-  const articleList = allArticles.slice(0, 10).map((a, i) =>
+  const articleList = allArticles.slice(0, 8).map((a, i) =>
     `${i + 1}. [${a.query_category}] "${a.title}" — ${a.source} (${a.pubDate})\n   URL: ${a.link}`
   ).join('\n');
 
   try {
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 3000,
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 2000,
       messages: [{
         role: 'user',
-        content: `You are a research analyst for Next Generation Learners (NGL), an AI literacy education company that teaches K-12 students to think critically with AI through prompt engineering, output verification, and ethical reasoning. NGL is based in Boca Raton, FL, founded by Ryan Vincent.
+        content: `You are a research analyst for Next Generation Learners (NGL), an AI literacy education company teaching K-12 students to think critically with AI. Based in Boca Raton, FL, founded by Ryan Vincent.
 
-Analyze these recent articles and extract the most valuable insights for NGL's business:
+Analyze these articles and extract valuable insights for NGL:
 
 ${articleList}
 
-For each article that is ACTUALLY relevant to NGL (skip irrelevant ones), return a JSON array of objects with:
-- "category": one of "ai_education", "competitors", "ai_trends", "market_opportunity"
-- "title": a concise headline (not the original — rewrite it to be useful for Ryan)
-- "summary": 2-3 sentences explaining what this means and why it matters to NGL
-- "source_url": the article URL
-- "source_name": the publication name
-- "relevance": one sentence on why this is relevant to NGL specifically
-- "action_item": a specific action Ryan could take based on this (e.g., "Reach out to this district", "Add this feature to the toolkit", "Monitor this competitor")
+For each RELEVANT article, return a JSON array with objects containing:
+- "category": "ai_education" | "competitors" | "ai_trends" | "market_opportunity"
+- "title": concise rewritten headline useful for Ryan
+- "summary": 2-3 sentences on what it means for NGL
+- "source_url": the URL
+- "source_name": publication name
+- "relevance": one sentence on why it matters to NGL
+- "action_item": specific action Ryan could take
 
-IMPORTANT:
-- Only include articles that are genuinely useful for an AI education startup
-- Be specific in action items — vague advice is useless
-- If fewer than 3 articles are relevant, that's fine — quality over quantity
-- Return ONLY valid JSON array, no other text
-
-Example format:
-[{"category":"ai_education","title":"...","summary":"...","source_url":"...","source_name":"...","relevance":"...","action_item":"..."}]`
+Skip irrelevant articles. Quality over quantity. Return ONLY a valid JSON array.`
       }]
     });
 
     const output = message.content[0].type === 'text' ? message.content[0].text : '';
 
-    // Parse JSON from response
     const jsonMatch = output.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
       return NextResponse.json({ ok: true, items: 0, message: 'No relevant insights found' });

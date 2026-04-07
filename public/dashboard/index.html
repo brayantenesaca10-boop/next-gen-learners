@@ -1573,7 +1573,7 @@ async function runResearchNow(){
     btn.textContent=`Done! ${d.items} insights found`;
     setTimeout(()=>{btn.disabled=false;btn.textContent='Run Now'},3000);
     loadResearch();
-  }catch(e){btn.disabled=false;btn.textContent='Run Now'}
+  }catch(e){alert('Research error: '+e.message);btn.disabled=false;btn.textContent='Run Now'}
 }
 
 // Auto-refresh research every 10 minutes
