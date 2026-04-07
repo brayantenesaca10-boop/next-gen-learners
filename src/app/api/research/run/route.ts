@@ -41,15 +41,22 @@ async function fetchGoogleNews(query: string): Promise<{ title: string; link: st
   }
 }
 
-export async function POST(req: NextRequest) {
-  // Allow cron calls with a secret, or authenticated users
-  const cronSecret = req.nextUrl.searchParams.get('secret');
-  const isAuthed = cronSecret === process.env.CRON_SECRET;
-
-  if (!isAuthed) {
-    const { isAuthenticated } = await import('@/lib/auth');
-    if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+export async function GET(req: NextRequest) {
+  // Vercel Cron calls GET with Authorization header
+  const authHeader = req.headers.get('authorization');
+  if (authHeader === `Bearer ${process.env.CRON_SECRET}`) {
+    return runResearch();
   }
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+}
+
+export async function POST(req: NextRequest) {
+  const { isAuthenticated } = await import('@/lib/auth');
+  if (!(await isAuthenticated())) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  return runResearch();
+}
+
+async function runResearch() {
 
   // Pick 2-3 random topics to research this run
   const shuffled = [...SEARCH_TOPICS].sort(() => Math.random() - 0.5);
