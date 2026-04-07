@@ -11,9 +11,16 @@ export function getOAuth2Client() {
   );
 }
 
-export async function getGmailClient() {
-  const token = await getOAuthToken('gmail');
-  if (!token || !token.access_token) return null;
+export async function getGmailClient(user?: string) {
+  // Try user-specific token first, then legacy
+  const providers = user ? [`gmail:${user}`, 'gmail'] : ['gmail:ryan', 'gmail:brayan', 'gmail'];
+  let token = null;
+  let provider = '';
+  for (const p of providers) {
+    const t = await getOAuthToken(p);
+    if (t && t.access_token) { token = t; provider = p; break; }
+  }
+  if (!token) return null;
   const oauth2 = getOAuth2Client();
   if (!oauth2) return null;
   oauth2.setCredentials({
@@ -23,7 +30,7 @@ export async function getGmailClient() {
   });
   oauth2.on('tokens', async (newTokens) => {
     await upsertOAuthToken({
-      provider: 'gmail',
+      provider,
       access_token: newTokens.access_token || token.access_token as string,
       refresh_token: newTokens.refresh_token || token.refresh_token as string,
       expiry: newTokens.expiry_date ? new Date(newTokens.expiry_date).toISOString() : token.expiry as string,
@@ -31,6 +38,33 @@ export async function getGmailClient() {
     });
   });
   return google.gmail({ version: 'v1', auth: oauth2 });
+}
+
+export async function getAllGmailClients(): Promise<{ user: string; gmail: ReturnType<typeof google.gmail> }[]> {
+  const clients: { user: string; gmail: ReturnType<typeof google.gmail> }[] = [];
+  for (const user of ['ryan', 'brayan']) {
+    const token = await getOAuthToken(`gmail:${user}`);
+    if (!token || !token.access_token) continue;
+    const oauth2 = getOAuth2Client();
+    if (!oauth2) continue;
+    oauth2.setCredentials({
+      access_token: token.access_token as string,
+      refresh_token: token.refresh_token as string,
+      expiry_date: token.expiry ? new Date(token.expiry as string).getTime() : 0,
+    });
+    const provider = `gmail:${user}`;
+    oauth2.on('tokens', async (newTokens) => {
+      await upsertOAuthToken({
+        provider,
+        access_token: newTokens.access_token || token.access_token as string,
+        refresh_token: newTokens.refresh_token || token.refresh_token as string,
+        expiry: newTokens.expiry_date ? new Date(newTokens.expiry_date).toISOString() : token.expiry as string,
+        email: token.email as string || '',
+      });
+    });
+    clients.push({ user, gmail: google.gmail({ version: 'v1', auth: oauth2 }) });
+  }
+  return clients;
 }
 
 export async function sendEmail(to: string, subject: string, body: string) {

@@ -28,62 +28,101 @@ function identifyPerson(name: string, email?: string): string {
   return lower || 'unknown';
 }
 
-// ── Gmail Sync ──────────────────────────────────────────────────────
+// ── Gmail Sync — Sent & Received Emails (both accounts) ────────────
 async function syncGmail(): Promise<{ synced: number; errors: string[] }> {
   let synced = 0;
   const errors: string[] = [];
 
   try {
-    const { getGmailClient } = await import('@/lib/gmail');
-    const gmail = await getGmailClient();
-    if (!gmail) return { synced: 0, errors: ['Gmail not connected'] };
+    const { getAllGmailClients } = await import('@/lib/gmail');
+    const clients = await getAllGmailClients();
+    if (clients.length === 0) return { synced: 0, errors: ['No Gmail accounts connected'] };
 
-    // Get recent sent emails (last 24 hours)
     const after = Math.floor((Date.now() - 24 * 60 * 60 * 1000) / 1000);
-    const list = await gmail.users.messages.list({
-      userId: 'me',
-      q: `in:sent after:${after}`,
-      maxResults: 20,
-    });
 
-    if (!list.data.messages || list.data.messages.length === 0) return { synced, errors };
-
-    for (const msg of list.data.messages) {
-      const full = await gmail.users.messages.get({ userId: 'me', id: msg.id!, format: 'metadata', metadataHeaders: ['From', 'To', 'Subject', 'Date'] });
-      const headers = full.data.payload?.headers || [];
-      const getH = (n: string) => headers.find(h => h.name?.toLowerCase() === n.toLowerCase())?.value || '';
-
-      const from = getH('From');
-      const to = getH('To');
-      const subject = getH('Subject');
-      const date = getH('Date');
-
-      // Figure out who sent it
-      const fromName = from.match(/^([^<]+)/)?.[1]?.trim() || from;
-      const fromEmail = from.match(/<(.+?)>/)?.[1] || from;
-      const person = identifyPerson(fromName, fromEmail);
-
-      // Extract recipient name/email
-      const toName = to.match(/^([^<]+)/)?.[1]?.trim() || to;
-      const toEmail = to.match(/<(.+?)>/)?.[1] || to;
-      const recipientDisplay = toName !== toEmail ? toName : toEmail;
-
-      // Parse date for created_at
-      let createdAt: string | undefined;
-      try {
-        const d = new Date(date);
-        if (!isNaN(d.getTime())) createdAt = d.toISOString().replace('T', ' ').slice(0, 19);
-      } catch {}
-
-      const added = await logActivityIfNew(`gmail:${msg.id}`, {
-        person,
-        action: 'sent email',
-        resource_type: 'email',
-        resource_name: recipientDisplay,
-        details: subject ? `Subject: ${subject}` : '',
-        created_at: createdAt,
+    for (const { user, gmail } of clients) {
+      // Sent emails
+      const list = await gmail.users.messages.list({
+        userId: 'me',
+        q: `in:sent after:${after}`,
+        maxResults: 20,
       });
-      if (added) synced++;
+
+      if (list.data.messages) {
+        for (const msg of list.data.messages) {
+          const full = await gmail.users.messages.get({
+            userId: 'me', id: msg.id!, format: 'metadata',
+            metadataHeaders: ['From', 'To', 'Subject', 'Date'],
+          });
+          const headers = full.data.payload?.headers || [];
+          const getH = (n: string) => headers.find(h => h.name?.toLowerCase() === n.toLowerCase())?.value || '';
+
+          const to = getH('To');
+          const subject = getH('Subject');
+          const date = getH('Date');
+
+          const toName = to.match(/^([^<]+)/)?.[1]?.trim() || to;
+          const toEmail = to.match(/<(.+?)>/)?.[1] || to;
+          const recipientDisplay = toName !== toEmail ? toName : toEmail;
+
+          let createdAt: string | undefined;
+          try {
+            const d = new Date(date);
+            if (!isNaN(d.getTime())) createdAt = d.toISOString().replace('T', ' ').slice(0, 19);
+          } catch {}
+
+          const added = await logActivityIfNew(`gmail:${user}:${msg.id}`, {
+            person: user,
+            action: 'sent email',
+            resource_type: 'email',
+            resource_name: recipientDisplay,
+            details: subject ? `Subject: ${subject}` : '',
+            created_at: createdAt,
+          });
+          if (added) synced++;
+        }
+      }
+
+      // Inbox (received emails)
+      const inboxList = await gmail.users.messages.list({
+        userId: 'me',
+        q: `in:inbox is:unread after:${after}`,
+        maxResults: 10,
+      });
+
+      if (inboxList.data.messages) {
+        for (const msg of inboxList.data.messages) {
+          const full = await gmail.users.messages.get({
+            userId: 'me', id: msg.id!, format: 'metadata',
+            metadataHeaders: ['From', 'To', 'Subject', 'Date'],
+          });
+          const headers = full.data.payload?.headers || [];
+          const getH = (n: string) => headers.find(h => h.name?.toLowerCase() === n.toLowerCase())?.value || '';
+
+          const from = getH('From');
+          const subject = getH('Subject');
+          const date = getH('Date');
+
+          const fromName = from.match(/^([^<]+)/)?.[1]?.trim() || from;
+          const fromEmail = from.match(/<(.+?)>/)?.[1] || from;
+
+          let createdAt: string | undefined;
+          try {
+            const d = new Date(date);
+            if (!isNaN(d.getTime())) createdAt = d.toISOString().replace('T', ' ').slice(0, 19);
+          } catch {}
+
+          const added = await logActivityIfNew(`gmail-in:${user}:${msg.id}`, {
+            person: user,
+            action: 'received email',
+            resource_type: 'email',
+            resource_name: fromName !== fromEmail ? fromName : fromEmail,
+            details: subject ? `Subject: ${subject}` : '',
+            created_at: createdAt,
+          });
+          if (added) synced++;
+        }
+      }
     }
   } catch (e) {
     errors.push(`Gmail: ${e instanceof Error ? e.message : 'Unknown error'}`);

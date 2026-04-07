@@ -844,8 +844,10 @@ async function loadCRM(){
     renderPipeline();
     renderContacts();
     // Check Gmail
-    const gs=await fetch('/api/auth/gmail/status').then(r=>r.json()).catch(()=>({connected:false}));
-    document.getElementById('gmailLabel').textContent=gs.connected?'Gmail connected: '+gs.email:'Gmail not connected';
+    const gu=getCurrentUser();
+    const gs=await fetch('/api/auth/gmail/status?user='+gu).then(r=>r.json()).catch(()=>({connected:false}));
+    document.getElementById('gmailLabel').textContent=gs.connected?'Gmail connected: '+gs.email:'Gmail not connected ('+gu+')';
+    document.getElementById('gmailConnectBtn').href='/api/auth/gmail?user='+gu;
     document.getElementById('gmailConnectBtn').style.display=gs.connected?'none':'inline-block';
   }catch(e){console.error(e)}
 }
@@ -1177,8 +1179,10 @@ async function deletePnl(id){
 // ── Email Search ────────────────────────────────────────────────────────────
 async function loadEmails(){
   try{
-    const gs=await fetch('/api/auth/gmail/status').then(r=>r.json()).catch(()=>({connected:false}));
-    document.getElementById('emailGmailLabel').textContent=gs.connected?'Gmail connected: '+gs.email:'Gmail not connected';
+    const user=getCurrentUser();
+    const gs=await fetch('/api/auth/gmail/status?user='+user).then(r=>r.json()).catch(()=>({connected:false}));
+    document.getElementById('emailGmailLabel').textContent=gs.connected?'Gmail connected: '+gs.email:'Gmail not connected ('+user+')';
+    document.getElementById('emailGmailConnectBtn').href='/api/auth/gmail?user='+user;
     document.getElementById('emailGmailConnectBtn').style.display=gs.connected?'none':'inline-block';
   }catch(e){console.error(e)}
 }

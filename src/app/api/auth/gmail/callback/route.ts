@@ -4,6 +4,7 @@ import { upsertOAuthToken } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get('code');
+  const user = req.nextUrl.searchParams.get('state') || 'ryan';
   if (!code) return NextResponse.json({ error: 'No code provided' }, { status: 400 });
 
   const oauth2 = getOAuth2Client();
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest) {
       } catch {}
     }
     await upsertOAuthToken({
-      provider: 'gmail',
+      provider: `gmail:${user}`,
       access_token: tokens.access_token || '',
       refresh_token: tokens.refresh_token || '',
       expiry: tokens.expiry_date ? new Date(tokens.expiry_date).toISOString() : '',
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
 
     return new NextResponse(
       `<html><body style="background:#FAFBFF;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif">
-        <div style="text-align:center"><h2 style="color:#4F46E5">Gmail Connected!</h2><p>Connected as ${email}</p><p><a href="/dashboard">Back to Dashboard</a></p></div>
+        <div style="text-align:center"><h2 style="color:#4F46E5">Gmail Connected!</h2><p>Connected as ${email} (${user})</p><p><a href="/dashboard">Back to Dashboard</a></p></div>
       </body></html>`,
       { headers: { 'Content-Type': 'text/html' } }
     );
