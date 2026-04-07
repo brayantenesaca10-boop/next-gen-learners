@@ -685,6 +685,7 @@ function initApp(){if(_appInitialized)return;_appInitialized=true;}
       <div id="actLiveIndicator" style="display:flex;align-items:center;gap:5px;font-size:.6rem;color:var(--accent);font-weight:600;margin-right:8px">
         <span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;animation:pulse 2s infinite"></span>LIVE
       </div>
+      <button class="btn" id="actSyncBtn" onclick="syncExternalActivity()" style="font-size:.6rem;padding:5px 10px" title="Pull latest from Gmail & GitHub">🔄 Sync</button>
       <button class="btn" id="actFilterAll" onclick="filterActivity('all')" style="font-size:.65rem">All</button>
       <button class="btn" id="actFilterRyan" onclick="filterActivity('ryan')" style="font-size:.65rem">Ryan</button>
       <button class="btn" id="actFilterBrayan" onclick="filterActivity('brayan')" style="font-size:.65rem">Brayan</button>
@@ -753,7 +754,7 @@ function switchTab(t){
   if(t==='crm')loadCRM();
   if(t==='metrics')loadMetrics();
   if(t==='time')loadTime();
-  if(t==='activity')loadActivity();
+  if(t==='activity'){syncExternalActivity();loadActivity()}
   if(t==='research')loadResearch();
   history.replaceState(null,'','#'+t);
 }
@@ -1456,11 +1457,11 @@ let _actAutoRefresh=null;
 const ACT_ICONS={
   'sent email':'✉️','added':'➕','updated':'✏️','deleted':'🗑️',
   'generated':'⚡','imported':'📥','found insights':'🔬',
-  'switched to dashboard':'🔄','created':'🆕','logged time':'⏱️','logged in':'🔐','ran research':'🔬',
+  'switched to dashboard':'🔄','created':'🆕','logged time':'⏱️','logged in':'🔐','ran research':'🔬','pushed code':'💻','sent email':'✉️',
 };
 const ACT_TYPE_ICONS={
   contact:'👤',pnl_entry:'💰',email:'✉️',lesson_plan:'📝',
-  classroom:'🏫',tool_output:'🛠️',time_entry:'⏱️',research:'🔬',session:'🔄',
+  classroom:'🏫',tool_output:'🛠️',time_entry:'⏱️',research:'🔬',session:'🔄',github:'💻',
 };
 
 function actIconBadge(action,type){
@@ -1496,6 +1497,8 @@ function actDescription(a){
   if(action==='switched to dashboard')return 'opened the dashboard';
   if(action==='logged in')return 'logged into the dashboard';
   if(action==='ran research')return `ran the research agent${rn?' — '+rn:''}`;
+  if(action==='pushed code')return `pushed code: <strong>${rn}</strong>`;
+  if(action==='sent email'&&type==='email')return `sent an email to <strong>${rn}</strong>`;
   if(action==='logged time')return `logged time${rn?' on <strong>'+rn+'</strong>':''}`;
   if(action==='created')return `created ${rn?'<strong>'+rn+'</strong>':'a new '+typeLabel}`;
   return `${esc(action)}${rn?' <strong>'+rn+'</strong>':''}`;
@@ -1625,12 +1628,36 @@ function filterActivity(f){
   loadActivity();
 }
 
+// Sync external sources (Gmail + GitHub) then reload
+async function syncExternalActivity(){
+  const btn=document.getElementById('actSyncBtn');
+  btn.disabled=true;btn.textContent='⏳ Syncing...';
+  try{
+    const r=await fetch(API_BASE+'/api/activity/sync',{method:'POST'});
+    const d=await r.json();
+    if(d.synced&&d.synced.total>0){
+      btn.textContent=`✅ ${d.synced.total} new`;
+    } else {
+      btn.textContent='✅ Up to date';
+    }
+    setTimeout(()=>{btn.disabled=false;btn.textContent='🔄 Sync'},3000);
+    loadActivity();
+    loadDashTicker();
+  }catch(e){btn.disabled=false;btn.textContent='🔄 Sync'}
+}
+
 // Auto-refresh activity every 30 seconds when on the activity tab
+// Also sync external sources every 5 minutes
+let _actAutoRefresh=null;
+let _actSyncInterval=null;
 function startActivityAutoRefresh(){
   if(_actAutoRefresh)return;
   _actAutoRefresh=setInterval(()=>{
     if(document.getElementById('view-activity').classList.contains('active'))loadActivity();
   },30000);
+  _actSyncInterval=setInterval(()=>{
+    if(document.getElementById('view-activity').classList.contains('active'))syncExternalActivity();
+  },300000);
 }
 startActivityAutoRefresh();
 

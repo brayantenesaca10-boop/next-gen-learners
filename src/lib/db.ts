@@ -126,6 +126,12 @@ export async function initDb() {
       created_at TEXT DEFAULT (datetime('now'))
     )
   `);
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS sync_state (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    )
+  `);
   // Migrations
   try { await db.execute("ALTER TABLE contacts ADD COLUMN source TEXT DEFAULT 'ryan'"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN channel TEXT DEFAULT ''"); } catch {}
@@ -133,6 +139,7 @@ export async function initDb() {
   try { await db.execute("ALTER TABLE contacts ADD COLUMN follow_up_date TEXT DEFAULT NULL"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN contact_type TEXT DEFAULT 'outreach'"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN relationship_status TEXT DEFAULT ''"); } catch {}
+  try { await db.execute("ALTER TABLE activity_log ADD COLUMN external_id TEXT DEFAULT NULL"); } catch {}
 
   initialized = true;
 }
@@ -382,6 +389,30 @@ export async function getActivityLog(limit = 50) {
 export async function getActivityByPerson(person: string, limit = 50) {
   await initDb();
   return (await db.execute({ sql: 'SELECT * FROM activity_log WHERE person = ? ORDER BY created_at DESC LIMIT ?', args: [person, limit] })).rows;
+}
+
+// ── Sync State ──────────────────────────────────────────────────
+export async function getSyncState(key: string): Promise<string | null> {
+  await initDb();
+  const row = (await db.execute({ sql: 'SELECT value FROM sync_state WHERE key = ?', args: [key] })).rows[0];
+  return row ? (row.value as string) : null;
+}
+
+export async function setSyncState(key: string, value: string) {
+  await initDb();
+  await db.execute({ sql: 'INSERT OR REPLACE INTO sync_state (key, value) VALUES (?, ?)', args: [key, value] });
+}
+
+export async function logActivityIfNew(externalId: string, data: { person: string; action: string; resource_type: string; resource_name: string; details?: string; created_at?: string }): Promise<boolean> {
+  await initDb();
+  const existing = (await db.execute({ sql: 'SELECT id FROM activity_log WHERE external_id = ?', args: [externalId] })).rows;
+  if (existing.length > 0) return false;
+  if (data.created_at) {
+    await db.execute({ sql: 'INSERT INTO activity_log (person, action, resource_type, resource_name, details, external_id, created_at) VALUES (?,?,?,?,?,?,?)', args: [data.person, data.action, data.resource_type, data.resource_name, data.details || '', externalId, data.created_at] });
+  } else {
+    await db.execute({ sql: 'INSERT INTO activity_log (person, action, resource_type, resource_name, details, external_id) VALUES (?,?,?,?,?,?)', args: [data.person, data.action, data.resource_type, data.resource_name, data.details || '', externalId] });
+  }
+  return true;
 }
 
 // ── Research Feed ────────────────────────────────────────────────
