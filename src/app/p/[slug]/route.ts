@@ -15,7 +15,11 @@ export async function GET(
     });
   }
 
-  return new NextResponse(proposal.html as string, {
+  // Strip any pricing from older proposals (e.g. "Starter — $2,000 - $5,000" → "Starter")
+  let html = proposal.html as string;
+  html = html.replace(/ — \$[\d,.]+ ?[-–] ?\$[\d,.]+/g, '');
+
+  return new NextResponse(html, {
     headers: { 'Content-Type': 'text/html; charset=utf-8' },
   });
 }
