@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { upsertProposal } from '@/lib/db';
 
-export const maxDuration = 120;
+export const maxDuration = 60;
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY || '' });
 
@@ -37,8 +37,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-5-20250514',
-      max_tokens: 8000,
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 6000,
       messages: [{
         role: 'user',
         content: `You are an AI consultant for Next Generation Learners (NGL), founded by Ryan Vincent. NGL builds custom AI-powered software for businesses. You need to generate a FULL proposal page for a business.
