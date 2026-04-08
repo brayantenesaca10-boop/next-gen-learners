@@ -332,7 +332,7 @@ function buildProposalHTML(businessName: string, businessUrl: string, p: Record<
   <div class="cta-content container">
     <h2>${esc(p.cta_headline as string)}</h2>
     <p>${esc(p.cta_text as string)}</p>
-    <a href="mailto:contact@nextgenerationlearners.com?subject=Proposal: ${encodeURIComponent(businessName)}" class="cta-btn">Let's Talk →</a>
+    <a href="mailto:RyanVincent@nextgenerationlearners.com?subject=Proposal: ${encodeURIComponent(businessName)}" class="cta-btn">Let's Talk →</a>
   </div>
 </div>
 

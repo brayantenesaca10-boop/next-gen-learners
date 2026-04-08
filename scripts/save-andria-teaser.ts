@@ -136,7 +136,7 @@ const html = `<!DOCTYPE html>
 
     <div class="teaser-box fade-up">
       <p>These are just the surface-level wins. We've mapped out a <strong>full automation strategy</strong> for your business — the exact tools to build, what to automate first, and how it all connects. We'd love to walk you through it.</p>
-      <a href="mailto:contact@nextgenerationlearners.com?subject=Let's Talk — Andria Jordania" class="cta-btn">See the Full Breakdown →</a>
+      <a href="mailto:RyanVincent@nextgenerationlearners.com?subject=Let's Talk — Andria Jordania" class="cta-btn">See the Full Breakdown →</a>
       <div class="small">20 min call. No pressure. We'll show you the full plan.</div>
     </div>
   </div>
@@ -148,7 +148,7 @@ const html = `<!DOCTYPE html>
   <div class="cta-content container">
     <h2>What If Your Business Ran While You Slept?</h2>
     <p>You've already built the audience and the products. Let's build the system that sells them for you — so you can focus on creating, not fulfilling.</p>
-    <a href="mailto:contact@nextgenerationlearners.com?subject=Let's Talk — Andria Jordania" class="cta-btn">Book a 20-Min Call →</a>
+    <a href="mailto:RyanVincent@nextgenerationlearners.com?subject=Let's Talk — Andria Jordania" class="cta-btn">Book a 20-Min Call →</a>
   </div>
 </div>
 

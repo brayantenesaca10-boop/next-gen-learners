@@ -148,7 +148,7 @@ function buildTeaserHTML(name: string, p: Record<string, unknown>): string {
     ${tips}
     <div class="teaser-box fade-up">
       <p>We found more. A lot more. We've mapped out a full automation strategy specific to your business — the pain points, the solutions, and exactly what we'd build.</p>
-      <a href="mailto:contact@nextgenerationlearners.com?subject=Let's Talk — ${encodeURIComponent(name)}" class="cta-btn" style="display:inline-flex">Let's Talk About It →</a>
+      <a href="mailto:RyanVincent@nextgenerationlearners.com?subject=Let's Talk — ${encodeURIComponent(name)}" class="cta-btn" style="display:inline-flex">Let's Talk About It →</a>
       <div class="small">20 minutes. No pressure. We'll walk you through everything.</div>
     </div>
   </div>
@@ -160,7 +160,7 @@ function buildTeaserHTML(name: string, p: Record<string, unknown>): string {
   <div class="cta-content container">
     <h2>Ready to Stop Doing Everything Manually?</h2>
     <p>${esc(p.cta_text as string || "Let's hop on a quick call and we'll show you exactly what we'd build for your business.")}</p>
-    <a href="mailto:contact@nextgenerationlearners.com?subject=Let's Talk — ${encodeURIComponent(name)}" class="cta-btn">Book a Call →</a>
+    <a href="mailto:RyanVincent@nextgenerationlearners.com?subject=Let's Talk — ${encodeURIComponent(name)}" class="cta-btn">Book a Call →</a>
   </div>
 </div>
 
