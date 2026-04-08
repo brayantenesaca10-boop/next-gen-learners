@@ -140,6 +140,31 @@ export async function initDb() {
   try { await db.execute("ALTER TABLE contacts ADD COLUMN contact_type TEXT DEFAULT 'outreach'"); } catch {}
   try { await db.execute("ALTER TABLE contacts ADD COLUMN relationship_status TEXT DEFAULT ''"); } catch {}
   try { await db.execute("ALTER TABLE activity_log ADD COLUMN external_id TEXT DEFAULT NULL"); } catch {}
+  // Command center migrations
+  try { await db.execute("ALTER TABLE contacts ADD COLUMN end_goal TEXT DEFAULT ''"); } catch {}
+  try { await db.execute("ALTER TABLE contacts ADD COLUMN priority TEXT DEFAULT 'pipeline'"); } catch {}
+  try { await db.execute("ALTER TABLE contacts ADD COLUMN pipeline TEXT DEFAULT ''"); } catch {}
+  try { await db.execute("ALTER TABLE contacts ADD COLUMN auto_followup INTEGER DEFAULT 1"); } catch {}
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS brain_dumps (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      raw_text TEXT NOT NULL,
+      action_items TEXT DEFAULT '[]',
+      created_at TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS quick_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      contact_id INTEGER,
+      channel TEXT DEFAULT 'imessage',
+      note TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (contact_id) REFERENCES contacts(id) ON DELETE SET NULL
+    )
+  `);
 
   await db.execute(`
     CREATE TABLE IF NOT EXISTS proposals (
@@ -469,4 +494,58 @@ export async function upsertProposal(data: { slug: string; business_name: string
 export async function getAllProposals() {
   await initDb();
   return (await db.execute('SELECT id, slug, business_name, business_url, created_at FROM proposals ORDER BY created_at DESC')).rows;
+}
+
+// ── Command Center ──────────────────────────────────────────────
+export async function getCommandContacts() {
+  await initDb();
+  return (await db.execute("SELECT * FROM contacts ORDER BY CASE priority WHEN 'high-touch' THEN 0 WHEN 'active-deal' THEN 1 WHEN 'pipeline' THEN 2 ELSE 3 END, last_contact_date ASC")).rows;
+}
+
+export async function getOverdueFollowups() {
+  await initDb();
+  return (await db.execute("SELECT * FROM contacts WHERE follow_up_date IS NOT NULL AND follow_up_date <= date('now') ORDER BY follow_up_date ASC")).rows;
+}
+
+export async function getGoingCold(days: number = 7) {
+  await initDb();
+  return (await db.execute({ sql: "SELECT * FROM contacts WHERE status NOT IN ('signed','cold') AND (last_contact_date IS NOT NULL AND last_contact_date <= date('now', '-' || ? || ' days')) ORDER BY last_contact_date ASC", args: [days] })).rows;
+}
+
+export async function updateContactGoal(id: number, data: { end_goal: string; priority: string; pipeline: string; auto_followup: number }) {
+  await initDb();
+  await db.execute({ sql: 'UPDATE contacts SET end_goal=?, priority=?, pipeline=?, auto_followup=? WHERE id=?', args: [data.end_goal, data.priority, data.pipeline, data.auto_followup, id] });
+}
+
+// ── Brain Dumps ─────────────────────────────────────────────────
+export async function getBrainDumps(limit = 20) {
+  await initDb();
+  return (await db.execute({ sql: 'SELECT * FROM brain_dumps ORDER BY created_at DESC LIMIT ?', args: [limit] })).rows;
+}
+
+export async function insertBrainDump(data: { raw_text: string; action_items: string }) {
+  await initDb();
+  const r = await db.execute({ sql: 'INSERT INTO brain_dumps (raw_text, action_items) VALUES (?,?)', args: [data.raw_text, data.action_items] });
+  return r.lastInsertRowid;
+}
+
+export async function deleteBrainDump(id: number) {
+  await initDb();
+  await db.execute({ sql: 'DELETE FROM brain_dumps WHERE id = ?', args: [id] });
+}
+
+// ── Quick Logs ──────────────────────────────────────────────────
+export async function getQuickLogs(limit = 30) {
+  await initDb();
+  return (await db.execute({ sql: "SELECT ql.*, c.name as contact_name FROM quick_logs ql LEFT JOIN contacts c ON ql.contact_id = c.id ORDER BY ql.created_at DESC LIMIT ?", args: [limit] })).rows;
+}
+
+export async function insertQuickLog(data: { contact_id: number | null; channel: string; note: string }) {
+  await initDb();
+  const r = await db.execute({ sql: 'INSERT INTO quick_logs (contact_id, channel, note) VALUES (?,?,?)', args: [data.contact_id, data.channel, data.note] });
+  // Also update contact's last_contact_date
+  if (data.contact_id) {
+    await db.execute({ sql: "UPDATE contacts SET last_contact_date = date('now'), times_contacted = times_contacted + 1 WHERE id = ?", args: [data.contact_id] });
+  }
+  return r.lastInsertRowid;
 }
