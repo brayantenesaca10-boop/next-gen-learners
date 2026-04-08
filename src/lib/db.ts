@@ -504,12 +504,14 @@ export async function getCommandContacts() {
 
 export async function getOverdueFollowups() {
   await initDb();
-  return (await db.execute("SELECT * FROM contacts WHERE follow_up_date IS NOT NULL AND follow_up_date <= date('now') ORDER BY follow_up_date ASC")).rows;
+  // Only flag contacts that have an end goal — no goal means no reason to follow up
+  return (await db.execute("SELECT * FROM contacts WHERE follow_up_date IS NOT NULL AND follow_up_date <= date('now') AND end_goal != '' ORDER BY follow_up_date ASC")).rows;
 }
 
 export async function getGoingCold(days: number = 7) {
   await initDb();
-  return (await db.execute({ sql: "SELECT * FROM contacts WHERE status NOT IN ('signed','cold') AND (last_contact_date IS NOT NULL AND last_contact_date <= date('now', '-' || ? || ' days')) ORDER BY last_contact_date ASC", args: [days] })).rows;
+  // Only flag contacts with an end goal — if there's no goal, there's no reason to flag them
+  return (await db.execute({ sql: "SELECT * FROM contacts WHERE end_goal != '' AND status NOT IN ('signed','cold') AND (last_contact_date IS NOT NULL AND last_contact_date <= date('now', '-' || ? || ' days')) ORDER BY last_contact_date ASC", args: [days] })).rows;
 }
 
 export async function updateContactGoal(id: number, data: { end_goal: string; priority: string; pipeline: string; auto_followup: number }) {

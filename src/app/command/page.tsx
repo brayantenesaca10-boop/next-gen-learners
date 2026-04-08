@@ -129,7 +129,8 @@ function ContactCard({
 }) {
   const p = priorityColors[contact.priority] || priorityColors.pipeline;
   const days = daysAgo(contact.last_contact_date);
-  const isStale = days > 5 && contact.status !== "signed" && contact.status !== "cold";
+  // Only flag as stale if there's an active end goal — no goal means no urgency
+  const isStale = days > 5 && contact.status !== "signed" && contact.status !== "cold" && !!contact.end_goal;
 
   return (
     <div
@@ -145,7 +146,7 @@ function ContactCard({
         <div className="flex items-center gap-2">
           {isStale && (
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-medium">
-              COLD
+              GOING COLD
             </span>
           )}
           <span
@@ -164,10 +165,14 @@ function ContactCard({
         <p className="text-white/30 text-xs mb-2">{contact.organization}</p>
       )}
 
-      {contact.end_goal && (
+      {contact.end_goal ? (
         <div className="mb-3 p-2 rounded-lg bg-white/[0.04] border border-white/[0.06]">
           <p className="text-white/25 text-[10px] tracking-wider uppercase mb-0.5">End Goal</p>
           <p className="text-white/70 text-xs leading-relaxed">{contact.end_goal}</p>
+        </div>
+      ) : (
+        <div className="mb-3 p-2 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+          <p className="text-white/15 text-[11px] italic">No end goal — click to set one</p>
         </div>
       )}
 
@@ -774,7 +779,7 @@ export default function CommandPage() {
                 </div>
                 {data.briefing.needsApproval.length === 0 && data.briefing.goingCold.length === 0 ? (
                   <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] text-center">
-                    <p className="text-white/25 text-xs">Nothing urgent right now</p>
+                    <p className="text-white/25 text-xs">All clear — no contacts with active goals need attention</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -786,11 +791,13 @@ export default function CommandPage() {
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-white text-sm font-medium">{c.name}</span>
-                          <span className="text-red-400/60 text-[10px]">overdue</span>
+                          <span className="text-red-400/60 text-[10px]">follow-up overdue</span>
                         </div>
-                        {c.end_goal && (
-                          <p className="text-white/30 text-xs mt-1 line-clamp-2">{c.end_goal}</p>
-                        )}
+                        <p className="text-red-400/40 text-[10px] mt-1 tracking-wider uppercase">Why</p>
+                        <p className="text-white/50 text-xs mt-0.5 leading-relaxed">{c.end_goal}</p>
+                        <p className="text-white/20 text-[10px] mt-1">
+                          Last contact {daysAgoLabel(c.last_contact_date)} &middot; Follow-up was {c.follow_up_date}
+                        </p>
                       </div>
                     ))}
                     {data.briefing.goingCold.map((c) => (
@@ -802,12 +809,11 @@ export default function CommandPage() {
                         <div className="flex items-center justify-between">
                           <span className="text-white text-sm font-medium">{c.name}</span>
                           <span className="text-amber-400/60 text-[10px]">
-                            {daysAgoLabel(c.last_contact_date)}
+                            no contact in {daysAgo(c.last_contact_date)}d
                           </span>
                         </div>
-                        {c.end_goal && (
-                          <p className="text-white/30 text-xs mt-1 line-clamp-2">{c.end_goal}</p>
-                        )}
+                        <p className="text-amber-400/40 text-[10px] mt-1 tracking-wider uppercase">At risk</p>
+                        <p className="text-white/50 text-xs mt-0.5 leading-relaxed">{c.end_goal}</p>
                       </div>
                     ))}
                   </div>
