@@ -1,11 +1,21 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 
-/* ── pipeline data ── */
+/* ═══════════════════════════════════════════
+   PIPELINE DATA
+   ═══════════════════════════════════════════ */
 const libraryPipeline = {
   name: "Library Outreach",
   color: "#06B6D4",
+  reasoning: [
+    "Libraries are community hubs — parents already trust them with their kids.",
+    "Children's coordinators actively look for new educational programs to fill their calendar.",
+    "Unlike schools, libraries have fewer bureaucratic layers — one conversation can lead to a pilot.",
+    "A successful library program creates visible social proof that makes the nearby school district pay attention.",
+    "Emailing 2-3 contacts per library ensures we reach the right person even if titles vary.",
+    "The 5-day + 7-day follow-up cadence is aggressive enough to stay top-of-mind but respectful enough not to burn the bridge.",
+  ],
   steps: [
     {
       id: "find",
@@ -46,393 +56,661 @@ const libraryPipeline = {
   ],
 };
 
-/* ── future pipelines (placeholders) ── */
 const futurePipelines = [
-  { name: "School Districts", color: "#7C3AED", status: "coming soon" },
-  { name: "After-School Programs", color: "#10B981", status: "coming soon" },
-  { name: "Corporate Sponsors", color: "#F59E0B", status: "coming soon" },
+  { name: "School Districts", color: "#7C3AED", angle: 150 },
+  { name: "After-School Programs", color: "#10B981", angle: 210 },
+  { name: "Corporate Sponsors", color: "#F59E0B", angle: 330 },
 ];
 
-/* ── animated dot on path ── */
-function PulseDot({ color, delay }: { color: string; delay: number }) {
+/* ═══════════════════════════════════════════
+   CANVAS HOOK — pan & zoom
+   ═══════════════════════════════════════════ */
+function useCanvas() {
+  const [cam, setCam] = useState({ x: 0, y: 0, zoom: 1 });
+  const isPanning = useRef(false);
+  const lastPos = useRef({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const onWheel = useCallback((e: React.WheelEvent) => {
+    e.preventDefault();
+    if (e.ctrlKey || e.metaKey) {
+      // pinch-zoom or ctrl+scroll
+      const delta = -e.deltaY * 0.002;
+      setCam((c) => ({
+        ...c,
+        zoom: Math.min(3, Math.max(0.15, c.zoom + delta * c.zoom)),
+      }));
+    } else {
+      // pan
+      setCam((c) => ({
+        ...c,
+        x: c.x - e.deltaX,
+        y: c.y - e.deltaY,
+      }));
+    }
+  }, []);
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    // only pan on middle-click, or when holding space (we track space separately), or direct canvas click
+    if (e.button === 1 || e.button === 0) {
+      isPanning.current = true;
+      lastPos.current = { x: e.clientX, y: e.clientY };
+      (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    }
+  }, []);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!isPanning.current) return;
+    const dx = e.clientX - lastPos.current.x;
+    const dy = e.clientY - lastPos.current.y;
+    lastPos.current = { x: e.clientX, y: e.clientY };
+    setCam((c) => ({ ...c, x: c.x + dx, y: c.y + dy }));
+  }, []);
+
+  const onPointerUp = useCallback(() => {
+    isPanning.current = false;
+  }, []);
+
+  const zoomIn = useCallback(() => {
+    setCam((c) => ({ ...c, zoom: Math.min(3, c.zoom * 1.3) }));
+  }, []);
+
+  const zoomOut = useCallback(() => {
+    setCam((c) => ({ ...c, zoom: Math.max(0.15, c.zoom / 1.3) }));
+  }, []);
+
+  const resetView = useCallback(() => {
+    setCam({ x: 0, y: 0, zoom: 1 });
+  }, []);
+
+  const fitView = useCallback(() => {
+    setCam({ x: 0, y: 0, zoom: 0.6 });
+  }, []);
+
+  // prevent default wheel on the container to avoid page scroll
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const handler = (e: WheelEvent) => e.preventDefault();
+    el.addEventListener("wheel", handler, { passive: false });
+    return () => el.removeEventListener("wheel", handler);
+  }, []);
+
+  return {
+    cam,
+    containerRef,
+    onWheel,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    zoomIn,
+    zoomOut,
+    resetView,
+    fitView,
+  };
+}
+
+/* ═══════════════════════════════════════════
+   STEP NODE COMPONENT
+   ═══════════════════════════════════════════ */
+function StepNode({
+  step,
+  index,
+  total,
+  color,
+  visible,
+}: {
+  step: (typeof libraryPipeline.steps)[0];
+  index: number;
+  total: number;
+  color: string;
+  visible: boolean;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const isLast = index === total - 1;
+
   return (
-    <span
-      className="absolute w-2.5 h-2.5 rounded-full animate-travel"
+    <div
+      className="absolute flex items-center gap-4"
       style={{
-        backgroundColor: color,
-        boxShadow: `0 0 12px ${color}, 0 0 24px ${color}40`,
-        animationDelay: `${delay}s`,
+        left: index * 280,
+        top: 0,
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transition: `all 0.5s cubic-bezier(0.16,1,0.3,1) ${index * 0.12}s`,
       }}
-    />
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* node */}
+      <div className="relative flex flex-col items-center" style={{ width: 220 }}>
+        {/* circle */}
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all duration-300 cursor-default"
+          style={{
+            borderColor: hovered ? color : `${color}50`,
+            background: hovered ? `${color}20` : `${color}0A`,
+            boxShadow: hovered ? `0 0 30px ${color}30` : "none",
+          }}
+        >
+          <svg
+            className="w-6 h-6 transition-colors duration-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke={hovered ? color : `${color}90`}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d={step.icon} />
+          </svg>
+          {/* step number badge */}
+          <span
+            className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold border"
+            style={{
+              background: "#000",
+              borderColor: `${color}60`,
+              color: color,
+            }}
+          >
+            {index + 1}
+          </span>
+        </div>
+
+        {/* label + detail */}
+        <h3 className="text-white font-semibold text-sm mt-3 text-center leading-tight">
+          {step.label}
+        </h3>
+        <p className="text-white/35 text-xs mt-1.5 text-center leading-relaxed max-w-[200px]">
+          {step.detail}
+        </p>
+
+        {/* timing badge */}
+        {(index === 3 || index === 4) && (
+          <span
+            className="mt-2 text-[10px] tracking-wider px-2.5 py-0.5 rounded-full border"
+            style={{
+              color: `${color}90`,
+              borderColor: `${color}30`,
+              background: `${color}10`,
+            }}
+          >
+            {index === 3 ? "+5 DAYS" : "+7 DAYS"}
+          </span>
+        )}
+
+        {isLast && (
+          <span className="mt-2 text-[10px] tracking-wider text-emerald-400/80 font-semibold uppercase">
+            Goal
+          </span>
+        )}
+      </div>
+
+      {/* connector arrow to next */}
+      {!isLast && (
+        <svg
+          className="absolute"
+          style={{ left: 220, top: 32, width: 60, height: 2 }}
+          viewBox="0 0 60 2"
+        >
+          <line
+            x1="0"
+            y1="1"
+            x2="50"
+            y2="1"
+            stroke={`${color}40`}
+            strokeWidth="1.5"
+            strokeDasharray="4 4"
+          >
+            <animate attributeName="stroke-dashoffset" from="0" to="-16" dur="1.5s" repeatCount="indefinite" />
+          </line>
+          <polygon points="50,0 58,1 50,2" fill={`${color}60`} />
+        </svg>
+      )}
+    </div>
   );
 }
 
-export default function SystemsPage() {
-  const [activeStep, setActiveStep] = useState<string | null>(null);
-  const [visibleSteps, setVisibleSteps] = useState<Set<string>>(new Set());
-  const [showBranches, setShowBranches] = useState(false);
-  const [showTitle, setShowTitle] = useState(false);
-  const stepsRef = useRef<(HTMLDivElement | null)[]>([]);
-
-  useEffect(() => {
-    // stagger the entrance
-    setTimeout(() => setShowTitle(true), 300);
-    setTimeout(() => setShowBranches(true), 900);
-
-    // reveal each step sequentially
-    libraryPipeline.steps.forEach((step, i) => {
-      setTimeout(() => {
-        setVisibleSteps((prev) => new Set(prev).add(step.id));
-      }, 1400 + i * 350);
-    });
-  }, []);
-
-  // intersection observer for scroll reveal (nice-to-have for long lists)
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            const id = (e.target as HTMLElement).dataset.stepId;
-            if (id) setVisibleSteps((prev) => new Set(prev).add(id));
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
-    stepsRef.current.forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
+/* ═══════════════════════════════════════════
+   REASONING PANEL
+   ═══════════════════════════════════════════ */
+function ReasoningPanel({
+  open,
+  onClose,
+  pipeline,
+}: {
+  open: boolean;
+  onClose: () => void;
+  pipeline: typeof libraryPipeline;
+}) {
   return (
     <>
-      {/* inline keyframes */}
-      <style>{`
-        @keyframes travel {
-          0%   { left: 0; opacity: 0; }
-          10%  { opacity: 1; }
-          90%  { opacity: 1; }
-          100% { left: 100%; opacity: 0; }
-        }
-        .animate-travel {
-          animation: travel 3s ease-in-out infinite;
-        }
-        @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 20px rgba(6,182,212,0.3), 0 0 60px rgba(6,182,212,0.1); }
-          50%      { box-shadow: 0 0 30px rgba(6,182,212,0.5), 0 0 80px rgba(6,182,212,0.2); }
-        }
-        @keyframes dash-flow {
-          to { stroke-dashoffset: -20; }
-        }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(24px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to   { opacity: 1; }
-        }
-        @keyframes scaleIn {
-          from { opacity: 0; transform: scale(0.7); }
-          to   { opacity: 1; transform: scale(1); }
-        }
-        @keyframes branchGrow {
-          from { opacity: 0; width: 0; }
-          to   { opacity: 1; width: 100%; }
-        }
-        .step-visible {
-          animation: fadeInUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
-        }
-        .node-ring {
-          transition: all 0.3s ease;
-        }
-        .node-ring:hover {
-          transform: scale(1.15);
-        }
-      `}</style>
-
-      <div className="min-h-screen bg-black relative overflow-hidden">
-        {/* subtle grid bg */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
-
-        {/* floating ambient orbs */}
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full bg-cyan-500/5 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-violet-500/5 blur-[120px] pointer-events-none" />
-
-        {/* ═══ HERO: NGL CORE ═══ */}
-        <section className="relative flex flex-col items-center justify-center pt-40 pb-20 px-4">
-          {/* glowing center node */}
-          <div
-            className="relative"
-            style={{
-              opacity: showTitle ? 1 : 0,
-              transform: showTitle ? "scale(1)" : "scale(0.7)",
-              transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)",
-            }}
-          >
-            <div
-              className="w-36 h-36 rounded-full flex items-center justify-center relative"
-              style={{
-                background: "radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%)",
-                animation: "pulse-glow 4s ease-in-out infinite",
-              }}
-            >
-              {/* ring */}
-              <div className="absolute inset-2 rounded-full border border-cyan-500/30" />
-              <div className="absolute inset-4 rounded-full border border-cyan-400/20" />
-              <span className="text-white text-5xl font-extrabold tracking-wider select-none">
-                NGL
-              </span>
-            </div>
-          </div>
-
-          <p
-            className="mt-6 text-white/40 text-sm tracking-[0.25em] uppercase"
-            style={{
-              opacity: showTitle ? 1 : 0,
-              transition: "opacity 0.6s ease 0.4s",
-            }}
-          >
-            Systems &amp; Pipelines
-          </p>
-        </section>
-
-        {/* ═══ BRANCH LINES FROM CENTER ═══ */}
-        <section className="relative max-w-6xl mx-auto px-4">
-          {/* branch connector line */}
-          <div className="flex justify-center mb-8">
-            <div
-              className="h-20 w-px relative overflow-hidden"
-              style={{
-                opacity: showBranches ? 1 : 0,
-                transition: "opacity 0.6s ease",
-              }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/60 to-cyan-500/10" />
-              {/* traveling dot */}
-              <span
-                className="absolute w-1.5 h-1.5 rounded-full bg-cyan-400 left-1/2 -translate-x-1/2"
-                style={{
-                  animation: "travel 2s ease-in-out infinite",
-                  animationDirection: "normal",
-                }}
-              />
-            </div>
-          </div>
-
-          {/* ═══ LIBRARY OUTREACH PIPELINE ═══ */}
-          <div
-            className="relative"
-            style={{
-              opacity: showBranches ? 1 : 0,
-              transform: showBranches ? "translateY(0)" : "translateY(20px)",
-              transition: "all 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s",
-            }}
-          >
-            {/* pipeline header */}
-            <div className="flex items-center gap-3 mb-10">
+      {/* backdrop */}
+      <div
+        className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+        style={{ opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none" }}
+        onClick={onClose}
+      />
+      {/* panel */}
+      <div
+        className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-lg bg-[#0a0a0a] border-l border-white/10 overflow-y-auto transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        style={{ transform: open ? "translateX(0)" : "translateX(100%)" }}
+      >
+        <div className="p-8">
+          {/* header */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
               <div
                 className="w-3 h-3 rounded-full"
-                style={{
-                  backgroundColor: libraryPipeline.color,
-                  boxShadow: `0 0 12px ${libraryPipeline.color}`,
-                }}
+                style={{ backgroundColor: pipeline.color, boxShadow: `0 0 12px ${pipeline.color}` }}
               />
-              <h2 className="text-white text-2xl font-bold tracking-tight">
-                {libraryPipeline.name}
-              </h2>
-              <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/30 to-transparent ml-2" />
-              <span className="text-cyan-400/60 text-xs tracking-widest uppercase">Active</span>
+              <h2 className="text-white text-xl font-bold">Why This Pipeline?</h2>
             </div>
-
-            {/* pipeline steps */}
-            <div className="relative ml-6">
-              {/* vertical flow line */}
-              <div className="absolute left-6 top-0 bottom-0 w-px">
-                <div className="h-full bg-gradient-to-b from-cyan-500/40 via-cyan-500/20 to-transparent" />
-                {/* animated dashes */}
-                <svg className="absolute inset-0 w-full h-full overflow-visible">
-                  <line
-                    x1="0.5"
-                    y1="0"
-                    x2="0.5"
-                    y2="100%"
-                    stroke="rgba(6,182,212,0.4)"
-                    strokeWidth="1"
-                    strokeDasharray="6 6"
-                    style={{ animation: "dash-flow 1.5s linear infinite" }}
-                  />
-                </svg>
-              </div>
-
-              {libraryPipeline.steps.map((step, i) => {
-                const isVisible = visibleSteps.has(step.id);
-                const isActive = activeStep === step.id;
-                const isLast = i === libraryPipeline.steps.length - 1;
-
-                return (
-                  <div
-                    key={step.id}
-                    ref={(el) => { stepsRef.current[i] = el; }}
-                    data-step-id={step.id}
-                    className="relative flex items-start gap-5 mb-2 group cursor-pointer"
-                    style={{
-                      opacity: isVisible ? 1 : 0,
-                      transform: isVisible ? "translateY(0)" : "translateY(24px)",
-                      transition: `all 0.6s cubic-bezier(0.16,1,0.3,1)`,
-                    }}
-                    onMouseEnter={() => setActiveStep(step.id)}
-                    onMouseLeave={() => setActiveStep(null)}
-                  >
-                    {/* node circle */}
-                    <div className="relative z-10 flex-shrink-0">
-                      <div
-                        className="node-ring w-12 h-12 rounded-full flex items-center justify-center border"
-                        style={{
-                          borderColor: isActive
-                            ? libraryPipeline.color
-                            : "rgba(6,182,212,0.3)",
-                          background: isActive
-                            ? "rgba(6,182,212,0.15)"
-                            : "rgba(6,182,212,0.05)",
-                          boxShadow: isActive
-                            ? `0 0 20px ${libraryPipeline.color}40`
-                            : "none",
-                        }}
-                      >
-                        <svg
-                          className="w-5 h-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke={isActive ? "#06B6D4" : "rgba(6,182,212,0.6)"}
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d={step.icon} />
-                        </svg>
-                      </div>
-                      {/* step number */}
-                      <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-black border border-cyan-500/40 flex items-center justify-center text-[10px] text-cyan-400 font-bold">
-                        {i + 1}
-                      </span>
-                    </div>
-
-                    {/* card */}
-                    <div
-                      className="flex-1 rounded-xl px-6 py-5 border transition-all duration-300 mb-4"
-                      style={{
-                        background: isActive
-                          ? "rgba(6,182,212,0.08)"
-                          : "rgba(255,255,255,0.02)",
-                        borderColor: isActive
-                          ? "rgba(6,182,212,0.3)"
-                          : "rgba(255,255,255,0.06)",
-                      }}
-                    >
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-white font-semibold text-lg">{step.label}</h3>
-                        {i > 0 && i < libraryPipeline.steps.length - 1 && (
-                          <span className="text-white/20 text-xs tracking-wider">
-                            {i === 3 ? "+5 days" : i === 4 ? "+7 days" : ""}
-                          </span>
-                        )}
-                        {isLast && (
-                          <span className="text-emerald-400/80 text-xs font-semibold tracking-wider uppercase">
-                            Goal
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-white/40 text-sm mt-1.5 leading-relaxed">
-                        {step.detail}
-                      </p>
-
-                      {/* expanded content on hover */}
-                      <div
-                        className="overflow-hidden transition-all duration-300"
-                        style={{
-                          maxHeight: isActive ? "80px" : "0",
-                          opacity: isActive ? 1 : 0,
-                        }}
-                      >
-                        <div className="mt-3 pt-3 border-t border-cyan-500/10">
-                          <div className="flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                            <span className="text-cyan-400/60 text-xs">
-                              {isLast
-                                ? "Program launch & onboarding"
-                                : `Stage ${i + 1} of ${libraryPipeline.steps.length}`}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* connector arrow between steps */}
-                    {!isLast && (
-                      <div className="absolute left-6 top-14 w-px h-6 flex justify-center">
-                        <svg
-                          className="w-2 h-3 text-cyan-500/30 mt-auto"
-                          viewBox="0 0 8 12"
-                          fill="currentColor"
-                        >
-                          <path d="M4 12L0 6h8L4 12z" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            <button
+              onClick={onClose}
+              className="text-white/30 hover:text-white/70 transition-colors p-1"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
 
-          {/* ═══ FUTURE PIPELINES (dimmed branches) ═══ */}
-          <div
-            className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-4"
-            style={{
-              opacity: showBranches ? 1 : 0,
-              transition: "opacity 0.6s ease 1.5s",
-            }}
-          >
-            {futurePipelines.map((p) => (
+          {/* pipeline name */}
+          <div className="mb-8">
+            <span className="text-white/40 text-xs tracking-[0.2em] uppercase">Pipeline</span>
+            <h3
+              className="text-2xl font-bold mt-1"
+              style={{ color: pipeline.color }}
+            >
+              {pipeline.name}
+            </h3>
+          </div>
+
+          {/* reasoning bullets */}
+          <div className="space-y-5">
+            {pipeline.reasoning.map((r, i) => (
               <div
-                key={p.name}
-                className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-6 py-5 flex items-center gap-4 group hover:border-white/10 transition-all duration-300"
+                key={i}
+                className="flex gap-4 items-start"
+                style={{
+                  animation: open ? `fadeSlideIn 0.4s ease ${0.15 + i * 0.08}s both` : "none",
+                }}
               >
                 <div
-                  className="w-3 h-3 rounded-full opacity-40 group-hover:opacity-70 transition-opacity"
-                  style={{ backgroundColor: p.color }}
-                />
-                <div>
-                  <h3 className="text-white/50 font-semibold text-sm group-hover:text-white/70 transition-colors">
-                    {p.name}
-                  </h3>
-                  <span className="text-white/20 text-xs tracking-widest uppercase">
-                    {p.status}
+                  className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 border"
+                  style={{
+                    borderColor: `${pipeline.color}40`,
+                    background: `${pipeline.color}10`,
+                  }}
+                >
+                  <span className="text-[11px] font-bold" style={{ color: pipeline.color }}>
+                    {i + 1}
                   </span>
                 </div>
+                <p className="text-white/70 text-sm leading-relaxed">{r}</p>
               </div>
             ))}
           </div>
-        </section>
 
-        {/* bottom spacer */}
-        <div className="h-32" />
-
-        {/* footer email */}
-        <div className="text-center pb-10">
-          <a
-            href="mailto:brayan@nextgenerationlearners.com"
-            className="text-white/20 text-xs hover:text-cyan-400/60 transition-colors"
-          >
-            brayan@nextgenerationlearners.com
-          </a>
+          {/* steps recap */}
+          <div className="mt-10 pt-8 border-t border-white/[0.06]">
+            <span className="text-white/40 text-xs tracking-[0.2em] uppercase">Flow</span>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {pipeline.steps.map((s, i) => (
+                <div key={s.id} className="flex items-center gap-2">
+                  <span
+                    className="text-xs font-medium px-3 py-1.5 rounded-full border"
+                    style={{
+                      color: `${pipeline.color}CC`,
+                      borderColor: `${pipeline.color}30`,
+                      background: `${pipeline.color}08`,
+                    }}
+                  >
+                    {s.label}
+                  </span>
+                  {i < pipeline.steps.length - 1 && (
+                    <svg className="w-4 h-4 text-white/15" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+      </div>
+    </>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   MAIN PAGE
+   ═══════════════════════════════════════════ */
+export default function SystemsPage() {
+  const {
+    cam,
+    containerRef,
+    onWheel,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    zoomIn,
+    zoomOut,
+    resetView,
+    fitView,
+  } = useCanvas();
+
+  const [mounted, setMounted] = useState(false);
+  const [stepsVisible, setStepsVisible] = useState(false);
+  const [reasoningOpen, setReasoningOpen] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => setMounted(true), 200);
+    setTimeout(() => setStepsVisible(true), 800);
+  }, []);
+
+  const zoomPercent = Math.round(cam.zoom * 100);
+
+  return (
+    <>
+      <style>{`
+        @keyframes dash-flow {
+          to { stroke-dashoffset: -20; }
+        }
+        @keyframes pulse-ring {
+          0%, 100% { box-shadow: 0 0 20px rgba(6,182,212,0.2), 0 0 60px rgba(6,182,212,0.05); }
+          50%       { box-shadow: 0 0 40px rgba(6,182,212,0.35), 0 0 80px rgba(6,182,212,0.1); }
+        }
+        @keyframes fadeSlideIn {
+          from { opacity: 0; transform: translateX(12px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes dotTravel {
+          0%   { offset-distance: 0%; opacity: 0; }
+          10%  { opacity: 1; }
+          90%  { opacity: 1; }
+          100% { offset-distance: 100%; opacity: 0; }
+        }
+      `}</style>
+
+      <div className="fixed inset-0 bg-black overflow-hidden" style={{ top: 0 }}>
+        {/* ── dot grid background ── */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)",
+            backgroundSize: `${24 * cam.zoom}px ${24 * cam.zoom}px`,
+            backgroundPosition: `${cam.x}px ${cam.y}px`,
+          }}
+        />
+
+        {/* ── CANVAS (pan & zoom area) ── */}
+        <div
+          ref={containerRef}
+          className="absolute inset-0 cursor-grab active:cursor-grabbing"
+          onWheel={onWheel}
+          onPointerDown={(e) => {
+            // don't pan if clicking a button or interactive element
+            if ((e.target as HTMLElement).closest("button, [data-no-pan]")) return;
+            onPointerDown(e);
+          }}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+        >
+          <div
+            className="absolute"
+            style={{
+              left: "50%",
+              top: "50%",
+              transform: `translate(${cam.x}px, ${cam.y}px) scale(${cam.zoom})`,
+              transformOrigin: "0 0",
+            }}
+          >
+            {/* ═══ NGL CORE NODE ═══ */}
+            <div
+              className="absolute flex flex-col items-center"
+              style={{
+                left: -72,
+                top: -72,
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? "scale(1)" : "scale(0.5)",
+                transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)",
+              }}
+            >
+              <div
+                className="w-36 h-36 rounded-full flex items-center justify-center relative"
+                style={{ animation: "pulse-ring 4s ease-in-out infinite" }}
+              >
+                <div className="absolute inset-0 rounded-full border border-cyan-500/20" />
+                <div className="absolute inset-3 rounded-full border border-cyan-400/10" />
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-500/10 to-violet-500/5" />
+                <span className="text-white text-5xl font-extrabold tracking-wider select-none relative z-10">
+                  NGL
+                </span>
+              </div>
+              <span className="text-white/30 text-[11px] tracking-[0.3em] uppercase mt-3 select-none">
+                Systems & Pipelines
+              </span>
+            </div>
+
+            {/* ═══ LIBRARY PIPELINE BRANCH ═══ */}
+            <div
+              className="absolute"
+              style={{
+                left: 140,
+                top: -10,
+                opacity: mounted ? 1 : 0,
+                transition: "opacity 0.6s ease 0.4s",
+              }}
+            >
+              {/* connector from NGL to pipeline */}
+              <svg className="absolute" style={{ left: -140, top: 10, width: 160, height: 2 }}>
+                <line
+                  x1="0" y1="1" x2="150" y2="1"
+                  stroke="rgba(6,182,212,0.3)"
+                  strokeWidth="1.5"
+                  strokeDasharray="6 4"
+                >
+                  <animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.5s" repeatCount="indefinite" />
+                </line>
+                <polygon points="150,0 158,1 150,2" fill="rgba(6,182,212,0.5)" />
+              </svg>
+
+              {/* pipeline header row */}
+              <div className="flex items-center gap-3 mb-8 select-none">
+                <div
+                  className="w-3 h-3 rounded-full flex-shrink-0"
+                  style={{
+                    backgroundColor: libraryPipeline.color,
+                    boxShadow: `0 0 12px ${libraryPipeline.color}`,
+                  }}
+                />
+                <h2 className="text-white text-xl font-bold tracking-tight whitespace-nowrap">
+                  {libraryPipeline.name}
+                </h2>
+                <span className="text-cyan-400/40 text-[10px] tracking-[0.2em] uppercase whitespace-nowrap border border-cyan-500/20 px-2 py-0.5 rounded-full">
+                  Active
+                </span>
+                {/* reasoning button */}
+                <button
+                  data-no-pan
+                  onClick={() => setReasoningOpen(true)}
+                  className="ml-2 flex items-center gap-1.5 text-[11px] tracking-wider text-cyan-400/50 hover:text-cyan-400 border border-cyan-500/20 hover:border-cyan-500/40 px-3 py-1 rounded-full transition-all duration-300 hover:bg-cyan-500/10 cursor-pointer whitespace-nowrap"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
+                  </svg>
+                  Why this pipeline?
+                </button>
+              </div>
+
+              {/* steps — horizontal flow */}
+              <div className="relative" style={{ height: 180 }}>
+                {libraryPipeline.steps.map((step, i) => (
+                  <StepNode
+                    key={step.id}
+                    step={step}
+                    index={i}
+                    total={libraryPipeline.steps.length}
+                    color={libraryPipeline.color}
+                    visible={stepsVisible}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* ═══ FUTURE PIPELINE BRANCHES (dimmed) ═══ */}
+            {futurePipelines.map((p, i) => {
+              const angles = [-40, 40, -80];
+              const distances = [220, 240, 200];
+              const angle = (angles[i] * Math.PI) / 180;
+              const dist = distances[i];
+              const dx = Math.cos(angle) * dist;
+              const dy = Math.sin(angle) * dist;
+
+              // line end, slightly shorter
+              const lineDist = dist - 50;
+              const ldx = Math.cos(angle) * lineDist;
+              const ldy = Math.sin(angle) * lineDist;
+
+              return (
+                <div
+                  key={p.name}
+                  style={{
+                    opacity: mounted ? 1 : 0,
+                    transition: `opacity 0.6s ease ${1.5 + i * 0.2}s`,
+                  }}
+                >
+                  {/* connector line */}
+                  <svg
+                    className="absolute overflow-visible"
+                    style={{ left: 0, top: 0, width: 1, height: 1 }}
+                  >
+                    <line
+                      x1="0"
+                      y1="0"
+                      x2={ldx}
+                      y2={ldy}
+                      stroke={`${p.color}20`}
+                      strokeWidth="1"
+                      strokeDasharray="4 6"
+                    />
+                  </svg>
+
+                  {/* branch label */}
+                  <div
+                    className="absolute flex items-center gap-3 group"
+                    style={{ left: dx - 80, top: dy - 16 }}
+                  >
+                    <div
+                      className="w-2.5 h-2.5 rounded-full opacity-40 group-hover:opacity-80 transition-opacity"
+                      style={{ backgroundColor: p.color }}
+                    />
+                    <div>
+                      <span className="text-white/30 text-sm font-medium group-hover:text-white/50 transition-colors whitespace-nowrap">
+                        {p.name}
+                      </span>
+                      <span className="block text-white/15 text-[10px] tracking-[0.15em] uppercase">
+                        coming soon
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── ZOOM CONTROLS (fixed overlay) ── */}
+        <div className="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-1.5">
+          {/* zoom percentage */}
+          <span className="text-white/25 text-[10px] tracking-wider font-mono mb-1 select-none">
+            {zoomPercent}%
+          </span>
+
+          <button
+            onClick={zoomIn}
+            className="w-9 h-9 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] flex items-center justify-center text-white/50 hover:text-white/80 transition-all"
+            title="Zoom in"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
+          </button>
+
+          <button
+            onClick={zoomOut}
+            className="w-9 h-9 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] flex items-center justify-center text-white/50 hover:text-white/80 transition-all"
+            title="Zoom out"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+            </svg>
+          </button>
+
+          <div className="w-6 h-px bg-white/10 my-0.5" />
+
+          <button
+            onClick={resetView}
+            className="w-9 h-9 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] flex items-center justify-center text-white/50 hover:text-white/80 transition-all"
+            title="Reset view"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+            </svg>
+          </button>
+
+          <button
+            onClick={fitView}
+            className="w-9 h-9 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] flex items-center justify-center text-white/50 hover:text-white/80 transition-all"
+            title="Fit view"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 9V4.5M9 9H4.5M9 9L3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5l5.25 5.25" />
+            </svg>
+          </button>
+        </div>
+
+        {/* ── MINIMAP (fixed overlay) ── */}
+        <div className="fixed bottom-6 left-6 z-40 w-32 h-20 rounded-lg bg-white/[0.04] border border-white/[0.08] overflow-hidden select-none pointer-events-none">
+          <div
+            className="absolute"
+            style={{
+              left: "50%",
+              top: "50%",
+              transform: `translate(${cam.x * 0.04}px, ${cam.y * 0.04}px)`,
+            }}
+          >
+            {/* NGL dot */}
+            <div className="w-2 h-2 rounded-full bg-cyan-500/60 absolute -translate-x-1/2 -translate-y-1/2" />
+            {/* pipeline line */}
+            <div className="w-16 h-px bg-cyan-500/30 absolute top-0 left-1" />
+          </div>
+          {/* viewport indicator */}
+          <div
+            className="absolute border border-white/20 rounded-sm"
+            style={{
+              width: `${Math.min(100, 100 / cam.zoom)}%`,
+              height: `${Math.min(100, 100 / cam.zoom)}%`,
+              left: `${50 - cam.x * 0.04 - 50 / cam.zoom}%`,
+              top: `${50 - cam.y * 0.04 - 50 / cam.zoom}%`,
+            }}
+          />
+        </div>
+
+        {/* ── HELP HINT ── */}
+        <div
+          className="fixed top-20 left-1/2 -translate-x-1/2 z-40 text-white/20 text-[11px] tracking-wider select-none transition-opacity duration-1000"
+          style={{ opacity: mounted ? 1 : 0, transitionDelay: "2s" }}
+        >
+          Scroll to pan &middot; Pinch or Ctrl+Scroll to zoom
+        </div>
+
+        {/* ── REASONING PANEL ── */}
+        <ReasoningPanel
+          open={reasoningOpen}
+          onClose={() => setReasoningOpen(false)}
+          pipeline={libraryPipeline}
+        />
       </div>
     </>
   );
