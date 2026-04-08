@@ -593,6 +593,10 @@ export default function CommandPage() {
   const [editContact, setEditContact] = useState<Contact | null>(null);
   const [contactFilter, setContactFilter] = useState<"all" | "high-touch" | "active-deal" | "pipeline">("all");
   const [activityTab, setActivityTab] = useState<"brayan" | "ryan">("brayan");
+  const [syncing, setSyncing] = useState(false);
+  const [backfilling, setBackfilling] = useState(false);
+  const [lastSync, setLastSync] = useState<string | null>(null);
+  const [syncUpdates, setSyncUpdates] = useState(0);
 
   const fetchData = useCallback(async () => {
     try {
@@ -606,9 +610,49 @@ export default function CommandPage() {
     }
   }, []);
 
+  // Real-time sync — polls Gmail history every 15 seconds
+  const syncGmail = useCallback(async (silent = true) => {
+    if (!silent) setSyncing(true);
+    try {
+      const res = await fetch("/api/command/sync");
+      const d = await res.json();
+      if (d.updated > 0) {
+        setSyncUpdates((prev) => prev + d.updated);
+        fetchData(); // Refresh dashboard with new data
+      }
+      setLastSync(new Date().toLocaleTimeString());
+    } catch {
+      // silent
+    } finally {
+      setSyncing(false);
+    }
+  }, [fetchData]);
+
+  // Backfill from Gmail history
+  const runBackfill = useCallback(async () => {
+    setBackfilling(true);
+    try {
+      const res = await fetch("/api/command/backfill", { method: "POST" });
+      const d = await res.json();
+      if (d.success) {
+        setSyncUpdates(d.synced);
+        fetchData();
+      }
+    } catch {
+      // silent
+    } finally {
+      setBackfilling(false);
+    }
+  }, [fetchData]);
+
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    // Initial sync to set history baseline
+    syncGmail(true);
+    // Poll every 15 seconds for real-time updates
+    const interval = setInterval(() => syncGmail(true), 15000);
+    return () => clearInterval(interval);
+  }, [fetchData, syncGmail]);
 
   if (loading) {
     return (
@@ -679,12 +723,37 @@ export default function CommandPage() {
                   <span className="text-white/20 text-[10px] tracking-wider uppercase">High Touch</span>
                 </div>
               </div>
+              {/* sync status */}
+              <div className="flex items-center gap-2">
+                {lastSync && (
+                  <div className="flex items-center gap-1.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${syncing ? "bg-cyan-400 animate-pulse" : "bg-emerald-500"}`} />
+                    <span className="text-white/20 text-[10px]">
+                      {syncing ? "syncing..." : `synced ${lastSync}`}
+                    </span>
+                    {syncUpdates > 0 && (
+                      <span className="text-cyan-400/60 text-[10px] font-medium">
+                        +{syncUpdates}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
               <button
-                onClick={fetchData}
-                className="p-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white/30 hover:text-white/60 transition-colors"
-                title="Refresh"
+                onClick={runBackfill}
+                disabled={backfilling}
+                className="px-3 py-1.5 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-400/70 text-[11px] font-medium hover:bg-violet-500/20 transition-colors disabled:opacity-50"
+                title="Scan Gmail history and backfill contact stats"
               >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                {backfilling ? "Scanning Gmail..." : "Backfill"}
+              </button>
+              <button
+                onClick={() => syncGmail(false)}
+                disabled={syncing}
+                className="p-2 rounded-lg bg-white/[0.04] border border-white/[0.08] text-white/30 hover:text-white/60 transition-colors disabled:opacity-50"
+                title="Sync now"
+              >
+                <svg className={`w-4 h-4 ${syncing ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.992 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />
                 </svg>
               </button>
