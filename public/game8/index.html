@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Money Moves — Woodstock Public Schools</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--green:#22C55E;--blue:#3B82F6;--purple:#8B5CF6;--orange:#F59E0B;--pink:#EC4899;--red:#EF4444;--cyan:#06B6D4;--bg:#0F172A;--card:#1E293B;--card2:#334155}
+    body{font-family:'Nunito',sans-serif;background:var(--bg);color:#fff;min-height:100vh;overflow-x:hidden;padding-bottom:0}
+
+    .bg-coins{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .coin{position:absolute;font-size:2rem;opacity:.08;animation:floatUp linear infinite}
+    @keyframes floatUp{0%{transform:translateY(110vh) rotate(0deg)}100%{transform:translateY(-10vh) rotate(720deg)}}
+
+    .app{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:20px}
+
+    .header{text-align:center;padding:24px 0 8px}
+    .header .school{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);font-weight:700;opacity:.8}
+    .header h1{font-size:2.2rem;font-weight:900;margin:8px 0;line-height:1.1}
+    .header h1 span{background:linear-gradient(135deg,var(--cyan),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .header .sub{font-size:.95rem;opacity:.5;margin-bottom:8px}
+
+    .stats{display:flex;gap:12px;justify-content:center;margin:16px 0 24px;flex-wrap:wrap}
+    .stat{background:var(--card);border-radius:14px;padding:10px 18px;display:flex;align-items:center;gap:8px;font-weight:700;font-size:.95rem;border:2px solid transparent;transition:all .3s}
+    .stat.xp-stat{border-color:var(--cyan)}
+    .stat.level-stat{border-color:var(--purple)}
+    .stat.streak-stat{border-color:var(--pink)}
+    .stat .icon{font-size:1.3rem}
+    .stat .val{font-size:1.1rem}
+
+    .screen{display:none;animation:fadeIn .4s ease}
+    .screen.active{display:block}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+    .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+    .menu-card{background:var(--card);border-radius:20px;padding:24px 20px;text-align:center;cursor:pointer;transition:all .25s;border:3px solid transparent;position:relative;overflow:hidden}
+    .menu-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.3)}
+    .menu-card:active{transform:scale(.97)}
+    .menu-card .emoji{font-size:2.8rem;margin-bottom:10px;display:block;animation:bounce 2s ease infinite}
+    .menu-card h3{font-size:1.1rem;font-weight:800;margin-bottom:4px}
+    .menu-card p{font-size:.75rem;opacity:.5;line-height:1.3}
+    .menu-card.cyan{border-color:var(--cyan)}.menu-card.cyan:hover{background:rgba(6,182,212,.1)}
+    .menu-card.green{border-color:var(--green)}.menu-card.green:hover{background:rgba(34,197,94,.1)}
+    .menu-card.blue{border-color:var(--blue)}.menu-card.blue:hover{background:rgba(59,130,246,.1)}
+    .menu-card.purple{border-color:var(--purple)}.menu-card.purple:hover{background:rgba(139,92,246,.1)}
+    .menu-card.orange{border-color:var(--orange)}.menu-card.orange:hover{background:rgba(245,158,11,.1)}
+    .menu-card.pink{border-color:var(--pink)}.menu-card.pink:hover{background:rgba(236,72,153,.1)}
+    .menu-card.red{border-color:var(--red)}.menu-card.red:hover{background:rgba(239,68,68,.1)}
+    .menu-card .badge{position:absolute;top:10px;right:10px;background:var(--pink);font-size:.6rem;font-weight:800;padding:3px 8px;border-radius:8px;letter-spacing:.05em}
+    .menu-card .badge.challenge{background:var(--red)}
+    .menu-card .badge.new{background:var(--cyan)}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+    .game-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+    .back-btn{background:var(--card2);border:none;color:#fff;width:40px;height:40px;border-radius:12px;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+    .back-btn:hover{background:var(--blue)}
+    .game-header h2{font-size:1.4rem;font-weight:800}
+    .game-header .progress-bar{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden;margin-left:auto;max-width:200px}
+    .game-header .progress-fill{height:100%;border-radius:4px;transition:width .4s ease;background:linear-gradient(90deg,var(--cyan),var(--purple))}
+
+    .q-card{background:var(--card);border-radius:20px;padding:28px;margin-bottom:16px;text-align:center}
+    .q-card .q-emoji{font-size:3rem;margin-bottom:12px;display:block;animation:bounce 2s ease infinite}
+    .q-card .q-text{font-size:1.15rem;font-weight:700;line-height:1.4;margin-bottom:4px}
+    .q-card .q-hint{font-size:.8rem;opacity:.4;margin-top:4px}
+
+    .answers{display:grid;gap:12px}
+    .ans-btn{background:var(--card);border:3px solid var(--card2);border-radius:16px;padding:16px 20px;font-size:1.05rem;font-weight:700;color:#fff;cursor:pointer;transition:all .2s;text-align:left;display:flex;align-items:center;gap:12px;font-family:inherit}
+    .ans-btn:hover{border-color:var(--blue);background:rgba(59,130,246,.08);transform:translateX(4px)}
+    .ans-btn:active{transform:scale(.98)}
+    .ans-btn .letter{width:32px;height:32px;border-radius:10px;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:800;flex-shrink:0}
+    .ans-btn.correct{border-color:var(--green);background:rgba(34,197,94,.15);animation:pop .4s ease}
+    .ans-btn.correct .letter{background:var(--green)}
+    .ans-btn.wrong{border-color:var(--red);background:rgba(239,68,68,.1);animation:shake .4s ease}
+    .ans-btn.wrong .letter{background:var(--red)}
+    @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+    @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+    .feedback{text-align:center;padding:20px;border-radius:16px;margin-top:16px;display:none;animation:fadeIn .3s ease}
+    .feedback.show{display:block}
+    .feedback.good{background:rgba(34,197,94,.1);border:2px solid var(--green)}
+    .feedback.bad{background:rgba(239,68,68,.1);border:2px solid var(--red)}
+    .feedback .fb-emoji{font-size:2.4rem;display:block;margin-bottom:8px}
+    .feedback .fb-text{font-size:1rem;font-weight:700}
+    .feedback .fb-explain{font-size:.85rem;opacity:.6;margin-top:4px;line-height:1.4}
+    .next-btn{background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;color:#fff;padding:12px 32px;border-radius:14px;font-size:1rem;font-weight:800;cursor:pointer;margin-top:16px;font-family:inherit;transition:all .2s}
+    .next-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(6,182,212,.3)}
+
+    /* Invest game */
+    .invest-card{background:var(--card);border-radius:20px;padding:24px;margin-bottom:16px}
+    .invest-card h3{font-size:1.1rem;font-weight:800;margin-bottom:12px;text-align:center}
+    .invest-option{background:var(--card2);border:3px solid transparent;border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer;transition:all .2s}
+    .invest-option:hover{border-color:var(--cyan);transform:translateX(4px)}
+    .invest-option.selected{border-color:var(--green);background:rgba(34,197,94,.08)}
+    .invest-option h4{font-size:1rem;font-weight:800;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+    .invest-option p{font-size:.82rem;opacity:.6;line-height:1.4}
+    .invest-option .risk-tag{font-size:.6rem;padding:3px 8px;border-radius:6px;font-weight:800;letter-spacing:.05em}
+    .risk-low{background:rgba(34,197,94,.2);color:var(--green)}
+    .risk-med{background:rgba(245,158,11,.2);color:var(--orange)}
+    .risk-high{background:rgba(239,68,68,.2);color:var(--red)}
+
+    /* Budget builder */
+    .budget-section{background:var(--card);border-radius:20px;padding:24px;margin-bottom:16px}
+    .budget-section h3{font-size:1.1rem;font-weight:800;margin-bottom:4px;text-align:center}
+    .budget-section .budget-subtitle{font-size:.82rem;opacity:.5;text-align:center;margin-bottom:16px}
+    .budget-bar{height:24px;background:var(--card2);border-radius:12px;overflow:hidden;margin:16px 0;display:flex}
+    .budget-bar div{height:100%;transition:width .3s ease;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800;letter-spacing:.05em;overflow:hidden;white-space:nowrap}
+    .budget-bar .b-needs{background:var(--green)}
+    .budget-bar .b-wants{background:var(--purple)}
+    .budget-bar .b-savings{background:var(--cyan)}
+    .budget-bar .b-invest{background:var(--orange)}
+    .budget-slider-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+    .budget-slider-row .bs-icon{font-size:1.3rem;width:32px;text-align:center}
+    .budget-slider-row .bs-label{font-size:.85rem;font-weight:700;min-width:80px}
+    .budget-slider-row input[type=range]{flex:1;height:8px;-webkit-appearance:none;appearance:none;border-radius:4px;background:var(--card2);outline:none}
+    .budget-slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;cursor:pointer;border:3px solid #fff}
+    .budget-slider-row .bs-pct{font-size:.95rem;font-weight:900;min-width:44px;text-align:right}
+    .budget-legend{display:flex;gap:16px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+    .budget-legend span{font-size:.72rem;font-weight:700;display:flex;align-items:center;gap:4px}
+    .budget-legend .dot{width:10px;height:10px;border-radius:3px}
+
+    .check-btn{background:linear-gradient(135deg,var(--green),#16A34A);border:none;color:#fff;padding:14px 40px;border-radius:14px;font-size:1.1rem;font-weight:800;cursor:pointer;margin:20px auto 0;display:block;font-family:inherit;transition:all .2s}
+    .check-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(34,197,94,.3)}
+
+    /* Credit score */
+    .credit-meter{width:200px;height:200px;margin:0 auto 16px;position:relative}
+    .credit-meter svg{width:100%;height:100%;transform:rotate(-90deg)}
+    .credit-meter .meter-bg{fill:none;stroke:var(--card2);stroke-width:12}
+    .credit-meter .meter-fill{fill:none;stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .8s ease,stroke 0.3s}
+    .credit-score-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+    .credit-score-val .num{font-size:2.4rem;font-weight:900;line-height:1}
+    .credit-score-val .label{font-size:.7rem;opacity:.5;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+    .scenario-card{background:var(--card);border-radius:16px;padding:20px;margin-bottom:12px;cursor:pointer;border:3px solid var(--card2);transition:all .2s}
+    .scenario-card:hover{border-color:var(--cyan);transform:translateX(4px)}
+    .scenario-card.picked{pointer-events:none;opacity:.7}
+    .scenario-card.good-pick{border-color:var(--green);background:rgba(34,197,94,.08)}
+    .scenario-card.bad-pick{border-color:var(--red);background:rgba(239,68,68,.08)}
+    .scenario-card h4{font-size:.95rem;font-weight:800;margin-bottom:4px}
+    .scenario-card p{font-size:.8rem;opacity:.5;line-height:1.4}
+
+    /* Stock sim */
+    .stock-chart{background:var(--card);border-radius:20px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+    .stock-chart canvas{width:100%;height:200px;display:block}
+    .stock-info{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0}
+    .stock-info-item{background:var(--card);border:2px solid var(--card2);border-radius:14px;padding:12px;text-align:center}
+    .stock-info-item .si-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;opacity:.4;font-weight:700}
+    .stock-info-item .si-val{font-size:1.3rem;font-weight:900;margin-top:2px}
+    .stock-info-item .si-val.up{color:var(--green)}
+    .stock-info-item .si-val.down{color:var(--red)}
+    .stock-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}
+    .stock-btn{border:none;color:#fff;padding:14px;border-radius:14px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s}
+    .stock-btn:hover{transform:translateY(-2px)}
+    .stock-btn.buy{background:linear-gradient(135deg,var(--green),#16A34A)}
+    .stock-btn.sell{background:linear-gradient(135deg,var(--red),#DC2626)}
+    .stock-btn.hold{background:linear-gradient(135deg,var(--blue),var(--purple))}
+    .stock-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+    .stock-news{background:var(--card);border-radius:14px;padding:14px;margin-top:12px;font-size:.85rem;line-height:1.5}
+    .stock-news .news-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:6px}
+
+    /* Paycheck game */
+    .paycheck-card{background:var(--card);border-radius:20px;padding:24px;margin-bottom:16px}
+    .paycheck-line{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--card2);font-size:.9rem}
+    .paycheck-line:last-child{border-bottom:none}
+    .paycheck-line.total{font-weight:900;font-size:1.1rem;padding-top:14px;border-top:2px solid var(--card2);border-bottom:none}
+    .paycheck-line .deduction{color:var(--red)}
+    .paycheck-line .addition{color:var(--green)}
+    .paycheck-input{display:flex;align-items:center;gap:8px;margin:16px 0}
+    .paycheck-input span{font-size:1.2rem;font-weight:900;color:var(--green)}
+    .paycheck-input input{flex:1;padding:14px;border:3px solid var(--card2);border-radius:14px;background:var(--card);color:#fff;font-size:1.2rem;font-weight:800;text-align:center;font-family:inherit;outline:none;transition:border-color .2s}
+    .paycheck-input input:focus{border-color:var(--cyan)}
+
+    .timer-bar{width:100%;height:10px;background:var(--card2);border-radius:5px;overflow:hidden;margin-bottom:16px}
+    .timer-fill{height:100%;border-radius:5px;transition:width .1s linear;background:linear-gradient(90deg,var(--cyan),var(--orange),var(--red))}
+    .timer-text{text-align:center;font-size:1.4rem;font-weight:900;margin-bottom:8px}
+    .timer-text.warn{color:var(--orange)}
+    .timer-text.danger{color:var(--red);animation:pulse .5s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+    .results{text-align:center;padding:32px 0}
+    .results .r-emoji{font-size:4rem;display:block;margin-bottom:16px;animation:bounce 1s ease infinite}
+    .results h2{font-size:1.8rem;font-weight:900;margin-bottom:8px}
+    .results .r-score{font-size:1.1rem;opacity:.6;margin-bottom:24px}
+    .results .r-stars{font-size:2rem;margin-bottom:24px;letter-spacing:4px}
+    .play-again{background:linear-gradient(135deg,var(--purple),var(--pink));border:none;color:#fff;padding:14px 36px;border-radius:14px;font-size:1.1rem;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s;margin:8px}
+    .play-again:hover{transform:translateY(-2px)}
+
+    .celebrate{position:fixed;inset:0;pointer-events:none;z-index:100}
+    .confetti{position:absolute;width:10px;height:10px;border-radius:2px;animation:confettiFall linear forwards}
+    @keyframes confettiFall{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(1080deg);opacity:0}}
+
+    .submit-btn{background:linear-gradient(135deg,var(--cyan),var(--purple));border:none;color:#fff;padding:14px 40px;border-radius:14px;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;display:block;margin:12px auto 0;transition:all .2s}
+    .submit-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(6,182,212,.3)}
+
+    @media(max-width:600px){
+      .menu-grid{grid-template-columns:1fr}
+      .stock-actions{grid-template-columns:1fr}
+      .stock-info{grid-template-columns:1fr}
+      .header h1{font-size:1.7rem}
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-coins" id="bgCoins"></div>
+
+<div class="app">
+  <div class="header">
+    <p class="school">Woodstock Public Schools</p>
+    <h1>Money <span>Moves</span></h1>
+    <p class="sub">Financial literacy for the real world</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat xp-stat"><span class="icon">💎</span><span class="val" id="totalXP">0</span> XP</div>
+    <div class="stat level-stat"><span class="icon">📊</span>Level <span class="val" id="level">1</span></div>
+    <div class="stat streak-stat"><span class="icon">🔥</span><span class="val" id="streak">0</span></div>
+  </div>
+
+  <!-- MENU -->
+  <div class="screen active" id="menuScreen">
+    <div class="menu-grid">
+      <div class="menu-card cyan" onclick="startGame('paycheck')">
+        <span class="emoji">💵</span>
+        <h3>Paycheck Decoder</h3>
+        <p>Gross pay, taxes, deductions: what's left?</p>
+      </div>
+      <div class="menu-card green" onclick="startGame('budget')">
+        <span class="emoji">📊</span>
+        <h3>Budget Builder</h3>
+        <p>Allocate a real monthly income</p>
+      </div>
+      <div class="menu-card purple" onclick="startGame('credit')">
+        <span class="emoji">💳</span>
+        <h3>Credit Score Lab</h3>
+        <p>Build or wreck your credit with choices</p>
+      </div>
+      <div class="menu-card orange" onclick="startGame('invest')">
+        <span class="emoji">📈</span>
+        <h3>Invest IQ</h3>
+        <p>Stocks, bonds, savings: pick wisely</p>
+      </div>
+      <div class="menu-card blue" onclick="startGame('stock')">
+        <span class="emoji">🏦</span>
+        <h3>Stock Market Sim</h3>
+        <p>Buy, sell, or hold through 10 rounds</p>
+        <span class="badge challenge">CHALLENGE</span>
+      </div>
+      <div class="menu-card pink" onclick="startGame('quiz')">
+        <span class="emoji">🧠</span>
+        <h3>Money IQ Quiz</h3>
+        <p>Test your financial knowledge</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYCHECK DECODER -->
+  <div class="screen" id="paycheckScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goMenu()">&#8592;</button>
+      <h2>Paycheck Decoder</h2>
+      <div class="progress-bar"><div class="progress-fill" id="paycheckProgress" style="width:0%"></div></div>
+    </div>
+    <div class="paycheck-card" id="paycheckStub"></div>
+    <div class="q-card">
+      <p class="q-text" id="paycheckQuestion"></p>
+      <p class="q-hint" id="paycheckHint"></p>
+    </div>
+    <div class="answers" id="paycheckAnswers"></div>
+    <div class="feedback" id="paycheckFeedback">
+      <span class="fb-emoji" id="paycheckFbEmoji"></span>
+      <p class="fb-text" id="paycheckFbText"></p>
+      <p class="fb-explain" id="paycheckFbExplain"></p>
+      <button class="next-btn" onclick="nextPaycheckQ()">Next &#8594;</button>
+    </div>
+  </div>
+
+  <!-- BUDGET BUILDER -->
+  <div class="screen" id="budgetScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goMenu()">&#8592;</button>
+      <h2>Budget Builder</h2>
+    </div>
+    <div class="budget-section">
+      <h3>Monthly Take-Home: <span style="color:var(--green)" id="budgetIncome">$2,400</span></h3>
+      <p class="budget-subtitle" id="budgetScenario"></p>
+      <div class="budget-bar" id="budgetBar">
+        <div class="b-needs" style="width:50%">Needs</div>
+        <div class="b-wants" style="width:30%">Wants</div>
+        <div class="b-savings" style="width:10%">Save</div>
+        <div class="b-invest" style="width:10%">Invest</div>
+      </div>
+      <div id="budgetSliders"></div>
+      <div class="budget-legend">
+        <span><span class="dot" style="background:var(--green)"></span> Needs</span>
+        <span><span class="dot" style="background:var(--purple)"></span> Wants</span>
+        <span><span class="dot" style="background:var(--cyan)"></span> Savings</span>
+        <span><span class="dot" style="background:var(--orange)"></span> Investing</span>
+      </div>
+      <p style="text-align:center;margin-top:16px;font-size:.85rem;opacity:.5" id="budgetTotal">Total: 100%</p>
+    </div>
+    <button class="check-btn" onclick="checkBudget()">Lock In My Budget &#10003;</button>
+  </div>
+
+  <!-- CREDIT SCORE LAB -->
+  <div class="screen" id="creditScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goMenu()">&#8592;</button>
+      <h2>Credit Score Lab</h2>
+      <div class="progress-bar"><div class="progress-fill" id="creditProgress" style="width:0%"></div></div>
+    </div>
+    <div class="credit-meter">
+      <svg viewBox="0 0 120 120">
+        <circle class="meter-bg" cx="60" cy="60" r="50"/>
+        <circle class="meter-fill" id="creditFill" cx="60" cy="60" r="50" stroke-dasharray="314" stroke-dashoffset="157"/>
+      </svg>
+      <div class="credit-score-val">
+        <div class="num" id="creditNum">650</div>
+        <div class="label">Credit Score</div>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:.85rem;opacity:.5;margin-bottom:16px" id="creditLabel">Fair</p>
+    <div id="creditScenarios"></div>
+  </div>
+
+  <!-- INVEST IQ -->
+  <div class="screen" id="investScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goMenu()">&#8592;</button>
+      <h2>Invest IQ</h2>
+      <div class="progress-bar"><div class="progress-fill" id="investProgress" style="width:0%"></div></div>
+    </div>
+    <div class="q-card">
+      <span class="q-emoji" id="investEmoji">📈</span>
+      <p class="q-text" id="investQuestion"></p>
+      <p class="q-hint" id="investHint"></p>
+    </div>
+    <div class="answers" id="investAnswers"></div>
+    <div class="feedback" id="investFeedback">
+      <span class="fb-emoji" id="investFbEmoji"></span>
+      <p class="fb-text" id="investFbText"></p>
+      <p class="fb-explain" id="investFbExplain"></p>
+      <button class="next-btn" onclick="nextInvestQ()">Next &#8594;</button>
+    </div>
+  </div>
+
+  <!-- STOCK MARKET SIM -->
+  <div class="screen" id="stockScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goMenu()">&#8592;</button>
+      <h2>Stock Market Sim</h2>
+    </div>
+    <div class="stock-info">
+      <div class="stock-info-item"><div class="si-label">Cash</div><div class="si-val up" id="stockCash">$10,000</div></div>
+      <div class="stock-info-item"><div class="si-label">Shares</div><div class="si-val" id="stockShares">0</div></div>
+      <div class="stock-info-item"><div class="si-label">Round</div><div class="si-val" id="stockRound">1 / 10</div></div>
+    </div>
+    <div class="stock-chart">
+      <canvas id="stockCanvas" height="200"></canvas>
+    </div>
+    <div style="text-align:center;margin-bottom:8px">
+      <span style="font-size:1.6rem;font-weight:900" id="stockPrice">$50.00</span>
+      <span style="font-size:.9rem;margin-left:8px" id="stockChange"></span>
+    </div>
+    <div class="stock-news" id="stockNews">
+      <div class="news-label">Market News</div>
+      <p id="stockNewsText">Markets open. Make your first move.</p>
+    </div>
+    <div class="stock-actions">
+      <button class="stock-btn buy" id="buyBtn" onclick="stockAction('buy')">Buy 10</button>
+      <button class="stock-btn hold" onclick="stockAction('hold')">Hold</button>
+      <button class="stock-btn sell" id="sellBtn" onclick="stockAction('sell')">Sell 10</button>
+    </div>
+  </div>
+
+  <!-- MONEY IQ QUIZ -->
+  <div class="screen" id="quizScreen">
+    <div class="game-header">
+      <button class="back-btn" onclick="goMenu()">&#8592;</button>
+      <h2>Money IQ Quiz</h2>
+      <div class="progress-bar"><div class="progress-fill" id="quizProgress" style="width:0%"></div></div>
+    </div>
+    <div class="q-card">
+      <span class="q-emoji" id="quizEmoji">🧠</span>
+      <p class="q-text" id="quizQuestion"></p>
+      <p class="q-hint" id="quizHint"></p>
+    </div>
+    <div class="answers" id="quizAnswers"></div>
+    <div class="feedback" id="quizFeedback">
+      <span class="fb-emoji" id="quizFbEmoji"></span>
+      <p class="fb-text" id="quizFbText"></p>
+      <p class="fb-explain" id="quizFbExplain"></p>
+      <button class="next-btn" onclick="nextQuizQ()">Next &#8594;</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="screen" id="resultsScreen">
+    <div class="results">
+      <span class="r-emoji" id="rEmoji">🏆</span>
+      <h2 id="rTitle">Amazing!</h2>
+      <p class="r-score" id="rScore"></p>
+      <p class="r-stars" id="rStars"></p>
+      <button class="play-again" onclick="goMenu()">Back to Games 🎮</button>
+      <button class="play-again" style="background:linear-gradient(135deg,var(--green),#16A34A)" onclick="replayGame()">Play Again! 🔄</button>
+    </div>
+  </div>
+</div>
+
+<div class="celebrate" id="celebrate"></div>
+
+<div style="text-align:center;padding:48px 20px 32px;font-size:0.82rem;color:rgba(255,255,255,0.35)">Questions? Reach out &rarr; <a href="mailto:brayan@nextgenerationlearners.com" style="color:#818CF8;text-decoration:none">brayan@nextgenerationlearners.com</a></div>
+
+<script>
+// ===== STATE =====
+let xp=0,level=1,streakCount=0,currentGame='',lastGame='',score=0,totalQ=0,currentQ=0;
+
+// ===== BACKGROUND =====
+(function(){const c=document.getElementById('bgCoins');for(let i=0;i<15;i++){const d=document.createElement('div');d.className='coin';d.textContent=['💵','💎','📈','💳','🏦'][Math.floor(Math.random()*5)];d.style.left=Math.random()*100+'%';d.style.animationDuration=(15+Math.random()*20)+'s';d.style.animationDelay=Math.random()*20+'s';c.appendChild(d)}})();
+
+// ===== NAV =====
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+function goMenu(){showScreen('menuScreen')}
+function startGame(g){currentGame=g;lastGame=g;score=0;currentQ=0;
+  if(g==='paycheck')initPaycheck();
+  else if(g==='budget')initBudget();
+  else if(g==='credit')initCredit();
+  else if(g==='invest')initInvest();
+  else if(g==='stock')initStock();
+  else if(g==='quiz')initQuiz();
+}
+function replayGame(){startGame(lastGame)}
+
+// ===== UTILS =====
+function updateStats(){
+  document.getElementById('totalXP').textContent=xp;
+  level=Math.floor(xp/100)+1;
+  document.getElementById('level').textContent=level;
+  document.getElementById('streak').textContent=streakCount;
+}
+function shuffleArray(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}}
+function fmt(cents){return'$'+(cents/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtD(dollars){return'$'+dollars.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+function endGame(){
+  const pct=totalQ>0?score/totalQ:0;
+  const s=pct>=.9?3:pct>=.7?2:pct>=.5?1:0;
+  xp+=score*15+s*25;updateStats();
+  document.getElementById('rEmoji').textContent=pct>=.9?'🏆':pct>=.7?'⭐':pct>=.5?'👍':'💪';
+  document.getElementById('rTitle').textContent=pct>=.9?'Financial Genius!':pct>=.7?'Solid moves!':pct>=.5?'Getting there!':'Keep learning!';
+  document.getElementById('rScore').textContent=`You got ${score} out of ${totalQ} right!`;
+  document.getElementById('rStars').textContent='⭐'.repeat(s)+'☆'.repeat(3-s);
+  showScreen('resultsScreen');
+  if(pct>=.7)spawnConfetti();
+}
+
+function spawnConfetti(){
+  const el=document.getElementById('celebrate');el.innerHTML='';
+  const colors=['#22C55E','#3B82F6','#8B5CF6','#F59E0B','#EC4899','#EF4444','#06B6D4'];
+  for(let i=0;i<60;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'%';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.width=(6+Math.random()*8)+'px';c.style.height=(6+Math.random()*8)+'px';c.style.animationDuration=(1.5+Math.random()*2)+'s';c.style.animationDelay=(Math.random()*0.5)+'s';el.appendChild(c)}
+  setTimeout(()=>el.innerHTML='',4000);
+}
+
+function genericQuizEngine(questions,screenPrefix,nextFn){
+  totalQ=questions.length;currentQ=0;score=0;
+  shuffleArray(questions);
+  showScreen(screenPrefix+'Screen');
+  showGenericQ(questions,screenPrefix,nextFn);
+}
+
+function showGenericQ(questions,prefix,nextFn){
+  if(currentQ>=totalQ){endGame();return}
+  const q=questions[currentQ];
+  document.getElementById(prefix+'Emoji').textContent=q.emoji||'🧠';
+  document.getElementById(prefix+'Question').textContent=q.q;
+  document.getElementById(prefix+'Hint').textContent=`Question ${currentQ+1} of ${totalQ}`;
+  document.getElementById(prefix+'Progress').style.width=(currentQ/totalQ*100)+'%';
+  document.getElementById(prefix+'Feedback').className='feedback';
+  const ans=document.getElementById(prefix+'Answers');ans.innerHTML='';
+  const letters=['A','B','C','D'];
+  q.a.forEach((a,i)=>{
+    const btn=document.createElement('button');btn.className='ans-btn';
+    btn.innerHTML=`<span class="letter">${letters[i]}</span>${a}`;
+    btn.onclick=()=>{
+      const btns=document.querySelectorAll('#'+prefix+'Answers .ans-btn');
+      btns.forEach((b,j)=>{b.onclick=null;if(j===q.c)b.classList.add('correct');else if(j===i&&i!==q.c)b.classList.add('wrong')});
+      const fb=document.getElementById(prefix+'Feedback');
+      if(i===q.c){score++;streakCount++;xp+=15;fb.className='feedback show good';document.getElementById(prefix+'FbEmoji').textContent='🎉';document.getElementById(prefix+'FbText').textContent='Correct!';}
+      else{streakCount=0;fb.className='feedback show bad';document.getElementById(prefix+'FbEmoji').textContent='😅';document.getElementById(prefix+'FbText').textContent='Not quite!';}
+      document.getElementById(prefix+'FbExplain').textContent=q.e;
+      updateStats();
+    };
+    ans.appendChild(btn);
+  });
+}
+
+// ===== PAYCHECK DECODER =====
+const paycheckData=[
+  {gross:2800,federal:336,state:140,fica:214,health:120,q:"What is this worker's net (take-home) pay?",hint:"Subtract all deductions from gross pay",a:["$1,990","$2,464","$2,120","$1,800"],c:0,e:"$2,800 - $336 - $140 - $214 - $120 = $1,990. Nearly 29% went to deductions!"},
+  {gross:3200,federal:448,state:160,fica:245,health:150,q:"What percentage of gross pay goes to federal tax?",hint:"Divide federal tax by gross pay",a:["14%","10%","18%","22%"],c:0,e:"$448 / $3,200 = 0.14 = 14%. The federal government takes the largest share."},
+  {gross:1600,federal:128,state:80,fica:122,health:0,q:"This worker has no health insurance deduction. What's their take-home?",hint:"Add up the three tax deductions",a:["$1,270","$1,350","$1,200","$1,400"],c:0,e:"$1,600 - $128 - $80 - $122 = $1,270. No health insurance means more take-home but no coverage!"},
+  {gross:4000,federal:680,state:200,fica:306,health:200,q:"How much total goes to deductions?",hint:"Add all deductions together",a:["$1,386","$1,200","$1,500","$1,100"],c:0,e:"$680 + $200 + $306 + $200 = $1,386. That's over a third of gross pay!"},
+  {gross:2400,federal:264,state:120,fica:184,health:100,q:"FICA funds Social Security and Medicare. What's the FICA rate here?",hint:"Divide FICA by gross pay",a:["7.65%","6%","10%","8.5%"],c:0,e:"$184 / $2,400 = 7.67%, approximately 7.65%. This rate is the same for almost everyone."},
+  {gross:5000,federal:1000,state:250,fica:383,health:250,q:"If this worker gets a $500 raise, roughly how much extra take-home will they see?",hint:"Not all $500 goes to you",a:["About $325","$500","About $400","About $250"],c:0,e:"Roughly 35% goes to taxes and deductions, so about $325 of a $500 raise is take-home. Raises are never dollar-for-dollar!"},
+];
+
+let paycheckRound=0;
+
+function initPaycheck(){
+  paycheckRound=0;score=0;totalQ=paycheckData.length;
+  shuffleArray(paycheckData);
+  showScreen('paycheckScreen');
+  loadPaycheckQ();
+}
+
+function loadPaycheckQ(){
+  if(paycheckRound>=totalQ){endGame();return}
+  const p=paycheckData[paycheckRound];
+  const stub=document.getElementById('paycheckStub');
+  stub.innerHTML=`<h3 style="margin-bottom:12px;text-align:center">Pay Stub</h3>
+    <div class="paycheck-line"><span>Gross Pay</span><span class="addition">$${p.gross.toLocaleString()}</span></div>
+    <div class="paycheck-line"><span>Federal Tax</span><span class="deduction">-$${p.federal}</span></div>
+    <div class="paycheck-line"><span>State Tax</span><span class="deduction">-$${p.state}</span></div>
+    <div class="paycheck-line"><span>FICA (SS + Medicare)</span><span class="deduction">-$${p.fica}</span></div>
+    <div class="paycheck-line"><span>Health Insurance</span><span class="deduction">-$${p.health}</span></div>
+    <div class="paycheck-line total"><span>Net Pay</span><span>???</span></div>`;
+  document.getElementById('paycheckQuestion').textContent=p.q;
+  document.getElementById('paycheckHint').textContent=p.hint;
+  document.getElementById('paycheckProgress').style.width=(paycheckRound/totalQ*100)+'%';
+  document.getElementById('paycheckFeedback').className='feedback';
+  const ans=document.getElementById('paycheckAnswers');ans.innerHTML='';
+  const letters=['A','B','C','D'];
+  p.a.forEach((a,i)=>{
+    const btn=document.createElement('button');btn.className='ans-btn';
+    btn.innerHTML=`<span class="letter">${letters[i]}</span>${a}`;
+    btn.onclick=()=>{
+      const btns=document.querySelectorAll('#paycheckAnswers .ans-btn');
+      btns.forEach((b,j)=>{b.onclick=null;if(j===p.c)b.classList.add('correct');else if(j===i&&i!==p.c)b.classList.add('wrong')});
+      const fb=document.getElementById('paycheckFeedback');
+      if(i===p.c){score++;streakCount++;xp+=15;fb.className='feedback show good';document.getElementById('paycheckFbEmoji').textContent='💰';document.getElementById('paycheckFbText').textContent='You read that stub like a pro!';}
+      else{streakCount=0;fb.className='feedback show bad';document.getElementById('paycheckFbEmoji').textContent='😅';document.getElementById('paycheckFbText').textContent='Not quite!';}
+      document.getElementById('paycheckFbExplain').textContent=p.e;
+      updateStats();
+    };
+    ans.appendChild(btn);
+  });
+}
+
+function nextPaycheckQ(){paycheckRound++;loadPaycheckQ()}
+
+// ===== BUDGET BUILDER =====
+const budgetScenarios=[
+  {income:2400,label:"You just got your first full-time job after high school. Monthly take-home: $2,400.",ideal:{needs:50,wants:25,savings:15,invest:10}},
+  {income:1800,label:"Summer job pays $1,800/month after taxes. You need to save for a car AND have fun.",ideal:{needs:40,wants:25,savings:25,invest:10}},
+  {income:3200,label:"You're 22, living on your own, making $3,200/month. Rent is expensive in your city.",ideal:{needs:55,wants:20,savings:15,invest:10}},
+];
+
+let budgetValues={needs:50,wants:30,savings:10,invest:10};
+let currentBudgetScenario=null;
+
+function initBudget(){
+  currentBudgetScenario=budgetScenarios[Math.floor(Math.random()*budgetScenarios.length)];
+  budgetValues={needs:50,wants:30,savings:10,invest:10};
+  showScreen('budgetScreen');
+  document.getElementById('budgetIncome').textContent='$'+currentBudgetScenario.income.toLocaleString();
+  document.getElementById('budgetScenario').textContent=currentBudgetScenario.label;
+  renderBudgetSliders();
+  updateBudgetBar();
+}
+
+function renderBudgetSliders(){
+  const el=document.getElementById('budgetSliders');
+  const cats=[
+    {key:'needs',icon:'🏠',label:'Needs',color:'var(--green)'},
+    {key:'wants',icon:'🎮',label:'Wants',color:'var(--purple)'},
+    {key:'savings',icon:'🏦',label:'Savings',color:'var(--cyan)'},
+    {key:'invest',icon:'📈',label:'Investing',color:'var(--orange)'}
+  ];
+  el.innerHTML='';
+  cats.forEach(c=>{
+    const row=document.createElement('div');row.className='budget-slider-row';
+    row.innerHTML=`<span class="bs-icon">${c.icon}</span><span class="bs-label">${c.label}</span><input type="range" min="0" max="100" value="${budgetValues[c.key]}" style="accent-color:${c.color}" oninput="updateBudgetVal('${c.key}',this.value)"/><span class="bs-pct" id="bpct-${c.key}" style="color:${c.color}">${budgetValues[c.key]}%</span>`;
+    el.appendChild(row);
+  });
+}
+
+function updateBudgetVal(key,val){
+  budgetValues[key]=parseInt(val);
+  document.getElementById('bpct-'+key).textContent=val+'%';
+  updateBudgetBar();
+}
+
+function updateBudgetBar(){
+  const total=budgetValues.needs+budgetValues.wants+budgetValues.savings+budgetValues.invest;
+  const bar=document.getElementById('budgetBar');
+  bar.children[0].style.width=(budgetValues.needs/Math.max(total,1)*100)+'%';
+  bar.children[1].style.width=(budgetValues.wants/Math.max(total,1)*100)+'%';
+  bar.children[2].style.width=(budgetValues.savings/Math.max(total,1)*100)+'%';
+  bar.children[3].style.width=(budgetValues.invest/Math.max(total,1)*100)+'%';
+  const color=total===100?'var(--green)':total>100?'var(--red)':'var(--orange)';
+  document.getElementById('budgetTotal').innerHTML=`Total: <span style="color:${color};font-weight:900">${total}%</span>`+(total!==100?' (must equal 100%)':'  &#10003;');
+}
+
+function checkBudget(){
+  const total=budgetValues.needs+budgetValues.wants+budgetValues.savings+budgetValues.invest;
+  if(total!==100){alert('Your budget must add up to exactly 100%!');return}
+  const ideal=currentBudgetScenario.ideal;
+  let pts=0;totalQ=4;
+  // Score: within 10% of ideal for each category = point
+  if(Math.abs(budgetValues.needs-ideal.needs)<=10)pts++;
+  if(Math.abs(budgetValues.wants-ideal.wants)<=10)pts++;
+  if(Math.abs(budgetValues.savings-ideal.savings)<=10)pts++;
+  if(Math.abs(budgetValues.invest-ideal.invest)<=10)pts++;
+  // Bonus: savings+invest >= 20%
+  if(budgetValues.savings+budgetValues.invest>=20)pts=Math.min(pts+1,4);
+  score=pts;
+  xp+=pts*20;streakCount=pts>=3?streakCount+1:0;updateStats();
+
+  let msg='';
+  if(budgetValues.needs>60)msg+='Your needs are high. Can you find cheaper housing or cut utilities? ';
+  if(budgetValues.wants>35)msg+='That\'s a lot on wants. The 50/30/20 rule caps wants at 30%. ';
+  if(budgetValues.savings+budgetValues.invest<15)msg+='Financial advisors recommend saving at least 15-20% of income. ';
+  if(budgetValues.invest>0)msg+='Great that you\'re investing! Starting early is the #1 advantage. ';
+  if(pts>=3)msg+='Solid budget! You\'re thinking like a financial planner.';
+
+  alert(msg||'Budget submitted!');
+  endGame();
+}
+
+// ===== CREDIT SCORE LAB =====
+const creditScenarios=[
+  {text:"Your credit card bill is $200. Pay it off in full or just the $25 minimum?",options:[
+    {label:"Pay in full ($200)",effect:15,good:true,explain:"Paying in full avoids interest and shows responsible use."},
+    {label:"Pay minimum ($25)",effect:-10,good:false,explain:"Minimum payments rack up interest. The remaining $175 now costs you 20%+ APR."}
+  ]},
+  {text:"You found a great deal on a TV. Open a new store credit card for 10% off?",options:[
+    {label:"Skip the card, pay cash",effect:10,good:true,explain:"New credit inquiries lower your score temporarily, and store cards have high rates."},
+    {label:"Open the card for the discount",effect:-15,good:false,explain:"Hard inquiry + new account = short-term score drop. That 10% off could cost more in interest."}
+  ]},
+  {text:"You have 3 credit cards. One has a $0 balance. Close it?",options:[
+    {label:"Keep it open",effect:10,good:true,explain:"Closing it reduces your total credit limit, increasing your utilization ratio. Keep old accounts open."},
+    {label:"Close it, I don't use it",effect:-10,good:false,explain:"Your credit utilization ratio went up because your total available credit decreased."}
+  ]},
+  {text:"Rent is due tomorrow. You're $100 short. Use your credit card for groceries to free up cash?",options:[
+    {label:"Use credit card for groceries, pay rent on time",effect:5,good:true,explain:"Rent payment history matters. Using credit strategically and paying it off next month is smart."},
+    {label:"Pay for groceries in cash, rent will be 5 days late",effect:-25,good:false,explain:"Late payments are the #1 credit score killer. One 30-day late payment can drop your score 100+ points."}
+  ]},
+  {text:"A friend asks you to co-sign their car loan. They promise to make all payments.",options:[
+    {label:"Politely decline",effect:10,good:true,explain:"Co-signing means their missed payments destroy YOUR credit. Never co-sign unless you can afford the full loan."},
+    {label:"Co-sign to help them out",effect:-20,good:false,explain:"If they miss even one payment, your credit takes the hit. You're now legally responsible for their debt."}
+  ]},
+  {text:"You got a $1,000 credit limit. How much should you actually use?",options:[
+    {label:"Under $300 (30% or less)",effect:15,good:true,explain:"Credit utilization under 30% is ideal. Under 10% is even better for your score."},
+    {label:"Up to $900 (leave some room)",effect:-15,good:false,explain:"Using 90% of your limit signals financial stress to lenders. Keep it under 30%."}
+  ]},
+  {text:"You notice a $50 charge on your credit card you didn't make.",options:[
+    {label:"Dispute it immediately with your bank",effect:10,good:true,explain:"Quick disputes protect your score and your money. Banks have fraud protection for this."},
+    {label:"Ignore it, it's only $50",effect:-10,good:false,explain:"Unchallenged fraud can escalate. Always dispute unauthorized charges immediately."}
+  ]},
+  {text:"You're approved for a $15,000 car loan at 8% APR. A friend says to negotiate.",options:[
+    {label:"Shop around for better rates first",effect:10,good:true,explain:"Multiple loan inquiries within 14 days count as one hard pull. Shopping saves thousands in interest."},
+    {label:"Take the first offer, don't want more inquiries",effect:-5,good:false,explain:"Rate shopping within a 14-day window barely affects your score, but could save you thousands."}
+  ]},
+];
+
+let creditScore=650,creditRound=0;
+
+function initCredit(){
+  creditScore=650;creditRound=0;score=0;totalQ=creditScenarios.length;
+  shuffleArray(creditScenarios);
+  showScreen('creditScreen');
+  updateCreditMeter();
+  loadCreditScenario();
+}
+
+function updateCreditMeter(){
+  const pct=(creditScore-300)/550;
+  const offset=314-(pct*314);
+  const fill=document.getElementById('creditFill');
+  fill.style.strokeDashoffset=offset;
+  fill.style.stroke=creditScore>=750?'var(--green)':creditScore>=670?'var(--cyan)':creditScore>=580?'var(--orange)':'var(--red)';
+  document.getElementById('creditNum').textContent=creditScore;
+  document.getElementById('creditLabel').textContent=creditScore>=750?'Excellent':creditScore>=670?'Good':creditScore>=580?'Fair':'Poor';
+}
+
+function loadCreditScenario(){
+  if(creditRound>=totalQ){endGame();return}
+  const s=creditScenarios[creditRound];
+  document.getElementById('creditProgress').style.width=(creditRound/totalQ*100)+'%';
+  const el=document.getElementById('creditScenarios');el.innerHTML='';
+  const header=document.createElement('div');header.className='q-card';
+  header.innerHTML=`<span class="q-emoji">💳</span><p class="q-text">${s.text}</p><p class="q-hint">Round ${creditRound+1} of ${totalQ}</p>`;
+  el.appendChild(header);
+  s.options.forEach((opt,i)=>{
+    const card=document.createElement('div');card.className='scenario-card';
+    card.innerHTML=`<h4>${opt.label}</h4>`;
+    card.onclick=()=>pickCreditOption(s,i);
+    el.appendChild(card);
+  });
+}
+
+function pickCreditOption(scenario,idx){
+  const opt=scenario.options[idx];
+  creditScore=Math.max(300,Math.min(850,creditScore+opt.effect));
+  updateCreditMeter();
+  const cards=document.querySelectorAll('#creditScenarios .scenario-card');
+  cards.forEach((c,i)=>{
+    c.classList.add('picked');
+    if(i===idx)c.classList.add(opt.good?'good-pick':'bad-pick');
+    const explain=document.createElement('p');
+    explain.style.cssText='font-size:.82rem;opacity:.7;margin-top:8px;line-height:1.4';
+    explain.textContent=scenario.options[i].explain;
+    c.appendChild(explain);
+  });
+  if(opt.good){score++;streakCount++;xp+=15}else{streakCount=0}
+  updateStats();
+  const nextBtn=document.createElement('button');nextBtn.className='next-btn';nextBtn.style.marginTop='16px';
+  nextBtn.textContent=creditRound>=totalQ-1?'See Results':'Next Scenario';
+  nextBtn.onclick=()=>{creditRound++;loadCreditScenario()};
+  document.getElementById('creditScenarios').appendChild(nextBtn);
+}
+
+// ===== INVEST IQ =====
+const investQuestions=[
+  {q:"You have $1,000 to invest for 30 years. Which historically gives the best return?",a:["S&P 500 index fund","Savings account","Government bonds","Keeping cash at home"],c:0,e:"The S&P 500 has averaged ~10% annual returns over decades. $1,000 becomes ~$17,000 in 30 years!",emoji:"📈"},
+  {q:"What is compound interest?",a:["Earning interest on your interest","Paying double interest","Interest that compounds monthly only","A type of bank fee"],c:0,e:"Compound interest means your returns generate their own returns. Einstein called it the 8th wonder of the world.",emoji:"🔄"},
+  {q:"What does 'diversification' mean in investing?",a:["Spreading money across different investments","Putting all money in one stock","Only investing in tech companies","Changing investments every week"],c:0,e:"Diversification reduces risk. If one investment drops, others may hold or rise.",emoji:"🎯"},
+  {q:"A stock drops 20% in one day. What should you usually do?",a:["Hold and don't panic sell","Sell everything immediately","Buy more immediately","Call the police"],c:0,e:"Markets recover. Panic selling locks in losses. Long-term investors who hold through dips almost always come out ahead.",emoji:"📉"},
+  {q:"What's the main advantage of starting to invest at age 18 vs. 30?",a:["12 extra years of compound growth","You get a tax break for being young","Stocks are cheaper for young people","There's no real advantage"],c:0,e:"12 extra years of compounding is massive. Investing $200/month from 18 vs. 30 can mean $500K+ more by retirement.",emoji:"⏰"},
+  {q:"What is a 401(k)?",a:["An employer-sponsored retirement account","A type of savings account","A government bond","A credit score number"],c:0,e:"A 401(k) lets you invest pre-tax dollars for retirement. Many employers match contributions, which is free money!",emoji:"🏢"},
+  {q:"What's the difference between a stock and a bond?",a:["Stock = ownership in a company, Bond = lending money to a company","They're the same thing","Stock = safer, Bond = riskier","Stock = for retirement, Bond = for emergencies"],c:0,e:"Stocks give you ownership (higher risk, higher reward). Bonds are loans you make (lower risk, lower reward).",emoji:"⚖️"},
+  {q:"An investment promises 'guaranteed 50% returns with zero risk.' What should you think?",a:["It's almost certainly a scam","Great deal, invest everything","Only invest half my money","Wait for 100% returns"],c:0,e:"If it sounds too good to be true, it is. Guaranteed high returns with zero risk don't exist. This is how Ponzi schemes work.",emoji:"🚨"},
+  {q:"What does 'ETF' stand for?",a:["Exchange-Traded Fund","Extra Tax Fee","Electronic Transfer Fund","Equity Trading Formula"],c:0,e:"ETFs are baskets of stocks/bonds traded like a single stock. They're a simple way to diversify with one purchase.",emoji:"📦"},
+  {q:"Inflation is 3% and your savings account pays 1%. What's happening to your money?",a:["Losing purchasing power","Growing faster than prices","Staying exactly the same","Doubling every year"],c:0,e:"If prices rise 3% but your money only grows 1%, you're losing 2% in real value every year. This is why investing matters.",emoji:"🔥"},
+];
+
+function initInvest(){genericQuizEngine(investQuestions,'invest',nextInvestQ)}
+function nextInvestQ(){currentQ++;showGenericQ(investQuestions,'invest',nextInvestQ)}
+
+// ===== STOCK MARKET SIM =====
+let stockPrice=50,stockCash=10000,stockSharesOwned=0,stockRoundNum=0,stockHistory=[50];
+const STOCK_ROUNDS=10;
+
+const stockNewsItems=[
+  {text:"Tech earnings beat expectations. Market sentiment is bullish.",bias:0.15},
+  {text:"Federal Reserve hints at rate hikes. Investors nervous.",bias:-0.12},
+  {text:"New product launch drives excitement. Stock trending on social media.",bias:0.2},
+  {text:"Supply chain issues reported. Quarterly guidance lowered.",bias:-0.18},
+  {text:"Company announces stock buyback program.",bias:0.1},
+  {text:"CEO unexpectedly resigns. Board searching for replacement.",bias:-0.15},
+  {text:"Analyst upgrades stock to 'Strong Buy.'",bias:0.12},
+  {text:"Competitor releases a superior product. Market share at risk.",bias:-0.1},
+  {text:"Record revenue reported. Company expanding internationally.",bias:0.18},
+  {text:"Lawsuit filed against the company. Settlement could be costly.",bias:-0.2},
+  {text:"Partnership announced with major retailer.",bias:0.08},
+  {text:"Inflation data comes in hot. Market broadly selling off.",bias:-0.08},
+];
+
+function initStock(){
+  stockPrice=50;stockCash=10000;stockSharesOwned=0;stockRoundNum=0;stockHistory=[50];
+  score=0;totalQ=10;
+  showScreen('stockScreen');
+  drawStockChart();
+  updateStockUI();
+  loadStockRound();
+}
+
+function loadStockRound(){
+  if(stockRoundNum>=STOCK_ROUNDS){
+    const portfolio=stockCash+stockSharesOwned*stockPrice;
+    const profit=portfolio-10000;
+    score=profit>2000?10:profit>1000?8:profit>0?6:profit>-1000?4:2;
+    totalQ=10;xp+=score*10;
+    streakCount=profit>0?streakCount+1:0;
+    updateStats();
+    document.getElementById('rScore').textContent=`Final portfolio: ${fmtD(portfolio)} (${profit>=0?'+':''}${fmtD(profit)})`;
+    endGame();return;
+  }
+  const news=stockNewsItems[Math.floor(Math.random()*stockNewsItems.length)];
+  document.getElementById('stockNewsText').textContent=news.text;
+  document.getElementById('stockScreen').dataset.bias=news.bias;
+  document.getElementById('stockRound').textContent=(stockRoundNum+1)+' / '+STOCK_ROUNDS;
+  document.getElementById('buyBtn').disabled=stockCash<stockPrice*10;
+  document.getElementById('sellBtn').disabled=stockSharesOwned<10;
+}
+
+function stockAction(action){
+  const bias=parseFloat(document.getElementById('stockScreen').dataset.bias||0);
+  if(action==='buy'&&stockCash>=stockPrice*10){stockCash-=stockPrice*10;stockSharesOwned+=10}
+  else if(action==='sell'&&stockSharesOwned>=10){stockCash+=stockPrice*10;stockSharesOwned-=10}
+
+  const change=bias+(Math.random()*0.2-0.1);
+  stockPrice=Math.max(5,Math.round((stockPrice*(1+change))*100)/100);
+  stockHistory.push(stockPrice);
+  stockRoundNum++;
+  drawStockChart();
+  updateStockUI();
+  loadStockRound();
+}
+
+function updateStockUI(){
+  document.getElementById('stockCash').textContent=fmtD(stockCash);
+  document.getElementById('stockShares').textContent=stockSharesOwned;
+  document.getElementById('stockPrice').textContent=fmtD(stockPrice);
+  if(stockHistory.length>1){
+    const prev=stockHistory[stockHistory.length-2];
+    const diff=stockPrice-prev;
+    const pct=((diff/prev)*100).toFixed(1);
+    const el=document.getElementById('stockChange');
+    el.textContent=(diff>=0?'+':'')+fmtD(diff)+' ('+pct+'%)';
+    el.style.color=diff>=0?'var(--green)':'var(--red)';
+  }
+}
+
+function drawStockChart(){
+  const canvas=document.getElementById('stockCanvas');
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth*2;canvas.height=400;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(stockHistory.length<2)return;
+  const min=Math.min(...stockHistory)*0.9;
+  const max=Math.max(...stockHistory)*1.1;
+  const w=canvas.width;const h=canvas.height;
+  const step=w/(stockHistory.length-1);
+  // Grid lines
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<5;i++){const y=h*i/4;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+  // Line
+  ctx.beginPath();ctx.strokeStyle=stockHistory[stockHistory.length-1]>=stockHistory[0]?'#22C55E':'#EF4444';ctx.lineWidth=3;
+  stockHistory.forEach((p,i)=>{const x=i*step;const y=h-(p-min)/(max-min)*h;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});
+  ctx.stroke();
+  // Fill
+  const lastX=(stockHistory.length-1)*step;const lastY=h-(stockHistory[stockHistory.length-1]-min)/(max-min)*h;
+  ctx.lineTo(lastX,h);ctx.lineTo(0,h);ctx.closePath();
+  ctx.fillStyle=stockHistory[stockHistory.length-1]>=stockHistory[0]?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)';
+  ctx.fill();
+}
+
+// ===== MONEY IQ QUIZ =====
+const quizQuestions=[
+  {q:"What's the 'Rule of 72' used for?",a:["Estimating how long it takes money to double","Calculating your tax rate","Determining credit card limits","Budgeting monthly expenses"],c:0,e:"Divide 72 by the interest rate to estimate doubling time. At 8% return, your money doubles in ~9 years.",emoji:"🧮"},
+  {q:"You owe $5,000 on a credit card at 22% APR and $5,000 on a student loan at 5%. Which should you pay off first?",a:["Credit card (higher interest)","Student loan (pay off debt faster)","Pay both equally","Neither, invest instead"],c:0,e:"Always attack the highest interest rate first. The credit card is costing you 4x more in interest every month.",emoji:"💳"},
+  {q:"What is an emergency fund?",a:["3-6 months of expenses saved in cash","Money for vacations","Your retirement account","Extra credit card limit"],c:0,e:"An emergency fund covers unexpected costs (job loss, car repair, medical bills) without going into debt.",emoji:"🛟"},
+  {q:"Why is your first paycheck usually smaller than expected?",a:["Taxes and deductions are taken out","Your employer keeps a fee","Banks charge a processing fee","First paychecks are always half"],c:0,e:"Federal tax, state tax, Social Security, Medicare, and possibly health insurance are all deducted before you see a dollar.",emoji:"💵"},
+  {q:"What's the biggest risk of only making minimum payments on a credit card?",a:["You pay way more in interest over time","Your card gets cancelled","You lose rewards points","Nothing, minimums are fine"],c:0,e:"A $1,000 balance at 20% APR with minimum payments takes 5+ years to pay off and costs $500+ in interest alone.",emoji:"🕳️"},
+  {q:"What is a W-2 form?",a:["A tax document showing your annual earnings","A job application","A bank statement","A credit report"],c:0,e:"Your employer sends you a W-2 showing total wages and taxes withheld. You need it to file your tax return.",emoji:"📄"},
+  {q:"What does APR stand for?",a:["Annual Percentage Rate","Applied Payment Return","Average Price Rate","Annual Payment Required"],c:0,e:"APR is the yearly interest rate charged on borrowed money. A 20% APR credit card charges $200/year per $1,000 owed.",emoji:"📊"},
+  {q:"You make $15/hr and work 40 hrs/week. What's your approximate monthly gross pay?",a:["$2,600","$2,400","$3,000","$1,500"],c:0,e:"$15 x 40 = $600/week. $600 x 52 weeks / 12 months = $2,600/month gross. After taxes, it's less.",emoji:"🧮"},
+  {q:"What is the difference between a debit card and a credit card?",a:["Debit uses your money; credit is a loan","They're the same thing","Debit has rewards; credit doesn't","Credit uses your money; debit is a loan"],c:0,e:"Debit pulls directly from your bank account. Credit is borrowed money you must pay back, often with interest.",emoji:"💳"},
+  {q:"Your friend says 'I got a tax refund, free money!' Is that accurate?",a:["No, it's your own money being returned","Yes, the government gives bonuses","Only if you make under $50K","It depends on the state"],c:0,e:"A tax refund means you overpaid taxes all year. It's YOUR money being returned, not a gift. You essentially gave the government an interest-free loan.",emoji:"🤔"},
+];
+
+function initQuiz(){genericQuizEngine(quizQuestions,'quiz',nextQuizQ)}
+function nextQuizQ(){currentQ++;showGenericQ(quizQuestions,'quiz',nextQuizQ)}
+
+// Resize stock chart on window resize
+window.addEventListener('resize',()=>{if(document.getElementById('stockScreen').classList.contains('active'))drawStockChart()});
+</script>
+
+</body>
+</html>
