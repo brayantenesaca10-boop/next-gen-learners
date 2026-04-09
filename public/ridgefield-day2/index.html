@@ -88,34 +88,8 @@
 
 <div class="deck" id="deck">
 
-  <!-- SLIDE 1: Title -->
-  <div class="slide bg-dark active" data-bg="dark">
-    <div class="orb" style="width:400px;height:400px;background:#4F46E5;top:-100px;right:-100px"></div>
-    <div class="orb" style="width:300px;height:300px;background:#10B981;bottom:-80px;left:-60px;animation-delay:5s"></div>
-    <p class="label">Ridgefield Library &middot; Day 2 &middot; April 9, 2026</p>
-    <h1 class="mega">Thinkers &amp;<br><span class="accent-i">Builders</span></h1>
-    <p class="body" style="margin-top:20px">AI Club</p>
-  </div>
-
-  <!-- SLIDE 2: Recap + Today -->
-  <div class="slide bg-indigo" data-bg="dark">
-    <h1 class="large">Yesterday you <span class="accent">built</span> things.</h1>
-    <p class="medium" style="margin-top:24px;opacity:.7">Today we find out:</p>
-    <p class="large" style="margin-top:16px">Are <span class="accent-w">you</span> better than AI?</p>
-  </div>
-
-  <!-- SLIDE 3: Quick Check-in -->
-  <div class="slide bg-dark" data-bg="dark">
-    <div class="orb" style="width:350px;height:350px;background:#7C3AED;top:10%;left:5%"></div>
-    <h1 class="large" style="margin-bottom:24px">Quick check-in</h1>
-    <ul class="items green">
-      <li>Who went home and tried AI on their own?</li>
-      <li>What did you make?</li>
-    </ul>
-  </div>
-
-  <!-- SLIDE 4: AI vs Me - Intro -->
-  <div class="slide bg-gradient" data-bg="dark">
+  <!-- SLIDE 1: AI vs Me - Intro -->
+  <div class="slide bg-gradient active" data-bg="dark">
     <p class="label">Part 1</p>
     <h1 class="mega">AI vs <span style="font-style:italic">Me</span></h1>
     <p class="body" style="margin-top:20px">You and AI get the same challenge.<br>You do it first. Then AI tries.<br>Let's see who wins.</p>
@@ -256,104 +230,11 @@
     <p class="body" style="margin-top:16px">Change it. Add to it. Remix it. Go crazy.<br>The only rule: start from here.</p>
   </div>
 
-  <!-- SLIDE 15: Categories -->
-  <div class="slide bg-dark" data-bg="dark">
-    <p class="label">You're competing for</p>
-    <div class="awards">
-      <div class="award">
-        <div class="award-emoji">&#127912;</div>
-        <div class="award-name" style="color:#818CF8">Most Creative</div>
-      </div>
-      <div class="award">
-        <div class="award-emoji">&#128514;</div>
-        <div class="award-name" style="color:#FBBF24">Funniest</div>
-      </div>
-      <div class="award">
-        <div class="award-emoji">&#128247;</div>
-        <div class="award-name" style="color:#22D3EE">Most Realistic</div>
-      </div>
-      <div class="award">
-        <div class="award-emoji">&#129327;</div>
-        <div class="award-name" style="color:#10B981">Most Surprising</div>
-      </div>
-    </div>
-    <p class="body" style="margin-top:24px">Try at least 3-4 different directions before picking your favorite.</p>
-  </div>
-
-  <!-- SLIDE 16: Build Time with Timer -->
-  <div class="slide bg-emerald" data-bg="dark">
-    <p class="label">Build Time</p>
-    <div class="timer-display" id="timer">20:00</div>
-    <p class="timer-sub">Remix, create, experiment</p>
-    <button class="timer-btn" id="timerBtn" onclick="toggleTimer()">Start Timer</button>
-  </div>
-
-  <!-- SLIDE 17: Time to Share -->
-  <div class="slide bg-indigo" data-bg="dark">
-    <h1 class="mega">Time to<br><span class="accent-w">share.</span></h1>
-    <p class="body" style="margin-top:20px">Show your best creation. 10 seconds to explain.</p>
-    <div class="prompt-card" style="font-size:clamp(.85rem,1.6vw,1.05rem);font-weight:400;text-align:left;margin-top:12px;opacity:.7;background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.08)">
-      <strong style="opacity:.6;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase">Example:</strong><br>
-      "I started with a cat in a city and turned it into a cat detective solving crimes in rainy London. I kept adding details until it looked like a movie poster."
-    </div>
-  </div>
-
-  <!-- SLIDE 18: Winners -->
-  <div class="slide bg-gradient" data-bg="dark">
-    <p class="label">And the winners are...</p>
-    <div class="awards">
-      <div class="award" style="background:rgba(255,255,255,.1)">
-        <div class="award-emoji">&#127912;</div>
-        <div class="award-name" style="color:#818CF8">Most Creative</div>
-      </div>
-      <div class="award" style="background:rgba(255,255,255,.1)">
-        <div class="award-emoji">&#128514;</div>
-        <div class="award-name" style="color:#FBBF24">Funniest</div>
-      </div>
-      <div class="award" style="background:rgba(255,255,255,.1)">
-        <div class="award-emoji">&#128247;</div>
-        <div class="award-name" style="color:#22D3EE">Most Realistic</div>
-      </div>
-      <div class="award" style="background:rgba(255,255,255,.1)">
-        <div class="award-emoji">&#129327;</div>
-        <div class="award-name" style="color:#10B981">Most Surprising</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 19: What We Learned -->
-  <div class="slide bg-dark" data-bg="dark">
-    <div class="orb" style="width:350px;height:350px;background:#4F46E5;top:10%;right:5%"></div>
-    <p class="label">What we learned today</p>
-    <ul class="items green">
-      <li>AI is a tool, not a replacement for you</li>
-      <li>The person behind the prompt matters more than the prompt itself</li>
-      <li>Same starting point, totally different results, because YOU are different</li>
-    </ul>
-  </div>
-
-  <!-- SLIDE 20: Tomorrow Teaser -->
-  <div class="slide bg-dark" data-bg="dark">
-    <div class="orb" style="width:400px;height:400px;background:#10B981;bottom:-100px;left:-80px"></div>
-    <div class="orb" style="width:300px;height:300px;background:#7C3AED;top:-80px;right:-60px;animation-delay:5s"></div>
-    <p class="label">Tomorrow - The Finale</p>
-    <h1 class="mega">Build Something<br><span class="accent">Real</span></h1>
-    <p class="body" style="margin-top:20px">Find a real problem in your life.<br>Build a real solution with AI.<br>Pitch it to the group.</p>
-    <p class="medium" style="margin-top:24px;opacity:.6">Come ready to think big.</p>
-  </div>
-
-  <!-- SLIDE 21: Thank You -->
-  <div class="slide bg-dark" data-bg="dark">
-    <div class="orb" style="width:400px;height:400px;background:#4F46E5;top:-100px;left:-100px"></div>
-    <div class="orb" style="width:300px;height:300px;background:#10B981;bottom:-100px;right:-60px"></div>
-    <h1 class="mega">See you<br><span class="accent-i">tomorrow.</span></h1>
-    <p class="body" style="margin-top:16px;font-size:1rem;opacity:0.6"><a href="mailto:brayan@nextgenerationlearners.com" style="color:#818CF8;text-decoration:none">brayan@nextgenerationlearners.com</a></p>
-  </div>
 
 </div>
 
 <div class="progress" id="progress"></div>
-<div class="counter" id="counter">1 / 21</div>
+<div class="counter" id="counter">1 / 11</div>
 <div class="nav-hint">Arrow keys or swipe to navigate</div>
 
 <script>
@@ -383,37 +264,7 @@ document.addEventListener('keydown',e=>{
 let tx=0;
 document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
 document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(dx<-50)go(cur+1);if(dx>50)go(cur-1)});
-document.addEventListener('click',e=>{if(e.target.closest('.progress')||e.target.closest('.timer-btn'))return;if(e.clientX>window.innerWidth*.5)go(cur+1);else go(cur-1)});
-
-// Timer
-let timerInterval=null;
-let timerSeconds=20*60;
-let timerRunning=false;
-
-function updateTimerDisplay(){
-  const m=Math.floor(timerSeconds/60);
-  const s=timerSeconds%60;
-  document.getElementById('timer').textContent=`${m}:${s.toString().padStart(2,'0')}`;
-}
-
-function toggleTimer(){
-  const btn=document.getElementById('timerBtn');
-  if(!timerRunning){
-    timerRunning=true;
-    btn.textContent='Pause';
-    btn.classList.add('running');
-    timerInterval=setInterval(()=>{
-      if(timerSeconds<=0){clearInterval(timerInterval);timerRunning=false;btn.textContent='Done!';btn.classList.remove('running');return}
-      timerSeconds--;
-      updateTimerDisplay();
-    },1000);
-  }else{
-    timerRunning=false;
-    clearInterval(timerInterval);
-    btn.textContent='Resume';
-    btn.classList.remove('running');
-  }
-}
+document.addEventListener('click',e=>{if(e.target.closest('.progress'))return;if(e.clientX>window.innerWidth*.5)go(cur+1);else go(cur-1)});
 </script>
 
 </body>
